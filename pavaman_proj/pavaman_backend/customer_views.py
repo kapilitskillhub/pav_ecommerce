@@ -1427,3 +1427,7 @@ def delete_customer_address(request):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+
+#mmmmmmmmm
+#llllll
