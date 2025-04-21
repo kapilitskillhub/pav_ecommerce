@@ -1,0 +1,96 @@
+.customer-profile-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #dbe0f9;
+    border-radius: 20px;
+    
+}
+
+.customer-profile-card {
+    display: flex;
+    flex-direction: column;
+    gap: -10px;
+}
+
+.customer-profile-section {
+    background: #7190ef;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.customer-profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.customer-profile-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.customer-edit-link {
+    font-size: 14px;
+    color: #2874f0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.customer-edit-link:hover {
+    text-decoration: underline;
+}
+
+.customer-input-row {
+    display: flex;
+    gap: 15px;
+    margin:3px;
+    margin-bottom: 3px;
+}
+
+.customer-input-row input,
+.customer-input-single input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    color: #555;
+}
+
+.customer-input-single {
+    width: 100%;
+}
+
+.customer-not-logged-in-box {
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    background-color: #f2f2f2;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    color: #777;
+}
+
+.customer-error {
+    color: red;
+    text-align: center;
+    font-size: 16px;
+}
+.customer-input-row-profile{
+    border-radius: 20px;
+}
+
+@media (max-width: 600px) {
+    .customer-input-row {
+        flex-direction: column;
+    }
+}
+
+
