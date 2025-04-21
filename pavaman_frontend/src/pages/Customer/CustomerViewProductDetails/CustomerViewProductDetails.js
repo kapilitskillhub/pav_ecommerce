@@ -331,8 +331,8 @@ const CustomerViewProductDetails = () => {
                                 </span>
                             </p>
                             <p className="customer-sku">SKU: {productDetails.sku_number}</p>
-                            <p className="customer-price">₹ {productDetails.final_price}.00<span>(Incl. GST)</span></p>
-                            <p className="customer-original-price">₹ {productDetails.price}.00<span>(Incl. GST)</span></p>
+                            <p className="customer-price">₹ {productDetails.final_price} /- <span>(Incl. GST)</span></p>
+                            <p className="customer-original-price">₹ {productDetails.price}  /- <span>(Incl. GST)</span></p>
 
 
                             {(productDetails.availability === "Very Few Products Left" || productDetails.availability === "In Stock") && (
@@ -427,7 +427,8 @@ const CustomerViewProductDetails = () => {
                                     </a>
                                 </div>
                                 <div onClick={() => handleDownloadMaterialFile(productDetails.product_id)} className="customer-material-download">
-                                    <MdCloudDownload />
+                                    
+                                    <button className="download-btn">Download<MdCloudDownload/></button>
                                 </div>
                             </div>
                             )}
@@ -442,3 +443,4 @@ const CustomerViewProductDetails = () => {
 };
 
 export default CustomerViewProductDetails;
+

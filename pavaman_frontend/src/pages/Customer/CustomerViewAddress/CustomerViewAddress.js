@@ -4,7 +4,7 @@ import "../CustomerViewAddress/CustomerViewAddress.css";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import PopupMessage from "../../../components/Popup/Popup";
 
-const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen }) => {
+const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen, onDeliverHere, onAddressSelect, onAddAddressClick }) => {
     const [addresses, setAddresses] = useState([]);
     const [editingAddress, setEditingAddress] = useState(null);
     const [selectedAddressId, setSelectedAddressId] = useState(null);
@@ -41,9 +41,9 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen }) => {
                 }
                 setAddresses([]); // still update the addresses to an empty list
             }
-            
+
         } catch (error) {
-            displayPopup("Something went wrong while fetching addresses.","error");
+            displayPopup("Something went wrong while fetching addresses.", "error");
         }
     };
 
@@ -82,13 +82,13 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen }) => {
             });
             const data = await response.json();
             if (response.ok) {
-                displayPopup("Address deleted successfully","success");
+                displayPopup("Address deleted successfully", "success");
                 fetchAddresses();
             } else {
-                displayPopup(data.error || "Failed to delete address","error");
+                displayPopup(data.error || "Failed to delete address", "error");
             }
         } catch (error) {
-            displayPopup("Something went wrong during deletion","error");
+            displayPopup("Something went wrong during deletion", "error");
         }
     };
 
@@ -98,7 +98,7 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen }) => {
 
     const handleOrderSummary = async () => {
         if (!selectedAddressId) {
-            displayPopup("Please select a delivery address.","error");
+            displayPopup("Please select a delivery address.", "error");
             return;
         }
 
@@ -106,7 +106,7 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen }) => {
         const productIds = JSON.parse(localStorage.getItem("product_ids")) || [];
 
         if (!orderIds.length || !productIds.length) {
-            displayPopup("Missing order or product details.","error");
+            displayPopup("Missing order or product details.", "error");
             return;
         }
 
@@ -124,22 +124,40 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen }) => {
 
             const data = await response.json();
             if (response.ok && data.status_code === 200) {
+                const selectedAddr = addresses.find(addr => addr.address_id === selectedAddressId);
                 setOrderSummary({
                     orders: data.orders,
                     shippingAddress: data.shipping_address,
+                    order_id: data.order_id,
+                    customer_id: customerId,
+                    total_amount: data.total_amount,
+                    product_name: data.product_name,
                 });
+                onDeliverHere();  // Scroll and collapse
+                // Set selected address to parent
+                if (selectedAddr) {
+                    onAddressSelect(selectedAddr);
+                }
             } else {
-                displayPopup(data.error || "Failed to load summary.","error");
+                displayPopup(data.error || "Failed to load summary.", "error");
             }
         } catch (error) {
-            displayPopup("Something went wrong. Try again.","error");
+            displayPopup("Something went wrong. Try again.", "error");
         }
     };
 
     return (
         <div className="address-list container">
             <h3 className="address-heading">Delivery Address</h3>
+            {!isAddOpen && (
 
+                <div className="add-address-btn-section container">
+
+                    <button className="add-address-btn" onClick={onAddAddressClick}>Add Address</button>
+
+                </div>
+
+            )}
             <div className="popup-cart">
                 {showPopup && (
                     <PopupMessage
@@ -175,14 +193,23 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen }) => {
                                     onChange={() => handleAddressSelect(address.address_id)}
                                 />
                             </div>
-
                             <div className="address-details-section">
-                                <label className="address-details" onClick={() => handleAddressSelect(address.address_id)}>
-                                    <p><strong>{address.first_name} {address.last_name} ({address.mobile_number})</strong></p>
-                                    <p>{address.street}, {address.landmark}, {address.village}, {address.mandal}, {address.district}, {address.state} - {address.pincode}</p>
-                                </label>
-                            </div>
 
+                                <label className="address-details" onClick={() => handleAddressSelect(address.address_id)}>
+
+                                    <p><strong>{address.first_name} {address.last_name}</strong>{" "}
+
+                                        <strong>{address.phone || address.mobile_number || address.contact_number}</strong>
+
+                                    </p>
+
+                                    <p>{address.street}, {address.village},{address.mandal} ,{address.district}, {address.state}-
+
+                                        <strong>{address.pincode}</strong></p>
+
+                                </label>
+
+                            </div>
                             {!isAddOpen && (
                                 <div className="menu-container">
                                     <BsThreeDotsVertical
@@ -193,8 +220,8 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen }) => {
                                     />
                                     {menuOpenFor === address.address_id && (
                                         <div className="manage-edit-menu-dropdown">
-                                            <button className="manage-edit-btn"onClick={() => handleEditClick(address)}>Edit</button>
-                                            <button  className="manage-delete-btn" onClick={() => handleDeleteClick(address.address_id)}>Delete</button>
+                                            <button className="manage-edit-btn" onClick={() => handleEditClick(address)}>Edit</button>
+                                            <button className="manage-delete-btn" onClick={() => handleDeleteClick(address.address_id)}>Delete</button>
                                         </div>
                                     )}
                                 </div>

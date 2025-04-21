@@ -125,7 +125,7 @@ const CustomerSignup = () => {
                         onClose={() => setPopupMessage({ text: "", type: "" })}
                     />
                 )}
-                    <label className="signup-label">First Name</label>
+                    <label className="signup-label">First Name <span className="required-star">*</span></label>
                     <input
                         type="text"
                         name="first_name"
@@ -138,7 +138,7 @@ const CustomerSignup = () => {
                 </div>
 
                 <div className="signup-form-fields">
-                    <label className="signup-label">Last Name</label>
+                    <label className="signup-label">Last Name <span className="required-star">*</span></label>
                     <input
                         type="text"
                         name="last_name"
@@ -151,7 +151,7 @@ const CustomerSignup = () => {
                 </div>
 
                 <div className="signup-form-fields">
-                    <label className="signup-label">Email</label>
+                    <label className="signup-label">Email <span className="required-star">*</span></label>
                     <input
                         type="email"
                         name="email"
@@ -164,7 +164,7 @@ const CustomerSignup = () => {
                 </div>
 
                 <div className="signup-form-fields">
-                    <label className="signup-label">Mobile Number</label>
+                    <label className="signup-label">Mobile Number <span className="required-star">*</span></label>
                     <div className="signup-phone-input">
                         <PhoneInput
                             country={"in"}
@@ -190,7 +190,13 @@ const CustomerSignup = () => {
                     </label>
                     {showTooltip && (
                         <div className="password-tool-tip">
-                            Password must be at least 8 characters long, contain uppercase, lowercase, special character and a number.
+                            <ul className="password-tool-tip-list" >
+                                <li>At least 8 characters long</li>
+                                <li>Contains an uppercase letter</li>
+                                <li>Contains a lowercase letter</li>
+                                <li>Contains a special character</li>
+                                <li>Contains a number</li>
+                            </ul>
                         </div>
                     )}
                     <div className="signup-password-input-wrapper">
@@ -248,3 +254,4 @@ const CustomerSignup = () => {
 };
 
 export default CustomerSignup;
+

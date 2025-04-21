@@ -116,7 +116,7 @@
  } 
 .manage-menu-dropdown { 
     right: auto; 
-    left: 0; }
+    left: -49px; }
 } 
 .manage-menu-dropdown button { 
     display: inline-block; 

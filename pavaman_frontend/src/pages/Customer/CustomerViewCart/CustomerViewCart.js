@@ -5,13 +5,12 @@ import "../CustomerViewCart/CustomerViewCart.css"
 import { RiDeleteBinLine } from "react-icons/ri";
 import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
+import {FaShoppingCart} from "react-icons/fa";
 
 const CustomerViewCart = () => {
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [discountPrice, setDiscountPrice] = useState(0);
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -94,8 +93,6 @@ const CustomerViewCart = () => {
             if (data.status_code === 200) {
                 const updatedCart = cartItems.filter(item => item.product_id !== product_id);
                 setTotalPrice(calculateTotalPrice(updatedCart));
-                setDiscountPrice(calculateDiscountPrice(updatedCart));
-
                 setCartItems(updatedCart);
 
                 // Recalculate total price from updated cart
@@ -123,13 +120,6 @@ const CustomerViewCart = () => {
     };
 
 
-    
-    // const calculateDiscountPrice = (items) => {
-    //     return items.reduce((sum, item) => sum + item.discount_price * item.quantity, 0);
-    // };
-    const calculateDiscountPrice = (items) => {
-        return items.reduce((sum, item) => sum + item.discount * item.quantity, 0);
-    };
     const handleDeleteSelectedItems = async () => {
         const customer_id = localStorage.getItem("customer_id");
         if (!customer_id) {
@@ -160,8 +150,6 @@ const CustomerViewCart = () => {
                 const updatedCart = cartItems.filter(item => !selectedProducts.includes(item.product_id));
 
                 setTotalPrice(calculateTotalPrice(updatedCart));
-                setDiscountPrice(calculateDiscountPrice(updatedCart));
-
                 setCartItems(updatedCart);
                 setSelectedProducts([]);
                 window.dispatchEvent(new Event("cartUpdated"));
@@ -242,6 +230,61 @@ const CustomerViewCart = () => {
         }
     };
 
+    // const handlePlaceOrderProduct = async (product_id) => {
+    //     const customer_id = localStorage.getItem("customer_id");
+    //     if (!customer_id) {
+    //         displayPopup(
+    //             <>
+    //                 Please <Link to="/customer-login" className="popup-link">log in</Link> to place order.
+    //             </>,
+    //             "error"
+    //         );
+    //         navigate("/customer-login");
+    //         return;
+    //     }
+
+    //     const productToOrder = cartItems.find(item => item.product_id === product_id);
+
+    //     if (!productToOrder) {
+    //         displayPopup("Product not found in cart.","error");
+    //         return;
+    //     }
+
+    //     const orderData = {
+    //         customer_id: String(customer_id),
+    //         products: [{
+    //             product_id: String(productToOrder.product_id),
+    //             quantity: String(productToOrder.quantity),
+    //         }],
+    //     };
+
+    //     try {
+    //         const response = await fetch("http://127.0.0.1:8000/products/order-multiple-products", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify(orderData),
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (data.status_code === 201) {
+    //             const orderIds = data.orders.map(order => order.order_id);
+    //             const productIds = data.orders.map(order => order.product_id);
+
+    //             localStorage.setItem("order_ids", JSON.stringify(orderIds));
+    //             localStorage.setItem("product_ids", JSON.stringify(productIds));
+
+    //             navigate("/checkout-page", { state: { orderSummary: data.orders } });
+    //         } else if (data.status_code === 400) {
+    //             displayPopup(data.error ||"Requested quantity is unavailable.","error");
+    //         } else {
+    //             displayPopup(data.error || "Failed to place order.","error");
+    //         }
+    //     } catch (error) {
+    //         displayPopup("An unexpected error occurred.","error");
+    //     }
+    // };
+
     const handleQuantityChange = (product_id, change) => {
         setCartItems((prevItems) => {
             const updatedCart = prevItems.map((item) =>
@@ -252,7 +295,6 @@ const CustomerViewCart = () => {
 
             setCartItems(updatedCart);
             setTotalPrice(calculateTotalPrice(updatedCart));
-            setDiscountPrice(calculateDiscountPrice(updatedCart));
 
             return updatedCart;
         });
@@ -274,7 +316,7 @@ const CustomerViewCart = () => {
                     />
                 )}
             </div>
-            <h2 className="cart-title">🛒Your Shopping Cart</h2>
+            <h2 className="cart-title"><FaShoppingCart className="cart-nav-icon" />Your Shopping Cart</h2>
 
 
             {loading && <p>Loading...</p>}
@@ -325,15 +367,15 @@ const CustomerViewCart = () => {
                                             ? "few-left"
                                             : "in-stock"
                                         }`}>{item.availability}</p>
-                                    <p className="discounted-price">₹ {item.discount_price}.00</p>
+                                    <p className="discounted-price">₹ {item.discount_price} /-</p>
 
-                                    <p className="original-price">₹ {item.price_per_item}.00</p>
+                                    <p className="original-price">₹ {item.price_per_item} /-</p>
 
 
                                 </div>
                                 <div>
 
-                                    <p className="subtotal"><b>Subtotal: ₹ </b>{(item.discount_price * item.quantity).toFixed(2)}.00</p>
+                                    <p className="subtotal"><b>Subtotal: ₹ </b>{(item.discount_price * item.quantity).toFixed(2)} /-</p>
                                     {/* {!selectedProducts.includes(item.product_id) && (
                                         <button className="product-place-order" onClick={() => handlePlaceOrderProduct(item.product_id)}>
                                             Place Order
@@ -366,23 +408,19 @@ const CustomerViewCart = () => {
                             <div className="cart-prices">
                                 <div className="cart-price">
                                     <div className="cart-price-label">Price({cartItems.length} items)</div>
-                                    <div className="cart-price-value">₹ {totalPrice}.00</div>
-                                </div>
-                                <div className="cart-price">
-                                    <div className="cart-price-label">Discount</div>
-                                    <div className="cart-price-value">₹ {discountPrice}.00</div>
+                                    <div className="cart-price-value">₹ {totalPrice} /-</div>
                                 </div>
                                 <div className="cart-price cart-pfee">
-                                    <div className="cart-price-label">Platform Fee</div>
-                                    <div className="cart-price-value">₹ 0.0</div>
+                                    <div className="cart-price-label">Platfrom Fee</div>
+                                    <div className="cart-price-value">₹ 0.0 /-</div>
                                 </div>
                                 <div className="cart-price cart-dfee">
                                     <div className="cart-price-label">Delivery fee</div>
-                                    <div className="cart-price-value">₹ 0.0</div>
+                                    <div className="cart-price-value">₹ 0.0 /-</div>
                                 </div>
                                 <div className="cart-price cart-total">
                                     <div className="cart-price-label">Total Price</div>
-                                    <div className="cart-price-value"> ₹ {totalPrice}.00</div>
+                                    <div className="cart-price-value"> ₹ {totalPrice} /-</div>
 
                                 </div>
                             </div>
@@ -400,19 +438,19 @@ const CustomerViewCart = () => {
 
                                     <div className="cart-price cart-payable">
                                         <div className="cart-price-label"><b>Price({selectedProducts.length} items)</b></div>
-                                        <div className="cart-price-value"><b>₹ {calculateSelectedTotal()}.00</b></div>
+                                        <div className="cart-price-value"><b>₹ {calculateSelectedTotal()} /-</b></div>
                                     </div>
                                     <div className="cart-price cart-pfee">
                                         <div className="cart-price-label">Platfrom Fee</div>
-                                        <div className="cart-price-value">₹ 0.0</div>
+                                        <div className="cart-price-value">₹ 0.0 /-</div>
                                     </div>
                                     <div className="cart-price cart-dfee">
                                         <div className="cart-price-label">Delivery fee</div>
-                                        <div className="cart-price-value">₹ 0.0</div>
+                                        <div className="cart-price-value">₹ 0.0 /-</div>
                                     </div>
                                     <div className="cart-price cart-total">
                                         <div className="cart-price-label">Total Price</div>
-                                        <div className="cart-price-value">₹ {calculateSelectedTotal()}.00</div>
+                                        <div className="cart-price-value">₹ {calculateSelectedTotal()} /-</div>
                                     </div>
                                 </div>
 

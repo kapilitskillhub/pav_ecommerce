@@ -175,7 +175,7 @@ const CustomerHeader = (onSearch ) => {
     localStorage.removeItem("customer_id");
     localStorage.clear();
     setIsLoggedIn(false);
-    navigate("/customer-login");
+    navigate("/");
   };
 
   const toggleUserDropdown = () => {

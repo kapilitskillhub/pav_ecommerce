@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import AddCustomerAddress from "../CustomerAddAddress/CustomerAddAddress";
 import ViewCustomerAddress from "../CustomerViewAddress/CustomerViewAddress";
 import EditAddress from "../CustomerEditAddress/CustomerEditAddress";
-import OrderSummary from "../CustomerOrderSummary/CustomerOrderSummary"; // Import new component
+import OrderSummary from "../CustomerOrderSummary/CustomerOrderSummary";
 import RazorpayPayment from "../CustomerPayment/CustomerPayment";
 import Popup from "../../../components/Popup/Popup";
 import PopupMessage from "../../../components/Popup/Popup";
@@ -12,17 +12,15 @@ const CustomerCheckoutPage = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [refreshAddresses, setRefreshAddresses] = useState(false);
     const [editingAddress, setEditingAddress] = useState(null);
-    const [orderSummary, setOrderSummary] = useState(null); // Store order summary
+    const [orderSummary, setOrderSummary] = useState(null);
     const [popupMessage, setPopupMessage] = useState("");
     const [popup, setPopup] = useState({ text: "", type: "" });
-
-    useEffect(() => {
-        console.log("Popup message updated:", popupMessage);
-    }, [popupMessage]);
+    const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
+    const orderSummaryRef = useRef(null);
 
     const handleAddressAdded = (message) => {
-        setShowAddressForm(false); // Hide form after successful submission
-        setRefreshAddresses((prev) => !prev); // Refresh addresses
+        setShowAddressForm(false);
+        setRefreshAddresses(prev => !prev);
         setPopupMessage(message);
     };
 
@@ -32,67 +30,95 @@ const CustomerCheckoutPage = () => {
 
     const handleEditCompleted = (message) => {
         setEditingAddress(null);
-        setRefreshAddresses((prev) => !prev);
+        setRefreshAddresses(prev => !prev);
         setPopupMessage(message);
+    };
 
+    const handleAddressSelect = (address) => {
+        setSelectedAddress(address);
+    };
+
+    const handleDeliverHere = () => {
+        setIsAddressConfirmed(true);
+        setTimeout(() => {
+            orderSummaryRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 300);
     };
 
     return (
-        <div>
-            {/* View Saved Addresses */}
+        <div className="checkout-page-container">
+            {/* Popup messages */}
             <div className="popup-cart">
-
-            {popup.text && (
-                <PopupMessage
-                    message={popup.text}
-                    type={popup.type}
-                    onClose={() => setPopup({ text: "", type: "" })}
-                />
-            )}
-
-            </div>
-
-            {popupMessage && <Popup message={popupMessage} onClose={() => setPopupMessage("")} />}
-            {/* Add Address */}
-            <div className="view-address-section">
-
-            </div><ViewCustomerAddress
-                onEditAddress={handleEditAddress}
-                refresh={refreshAddresses}
-                onAddressSelect={setSelectedAddress}
-                setOrderSummary={setOrderSummary} // Pass state updater
-
-            />
-            <div>
-                {!showAddressForm && !editingAddress && (
-                    <div className="add-address-btn-section container">
-                        <button className="add-address-btn" onClick={() => setShowAddressForm(true)}>Add Address</button>
-                    </div>
+                {popup.text && (
+                    <PopupMessage
+                        message={popup.text}
+                        type={popup.type}
+                        onClose={() => setPopup({ text: "", type: "" })}
+                    />
                 )}
             </div>
+            {popupMessage && <Popup message={popupMessage} onClose={() => setPopupMessage("")} />}
 
-            {/*   
-            {!showAddressForm && !editingAddress && (
-                <div className="add-address-btn-section container">
-                    <button className="add-address-btn" onClick={() => setShowAddressForm(true)}>Add Address</button>
+            {!isAddressConfirmed && (
+                <div className="address-section">
+                    <ViewCustomerAddress
+                        onEditAddress={handleEditAddress}
+                        refresh={refreshAddresses}
+                        onAddressSelect={handleAddressSelect}
+                        selectedAddress={selectedAddress}
+                        onDeliverHere={handleDeliverHere}
+                        setOrderSummary={setOrderSummary}
+                        isAddOpen={showAddressForm}
+                        onAddAddressClick={() => setShowAddressForm(true)}
+                    />
+
+                    {showAddressForm && (
+                        <AddCustomerAddress onAddressAdded={handleAddressAdded} />
+                    )}
+                    {editingAddress && (
+                        <EditAddress
+                            address={editingAddress}
+                            onEditCompleted={handleEditCompleted}
+                        />
+                    )}
                 </div>
-            )} */}
+            )}
 
-            {/* Show Add Address Form */}
-            {showAddressForm && <AddCustomerAddress onAddressAdded={handleAddressAdded} />}
+            {/* Show confirmed address with "Change" button */}
+            {isAddressConfirmed && selectedAddress && (
+                <div className="confirmed-address-section container">
+                    <div className="address-heading">Delivery Address</div>
 
-            {/* Show Edit Address Form */}
-            {editingAddress && <EditAddress address={editingAddress} onEditCompleted={handleEditCompleted} />}
+                    <div className="confirmed-address-box">
+                        <p>
+                            <strong>{selectedAddress.first_name} {selectedAddress.last_name} ({selectedAddress.mobile_number})</strong>
+                        </p>
+                        <p>
+                            {selectedAddress.street}, {selectedAddress.landmark}, {selectedAddress.village},
+                            {selectedAddress.mandal}, {selectedAddress.district}, {selectedAddress.state} - {selectedAddress.pincode}
+                        </p>
+                        <button className="add-address-btn" onClick={() => setIsAddressConfirmed(false)}>
+                            Change
+                        </button>
+                    </div>
+                </div>
+            )}
 
-            {/* Show Order Summary when order is placed */}
-            {orderSummary && <OrderSummary orderSummary={orderSummary} setOrderSummary={setOrderSummary} setPopup={setPopup} />}
-            {orderSummary && (
-                <RazorpayPayment
-                    orderId={orderSummary.order_id}
-                    customerId={orderSummary.customer_id}
-                    totalAmount={orderSummary.total_amount}
-                    productName={orderSummary.product_name}
-                />
+            {/* Order Summary and Payment Section */}
+            {isAddressConfirmed && orderSummary && (
+                <div className="order-summary-section" ref={orderSummaryRef}>
+                    <OrderSummary
+                        orderSummary={orderSummary}
+                        setOrderSummary={setOrderSummary}
+                        setPopup={setPopup}
+                    />
+                    <RazorpayPayment
+                        orderId={orderSummary.order_id}
+                        customerId={orderSummary.customer_id}
+                        totalAmount={orderSummary.total_amount}
+                        productName={orderSummary.product_name}
+                    />
+                </div>
             )}
         </div>
     );

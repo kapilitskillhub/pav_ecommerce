@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./CustomerEditProfile.css"; 
-
+import "./CustomerEditProfile.css";
+import PopupMessage from "../../../components/Popup/Popup";
 
 const CustomerEditProfile = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const customerData = location.state?.customer;
+
+    const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+    const [showPopup, setShowPopup] = useState(false);
+
+    const displayPopup = (text, type = "success") => {
+        setPopupMessage({ text, type });
+        setShowPopup(true);
+        setTimeout(() => {
+            setShowPopup(false);
+        }, 10000);
+    };
 
     const [formData, setFormData] = useState({
         first_name: "",
@@ -36,7 +47,6 @@ const CustomerEditProfile = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const response = await fetch("http://127.0.0.1:8000/edit-customer-profile", {
                 method: "POST",
@@ -50,43 +60,62 @@ const CustomerEditProfile = () => {
             const result = await response.json();
 
             if (response.ok) {
-                alert("Profile updated successfully!");
-                navigate("/profile"); // redirect to profile
+                displayPopup("Profile updated successfully!", "success");
+                setTimeout(() => navigate("/profile"), 3000);
             } else {
-                alert(result.error || "Failed to update profile");
+                displayPopup(result.error || "Failed to update profile", "error");
             }
         } catch (error) {
-            alert("Error updating profile: " + error.message);
+            displayPopup("Error updating profile: " + error.message, "error");
         }
     };
 
     return (
         <div className="edit-profile-container">
-            <h2>Edit Your Profile</h2>
-            <form onSubmit={handleSubmit} className="edit-profile-form">
-                <div className="input-row">
-                    <input
-                        type="text"
-                        name="first_name"
-                        placeholder="First Name"
-                        value={formData.first_name}
-                        onChange={handleChange}
-                        required
-                    />
-                    <input
-                        type="text"
-                        name="last_name"
-                        placeholder="Last Name"
-                        value={formData.last_name}
-                        onChange={handleChange}
-                        required
+            {showPopup && (
+                <div className="profile-popup-discount">
+                    <PopupMessage
+                        message={popupMessage.text}
+                        type={popupMessage.type}
+                        onClose={() => setShowPopup(false)}
                     />
                 </div>
+            )}
 
+            <h2>Edit Your Profile</h2>
+
+            <form onSubmit={handleSubmit} className="edit-profile-form">
+                <div className="input-row">
+  <div className="input-single">
+    <h3 className="profile-edit-heading-first">First Name</h3>
+    <input
+      type="text"
+      name="first_name"
+      value={formData.first_name}
+      onChange={handleChange}
+      className="Customer-input-row-edit-profile"
+      required
+    />
+  </div>
+  <div className="input-single">
+    <h3 className="profile-edit-heading-first">Last Name</h3>
+    <input
+      type="text"
+      name="last_name"
+      value={formData.last_name}
+      onChange={handleChange}
+      className="Customer-input-row-edit-profile"
+      required
+    />
+  </div>
+</div>
                 <div className="input-single">
+                    <h3 className="profile-edit-heading-first">Email</h3>
                     <input
+                        className="Customer-input-row-edit-profile"
                         type="email"
                         name="email"
+                        id="email"
                         placeholder="Email"
                         value={formData.email}
                         onChange={handleChange}
@@ -95,19 +124,24 @@ const CustomerEditProfile = () => {
                 </div>
 
                 <div className="input-single">
+                    <h3 className="profile-edit-heading-first">Mobile Number</h3>
                     <input
+                        className="Customer-input-row-edit-profile"
                         type="text"
                         name="mobile_no"
+                        id="mobile_no"
                         placeholder="Mobile Number"
                         value={formData.mobile_no}
                         onChange={handleChange}
+                        pattern="\d{10}"
+                        title="Mobile number must be exactly 10 digits"
                         required
                     />
                 </div>
 
                 <div className="button-row">
                     <button className="save-changes-edit-profile" type="submit">Save Changes</button>
-                    <button   className="cancel-edit-profile" type="button" onClick={() => navigate("/profile")}>Cancel</button>
+                    <button className="cancel-edit-profile" type="button" onClick={() => navigate("/profile")}>Cancel</button>
                 </div>
             </form>
         </div>
@@ -115,3 +149,4 @@ const CustomerEditProfile = () => {
 };
 
 export default CustomerEditProfile;
+

@@ -54,7 +54,10 @@
 .cart-details {
     flex: 1;
 }
-
+.cart-nav-icon{
+    font-size: 30px;
+   
+}
 .product-name {
     font-size: 20px;
     font-weight: 500;

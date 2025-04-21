@@ -86,7 +86,7 @@ const ManageCustomerAddress = ({ refresh }) => {
 
     return (
         <div className="manage-address-list">
-            {/* ✅ Popup on top */}
+            
             <div className="popup-cart">
                         {showPopup && (
                         <PopupMessage
@@ -104,13 +104,14 @@ const ManageCustomerAddress = ({ refresh }) => {
                 </button>
             )}
 
-            {showAddAddressForm && (
+             {showAddAddressForm && (
                 <CustomerManageAddAddress
                     onAddressAdded={() => {
                         fetchAddresses();
                         setShowAddAddressForm(false);
                         displayPopup("New address added successfully!","success");
                     }}
+                    setShowAddAddressForm={setShowAddAddressForm} 
                 />
             )}
 
@@ -154,7 +155,7 @@ const ManageCustomerAddress = ({ refresh }) => {
                                     <strong>{address.phone || address.mobile_number || address.contact_number}</strong>
                                 </p>
                                 <p>
-                                    {address.street}, {address.village}, {address.district}, {address.state}{" "}
+                                    {address.street}, {address.village},{address.mandal} ,{address.district}, {address.state}{" "}
                                     <strong>{address.pincode}</strong>
                                 </p>
                             </>

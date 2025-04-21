@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import "./CustomerEditAddress.css"; // You can reuse same styles
+import React, { useState, useRef, useEffect } from "react";
+import "./CustomerEditAddress.css";
 import PopupMessage from "../../../components/Popup/Popup";
 
 const CartEditAddress = ({ address, onEditCompleted }) => {
+    const wrapperRef = useRef(null);
+
     const [formData, setFormData] = useState({
         address_id: address.address_id,
         customer_id: localStorage.getItem("customer_id"),
@@ -17,21 +19,32 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
         landmark: address.landmark || "",
         latitude: address.latitude || "",
         longitude: address.longitude || "",
-        state: "",
-        district: ""
+        state: address.state || "",
+        district: address.district || "",
+        mandal: address.mandal || ""
     });
 
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    // Close when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+                onEditCompleted(""); // Call cancel logic
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [onEditCompleted]);
+
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
         setShowPopup(true);
-
-        setTimeout(() => {
-            setShowPopup(false);
-        }, 10000);
+        setTimeout(() => setShowPopup(false), 10000);
     };
 
     const fetchLocationDetails = async (pincode) => {
@@ -44,7 +57,8 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
                 setFormData((prev) => ({
                     ...prev,
                     state: postOfficeData.State || "",
-                    district: postOfficeData.District || ""
+                    district: postOfficeData.District || "",
+                    mandal: postOfficeData.Block || ""
                 }));
             } else {
                 displayPopup(data.error || "Failed to fetch location details.", "error");
@@ -92,90 +106,183 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
     };
 
     return (
-        <div className="edit-address">
-            <h3 className="form-title">Edit Address</h3>
-            <div className="popup-cart">
-                {showPopup && (
-                    <PopupMessage
-                        message={popupMessage.text}
-                        type={popupMessage.type}
-                        onClose={() => setShowPopup(false)}
-                    />
-                )}
+        <div className="edit-address-overlay">
+            <div className="edit-address" ref={wrapperRef}>
+                <h3 className="form-title">Edit Address</h3>
+                <div className="popup-cart">
+                    {showPopup && (
+                        <PopupMessage
+                            message={popupMessage.text}
+                            type={popupMessage.type}
+                            onClose={() => setShowPopup(false)}
+                        />
+                    )}
+                </div>
+                <form onSubmit={handleSubmit} className="form-grid">
+                    <div className="form-row">
+                        <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="first_name"
+                                value={formData.first_name}
+                                onChange={handleChange}
+                                required
+                            />
+                            <label>First Name <span className="required-star">*</span></label>
+                        </div>
+                        <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="last_name"
+                                value={formData.last_name}
+                                onChange={handleChange}
+                                required
+                            />
+                            <label>Last Name <span className="required-star">*</span></label>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="mobile_number"
+                                value={formData.mobile_number}
+                                onChange={handleChange}
+                                required
+                            />
+                            <label>Mobile Number <span className="required-star">*</span></label>
+                        </div>
+                        <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="alternate_mobile"
+                                value={formData.alternate_mobile}
+                                onChange={handleChange}
+                            />
+                            <label>Alternate Mobile (Optional)</label>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="pincode"
+                                value={formData.pincode}
+                                onChange={handleChange}
+                                required
+                            />
+                            <label>Pincode <span className="required-star">*</span></label>
+                        </div>
+                        <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="state"
+                                value={formData.state}
+                                readOnly
+                                required
+                            />
+                            <label>State <span className="required-star">*</span></label>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="input-group" style={{ width: "100%" }}>
+                            <input className="input-text-field" type="text" name="mandal" value={formData.mandal || ""} onChange={handleChange} required />
+                            <label>Mandal <span className="required-star">*</span></label>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="input-group" style={{ width: "100%" }}>
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="street"
+                                value={formData.street}
+                                onChange={handleChange}
+                                required
+                            />
+                            <label>Address (Area, street, Flat No.) <span className="required-star">*</span></label>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="district"
+                                value={formData.district}
+                                readOnly
+                                required
+                            />
+                            <label>District/Town <span className="required-star">*</span></label>
+                        </div>
+                        <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="landmark"
+                                value={formData.landmark}
+                                onChange={handleChange}
+                            />
+                            <label>Landmark (Optional)</label>
+                        </div>
+                    </div>
+
+                    <div className="form-row address-type-container" style={{ flexDirection: "column" }}>
+                        <label className="Address-type">Address Type:</label>
+                        <div className="address-type-options">
+                            <div className="radio-option">
+                                <input
+                                    type="radio"
+                                    id="home"
+                                    name="address_type"
+                                    value="home"
+                                    checked={formData.address_type === "home"}
+                                    onChange={handleChange}
+                                />
+                                <label htmlFor="home">Home</label>
+                            </div>
+                            <div className="radio-option">
+                                <input
+                                    type="radio"
+                                    id="work"
+                                    name="address_type"
+                                    value="work"
+                                    checked={formData.address_type === "work"}
+                                    onChange={handleChange}
+                                />
+                                <label htmlFor="work">Work &nbsp;(10AM–6PM)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="cart-actions">
+                        <button className="cart-place-order" type="submit">
+                            SAVE
+                        </button>
+                        <button
+                            className="cart-delete-selected"
+                            type="button"
+                            onClick={() => onEditCompleted("")}
+                        >
+                            CANCEL
+                        </button>
+                    </div>
+                </form>
             </div>
-            <form onSubmit={handleSubmit} className="form-grid">
-                <div className="form-row">
-                    <div className="input-group">
-                        <input className="input-text-field" type="text" name="first_name" value={formData.first_name} onChange={handleChange} required />
-                        <label>First Name</label>
-                    </div>
-                    <div className="input-group">
-                        <input className="input-text-field" type="text" name="last_name" value={formData.last_name} onChange={handleChange} required />
-                        <label>Last Name</label>
-                    </div>
-                </div>
-
-                <div className="form-row">
-                    <div className="input-group">
-                        <input className="input-text-field" type="text" name="mobile_number" value={formData.mobile_number} onChange={handleChange} required />
-                        <label>Mobile Number</label>
-                    </div>
-                    <div className="input-group">
-                        <input className="input-text-field" type="text" name="alternate_mobile" value={formData.alternate_mobile} onChange={handleChange} />
-                        <label>Alternate Mobile (Optional)</label>
-                    </div>
-                </div>
-
-                <div className="form-row">
-                    <div className="input-group">
-                        <input className="input-text-field"  type="text" name="pincode" value={formData.pincode} onChange={handleChange} required />
-                        <label>Pincode</label>
-                    </div>
-                    <div className="input-group">
-                        <input className="input-text-field"  type="text" name="state" value={formData.state} readOnly required />
-                        <label>State</label>
-                    </div>
-                </div>
-
-                <div className="form-row">
-                    <div className="input-group" style={{ width: "100%" }}>
-                        <input className="input-text-field"  type="text" name="street" value={formData.street} onChange={handleChange} required />
-                        <label>Address (Area and Street)</label>
-                    </div>
-                </div>
-
-                <div className="form-row">
-                    <div className="input-group">
-                        <input className="input-text-field"  type="text" name="district" value={formData.district} readOnly required />
-                        <label>District/Town</label>
-                    </div>
-                    <div className="input-group">
-                        <input className="input-text-field" type="text" name="landmark" value={formData.landmark} onChange={handleChange} />
-                        <label>Landmark (Optional)</label>
-                    </div>
-                </div>
-
-                <div className="form-row address-type-container" style={{ flexDirection: "column" }}>
-                    <label className="Address-type">Address Type:</label>
-                    <div className="address-type-options">
-                        <div className="radio-option">
-                            <input type="radio" id="home" name="address_type" value="home" checked={formData.address_type === "home"} onChange={handleChange} />
-                            <label htmlFor="home">Home</label>
-                        </div>
-                        <div className="radio-option">
-                            <input type="radio" id="work" name="address_type" value="work" checked={formData.address_type === "work"} onChange={handleChange} />
-                            <label htmlFor="work">Work</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="cart-actions">
-                    <button className="cart-place-order" type="submit">SAVE</button>
-                    <button className="cart-delete-selected" type="button" onClick={() => onEditCompleted("")}>CANCEL</button>
-                </div>
-            </form>
         </div>
     );
 };
 
 export default CartEditAddress;
+

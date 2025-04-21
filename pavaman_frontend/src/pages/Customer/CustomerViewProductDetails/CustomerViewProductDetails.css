@@ -299,11 +299,44 @@
     font-size: 10px;
 }
 
-.customer-material-download{
+/* .customer-material-download{
     font-size: 40px;
     color: #485692;
 
-}
+} */
+
+.customer-material-download {
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 170px;
+    height: 60px;
+    /* padding: 10px 20px; */
+    background-color:  #485692;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .download-btn:hover {
+    background-color: #3a4687; /* Darker shade on hover */
+  }
+  
+  .download-btn svg {
+    margin-left: 8px;
+    font-size: 1.2rem;
+  }
+  
+
 
 .customer-original-price{
     font-size: 18px;
@@ -357,3 +390,4 @@
         flex-direction: column;
     }
 }
+

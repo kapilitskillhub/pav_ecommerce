@@ -120,13 +120,13 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
             showPopup("Google Sign-In failed. No credential received.", "error");
             return;
         }
-    
+
         try {
-            const res = await axios.post("http://127.0.0.1:8000/google-login", 
-                { token: response.credential }, 
+            const res = await axios.post("http://127.0.0.1:8000/google-login",
+                { token: response.credential },
                 { headers: { "Content-Type": "application/json" } }
             );
-    
+
             if (res.data.existing_customer) {
                 if (res.data.register_status === 0) {
                     // User needs to enter mobile number
@@ -135,18 +135,18 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                     setShowMobilePopup(true);
                 } else {
                     showPopup("Login successful!", "success");
-    
+
                     localStorage.setItem("customerData", JSON.stringify(res.data));
                     localStorage.setItem("customer_id", res.data.customer_id);
-    
+
                     setCustomerAuthenticated(true);
-    
+
                     setTimeout(() => {
                         navigate("/");
                     }, 100);
                 }
             } else if (res.data.new_customer) {
-                showPopup("Account created successfully! A verification email has been sent to your email address. Please verify before logging in.", "success");
+                showPopup("Account created successfully! A verification email has been sent to your email address. Please check for verification link in  spam folder if not available in inbox.  Please verify before logging in.", "success");
                 localStorage.setItem("pending_email", res.data.email);
             }
         } catch (error) {
@@ -160,7 +160,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
             console.error(error);
         }
     };
-    
+
 
     const handleResendVerification = async () => {
         if (!userEmail) {
@@ -456,7 +456,13 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                     {/* Tooltip for Password Requirements */}
                     {showTooltip && (
                         <div className="password-tool-tip">
-                            Password must be at least 8 characters long, contain uppercase, lowercase, special character and a number.
+                            <ul className="password-tool-tip-list" >
+                                <li>At least 8 characters long</li>
+                                <li>Contains an uppercase letter</li>
+                                <li>Contains a lowercase letter</li>
+                                <li>Contains a special character</li>
+                                <li>Contains a number</li>
+                            </ul>
                         </div>
                     )}
 

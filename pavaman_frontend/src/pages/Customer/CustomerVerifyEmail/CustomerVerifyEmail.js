@@ -30,7 +30,7 @@ const VerifyEmail = () => {
                         navigate("/customer-login", {
                             state: { successMessage: "Your account is now verified. Please log in." }
                         });
-                    }, 10000);
+                    }, 3000);
                 }
 
 
@@ -43,7 +43,7 @@ const VerifyEmail = () => {
 
                 setTimeout(() => {
                     navigate("/customer-login");
-                }, 10000);
+                }, 3000);
             }
         };
 

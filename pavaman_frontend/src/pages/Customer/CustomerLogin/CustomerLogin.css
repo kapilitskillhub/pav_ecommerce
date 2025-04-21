@@ -64,7 +64,7 @@
     height: 54px;
     border-radius: 20px;
     background: #4450A2;
-    margin: 30px auto;
+    /* margin: 30px auto; */
 }
 
 
@@ -679,7 +679,7 @@
         top: 30px;
         left: 0;
         width: 80%;
-        font-size: 12px;
+        font-size: 14px;
         z-index: 1;
         margin-bottom: 16px;
   }
@@ -689,6 +689,13 @@
     margin-left: 5px;
   }
 
+  .password-tool-tip-list{
+    list-style: disc;
+    color: rgb(214, 97, 97);
+
+  }
+
+ 
   @media screen and (max-width : 1024px) {
     .customer-login-image{
         width: 400px;
@@ -796,6 +803,13 @@
     .password-tool-tip{
         width: 100%;
   }
+  .customer-login-wrapper{
+    display: flex;
+  }
+  .customer-login-btn{
+    margin: 0px auto;
+  }
+
 }
 @media (max-width: 500px) {
     .otp-input {
