@@ -165,6 +165,8 @@ const CustomerViewProductDetails = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     customer_id: customer_id,
+            from_cart: false,
+
                     products: [{ product_id: product_id, quantity: 1 }], // Updated request format
                 }),
             });

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import axios from 'axios';
-import './AdminCustomerOrderViewDetails.css'; // Make sure this CSS file exists
+import "./AdminCustomerOrderViewDetails.css"// Make sure this CSS file exists
 
 const PaidOrderDetails = () => {
   const { orderId } = useParams();
@@ -118,7 +118,7 @@ const PaidOrderDetails = () => {
                       "No image"
                     )}
                   </td>
-                  <td>{item.product_name}</td>
+                  <td className='item-data-name'>{item.product_name}</td>
                   <td>₹{item.price}</td>
                   <td>₹{item.discount}</td>
                   <td>₹{item.final_price}</td>

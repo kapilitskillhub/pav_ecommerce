@@ -94,6 +94,7 @@ textarea.cm-manage-address-input input:focus {
 .address-space{
     display: flex;
     gap: 20px;
+    
 }
 
 /* Responsive */
@@ -210,10 +211,16 @@ textarea.cm-manage-address-input input:focus {
         font-size: 13px; /* Slightly smaller font */
         padding: 7px 10px;
     }
+    .manage-form-title {
+        font-size: 20px;
+        margin: -5px;
 }
-/* .popup-message {
-    top: 50%;
-    left: 14%;
-    text-align: center;
-  } */
+.address-space{
+    display: grid;
+    gap: 8px;
+    text-align: start;
+}
+}
+
+
 

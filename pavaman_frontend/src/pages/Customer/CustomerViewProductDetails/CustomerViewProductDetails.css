@@ -213,6 +213,7 @@
     align-items: center;
     justify-content: center;
     gap: 20px;
+
 }
 
 .customer-specification-table {
@@ -354,6 +355,9 @@
         font-size: 14px;
         padding: 8px;
     }
+    .customer-material-section{
+        display: flex;
+    }
 }
 
 
@@ -389,5 +393,9 @@
     .customer-wishlist-buttons{
         flex-direction: column;
     }
+.customer-material-section{
+    display: inline-grid;
 }
+}
+
 

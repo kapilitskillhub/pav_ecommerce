@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./AdminCustomerOrders.css";
 import { Link } from "react-router-dom";
-
+import "./AdminCustomerOrders.css"
 const Report = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +52,27 @@ const Report = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const [statusMap, setStatusMap] = useState({});
+
+  const handleOrderDispatch = (orderId) => {
+    setStatusMap((prev) => ({
+      ...prev,
+      [orderId]: {
+        ...prev[orderId],
+        dispatched: true,
+      },
+    }));
+  };
+
+  const handleOrderDelivery = (orderId) => {
+    setStatusMap((prev) => ({
+      ...prev,
+      [orderId]: {
+        ...prev[orderId],
+        delivered: true,
+      },
+    }));
+  };
 
   return (
     <div className="report-wrapper">
@@ -71,29 +92,65 @@ const Report = () => {
                   <th>Amount</th>
                   <th>Payment Method</th>
                   <th>Rozarpay Order ID</th>
-                  {/* <th></th> */}
+                  <th>Order Status</th>
+                  <th>Delivery Status</th>
                   <th>Details</th>
                 </tr>
               </thead>
               <tbody>
-                {currentReports.map((report, index) => (
-                  <tr key={index}>
-                    <td className="customer-order-date">{indexOfFirstReport + index + 1}</td>
-                    {/* <td>{report.first_name} {report.last_name}</td> */}
-                    <td className="customer-order-date-name">{report.customer_name}</td>
+                {currentReports.map((report, index) => {
+                  const orderId = report.razorpay_order_id;
+                  const status = statusMap[orderId] || {};
 
-                    <td className="customer-order-date">{report.payment_date}</td>
-                    <td className="customer-order-date">₹{report.total_amount}</td>
-                    <td className="customer-order-date">{report.payment_mode}</td>
-                    <td className="customer-order-date">{report.razorpay_order_id}</td>
-                    <td className="customer-order-date">
-                    <Link to={`/admin-order-details/${report.razorpay_order_id}`} className="view-link">
-  View
-</Link>
-                    </td>
-                  </tr>
-                ))}
+                  return (
+                    <tr key={index}>
+                      <td className="order-table-data">{indexOfFirstReport + index + 1}</td>
+                      <td className="order-table-data">{report.customer_name}</td>
+                      <td className="order-table-data">{report.payment_date}</td>
+                      <td  className="order-table-data">₹{report.total_amount}</td>
+                      <td  className="order-table-data payment-mode">{report.payment_mode}</td>
+                      <td>{orderId}</td>
+
+                      {/* Order Status */}
+                      <td>
+                        {status.dispatched ? (
+                          <span className="status-tag dispatched">Dispatched</span>
+                        ) : (
+                          <input
+                            type="checkbox"
+                            onChange={() => handleOrderDispatch(orderId)}
+                            checked={false}
+                          />
+                        )}
+                      </td>
+
+                      {/* Delivery Status */}
+                      <td>
+                        {status.dispatched ? (
+                          status.delivered ? (
+                            <span className="status-tag delivered">Delivered</span>
+                          ) : (
+                            <input
+                              type="checkbox"
+                              onChange={() => handleOrderDelivery(orderId)}
+                              checked={false}
+                            />
+                          )
+                        ) : (
+                          <span className="status-tag disabled">--</span>
+                        )}
+                      </td>
+
+                      <td>
+                        <Link to={`/admin-order-details/${orderId}`} className="view-link">
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
+
             </table>
           </div>
 
@@ -111,9 +168,8 @@ const Report = () => {
               <button
                 key={page}
                 onClick={() => paginate(page)}
-                className={`pagination-button ${
-                  page === currentPage ? "active-page" : ""
-                }`}
+                className={`pagination-button ${page === currentPage ? "active-page" : ""
+                  }`}
               >
                 {page}
               </button>
