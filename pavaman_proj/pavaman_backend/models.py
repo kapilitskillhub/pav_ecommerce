@@ -207,6 +207,9 @@ class PaymentDetails(models.Model):
     quantity = models.PositiveIntegerField(default=1)  # Number of products purchased
     created_at = models.DateTimeField(auto_now_add=True)  # To track payment time
     product_order_id = models.CharField(default="")
+    invoice_number = models.CharField(default="")
+    invoice_date = models.DateTimeField(auto_now_add=True,null=True)
+    invoice_status = models.BooleanField(default=False)
     
     def str(self):
         return f"Order {self.razorpay_order_id} - {self.payment_type} ({self.payment_mode})"

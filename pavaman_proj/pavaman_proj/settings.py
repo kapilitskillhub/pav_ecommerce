@@ -183,6 +183,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB
 
+from decouple import config
 
 
 TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")

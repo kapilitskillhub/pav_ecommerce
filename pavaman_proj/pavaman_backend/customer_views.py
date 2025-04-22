@@ -2348,6 +2348,22 @@ def razorpay_callback(request):
 
                 if first_order:
                     product_order_id = f"PROD{datetime.now().strftime('%Y%m%d%H%M%S')}{''.join(random.choices(string.ascii_uppercase + string.digits, k=4))}"
+                    
+                    # Generate custom invoice number
+                    today = timezone.now().date()
+                    date_str = today.strftime("%d%m%Y")
+                    prefix = "PVM"
+                    base_invoice = f"{prefix}{date_str}"
+
+                    latest_invoice = PaymentDetails.objects.filter(created_at__date=today).order_by('-id').first()
+                    if latest_invoice and latest_invoice.invoice_number:
+                       last_serial = int(latest_invoice.invoice_number[-4:])
+                    else:
+                        last_serial = 0
+
+                    new_serial = last_serial + 1
+                    new_invoice_number = f"{base_invoice}{str(new_serial).zfill(4)}"
+
                     # Save Payment Details using JSON fields
                     PaymentDetails.objects.create(
                         admin=first_order.product.admin,
@@ -2368,7 +2384,7 @@ def razorpay_callback(request):
                         transaction_id=transaction_id,
                         quantity=total_quantity,
                         product_order_id= product_order_id, 
-
+                        invoice_number=new_invoice_number,
                     )
 
                     # Get all paid products for the customer
@@ -2442,7 +2458,8 @@ def razorpay_callback(request):
                         "order_product_ids": order_product_ids,  
                         "category_ids": category_ids,  
                         "sub_category_ids": sub_category_ids, 
-                        "product_order_id": product_order_id,    
+                        "product_order_id": product_order_id,
+                        "invoice_number": new_invoice_number,
                         "product_ids": product_ids,
                         "status_code": 200
                     }, status=200)
@@ -3928,27 +3945,27 @@ def generate_invoice_for_customer(request):
 
         for payment in payments:
             # Generate custom invoice number
-            today = payment.created_at.date()
-            date_str = today.strftime("%d%m%Y")  # e.g., 18042025
-            prefix = "PVM"
-            base_invoice = f"{prefix}{date_str}"
+            # today = payment.created_at.date()
+            # date_str = today.strftime("%d%m%Y")  # e.g., 18042025
+            # prefix = "PVM"
+            # base_invoice = f"{prefix}{date_str}"
 
-            # Fetch latest invoice number with this prefix
-            latest_invoice = PaymentDetails.objects.filter(
-                created_at__date=today
-            ).exclude(id=payment.id).order_by('-id').first()
+            # # Fetch latest invoice number with this prefix
+            # latest_invoice = PaymentDetails.objects.filter(
+            #     created_at__date=today
+            # ).exclude(id=payment.id).order_by('-id').first()
 
-            if latest_invoice and hasattr(latest_invoice, 'custom_invoice_no'):
-                last_serial = int(latest_invoice.custom_invoice_no[-4:])
-            else:
-                last_serial = 0
+            # if latest_invoice and hasattr(latest_invoice, 'custom_invoice_no'):
+            #     last_serial = int(latest_invoice.custom_invoice_no[-4:])
+            # else:
+            #     last_serial = 0
 
-            new_serial = last_serial + 1
-            new_invoice_number = f"{base_invoice}{str(new_serial).zfill(4)}"  # 0001 format
+            # new_serial = last_serial + 1
+            # new_invoice_number = f"{base_invoice}{str(new_serial).zfill(4)}"  # 0001 format
 
-            # Save the new invoice number to the payment (optional)
-            # payment.custom_invoice_no = new_invoice_number
-            # payment.save()
+            # # Save the new invoice number to the payment (optional)
+            # # payment.custom_invoice_no = new_invoice_number
+            # # payment.save()
 
       
             order_ids = payment.order_product_ids
@@ -3980,10 +3997,10 @@ def generate_invoice_for_customer(request):
 
             invoice_list.append({
                 # "invoice_number": f"INV-{payment.id}",
-                "invoice_number":new_invoice_number,
+                "invoice_number":payment.invoice_number,
                 "order_id": payment.product_order_id,
                 "order_date": payment.created_at.strftime("%d-%m-%Y"),
-                "invoice_date": payment.created_at.strftime("%d-%m-%Y"),
+                "invoice_date": payment.invoice_date.strftime("%d-%m-%Y"),
                 "Billing To": {
                     "name": f"{customer.first_name} {customer.last_name}" if customer else "",
                     # "address": f"{customer.street}, {customer.landmark}, {customer.village}, {customer.district}, {customer.state}, {customer.pincode}" if customer else "",
@@ -4129,3 +4146,5 @@ def order_status_summary(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
+
+
