@@ -210,7 +210,7 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
                                 onChange={handleChange}
                                 required
                             />
-                            <label>Address (Area, street, Flat No.) <span className="required-star">*</span></label>
+                            <label className="address-area">Address(Area, street, Flat No.) <span className="required-star">*</span></label>
                         </div>
                     </div>
 

@@ -197,6 +197,7 @@ const CustomerViewCart = () => {
 
         const orderData = {
             customer_id: String(customer_id),
+            from_cart: true,
             products: productsToOrder.map(item => ({
                 product_id: String(item.product_id),
                 quantity: String(item.quantity),

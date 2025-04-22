@@ -6,6 +6,7 @@ import "../CustomerViewSubCategory/CustomerViewSubCategory.css";
 import defaultImage from "../../../assets/images/default.png"
 import ViewDiscountedProducts from "../CustomerDiscountProducts/CustomerDiscountProducts";
 import { Range } from 'react-range';
+import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
 
 const ViewSubCategoriesAndDiscountedProducts = () => {
     const navigate = useNavigate();
@@ -169,6 +170,9 @@ const searchSubCategories = async (query) => {
 
     return (
         <div className="customer-dashboard container">
+            <div>
+            <CarouselLanding />
+                </div>
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
             

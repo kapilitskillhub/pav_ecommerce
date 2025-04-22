@@ -1,137 +1,65 @@
-.carousel-container {
-    height: 500px;
-    background: #f4f5f9;
+.carousel-wrapper {
+    width: 100%;
     margin-top: 20px;
-
-    .carousel-container-content {
-        display: flex !important;
-        flex-direction: row;
-        justify-content: center;
-        gap: 50px;
-        background-image: url("../../../assets/images/drone-banner.jpg");
-        background-size: cover;    /* Makes sure the image fully covers the area */
-        background-position: center; /* Keeps the image centered */
-        height: 500px;   /* Ensure the container has height */
+  }
+  
+  .carousel-slide {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .carousel-img {
+    width: 100%;
+    height: 250px; /* Default height for larger screens */
+    object-fit: cover;
+    border-radius: 0;
+  }
+  
+  /* Dots and Arrows Styling */
+  .slick-dots li button:before {
+    color: #4450a2;
+  }
+  
+  .slick-arrow.slick-prev::before,
+  .slick-arrow.slick-next::before {
+    color: #4450a2;
+  }
+  
+  /* Responsive Height (Max ~250px, Min ~200px) */
+  @media (max-width: 1024px) {
+    .carousel-img {
+      height: 230px;
     }
-    .carousel-slide {
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-      }
-    .carousel-content {
-        font-size: 24px !important;
-        color: white !important;
-        display: flex
-        ;
-                flex-direction: column;
-                justify-content: center;
+  }
+  
+  @media (max-width: 768px) {
+    .carousel-img {
+      height: 220px;
     }
-
-    .carousel-desc {
-        font-size: 20px;
-
+  }
+  
+  @media (max-width: 480px) {
+    .carousel-img {
+      height: 200px;
     }
-
-    .carousel-button {
-
-        width: 160px;
-        border-radius: 20px;
-        border: none;
-        color: white;
-        /* padding: 10px; */
-        height: 50px;
-        font-size: 16px;
-        font-weight: 600;
-        background-color: #4450A2;
-
-margin: 20px auto;
+  }
+  
+  /* Fix for arrow visibility on mobile devices */
+  @media (max-width: 425px) {
+    .slick-prev {
+      left: 3px !important;
+      z-index: 2;
     }
-
-    
-    .carousel-image{
-        width: 70px;
-        height: 70px;
+  
+    .slick-next {
+      right: 3px !important;
+      z-index: 2;
     }
-
-    /* .slick-arrow.slick-prev::before{
-        color: #4450A2 !important;
+  
+    .slick-arrow::before {
+      font-size: 20px !important;
+      color: white !important;
     }
-    
-    .slick-dots{
-        color: #4450A2 !important;
-    }
-
-    .slick-arrow.slick-next::before{
-        color: #4450A2 !important;
-
-    } */
-}
-
-
-@media (max-width: 768px) { 
-    .carousel-container {
-        height: 300px;
-    
-
-    .carousel-container-content {
-height: 300px;    }
-}
-}
-
-@media (max-width: 425px) { 
-    .carousel-container {
-        height: 200px;
-    .carousel-container-content {
-        gap: 10px;
-    }
-
-    .carousel-button{
-        width: 124px;
-        height: 40px;
-        font-size: 14px;
-    }
-
-    .carousel-content {
-        font-size: 20px !important;
-        color: #485692 !important;
-    }
-    .carousel-desc{
-        font-size: 16px;
-    }
-    }
-}
-
-
-
-@media (max-width: 375px) { 
-    .carousel-container {
-        height: 200px;
-    .carousel-container-content {
-        gap: 10px;
-
-
-    }
-
-    .carousel-image{
-        width: 70px;
-        height: 70px;
-    }
-    .carousel-button{
-        width: 90px;
-        height: 40px;
-        font-size: 14px;
-    }
-
-    .carousel-content {
-        font-size: 20px !important;
-        color: #485692 !important;
-    }
-    .carousel-desc{
-        font-size: 16px;
-    }
-    }
-}
+  }
+  

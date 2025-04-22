@@ -170,7 +170,7 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                     <div className="form-row">
                         <div className="input-group" style={{ width: "100%" }}>
                             <input className="input-text-field" type="text" name="street" value={formData.street || ""} onChange={handleChange} required />
-                            <label>Address (Area, Street, flat No.)<span className="required-star">*</span></label>
+                            <label className="address-area">Address <br/>(Area, Street, flat No.)<span className="required-star">*</span></label>
                         </div>
                     </div>
 

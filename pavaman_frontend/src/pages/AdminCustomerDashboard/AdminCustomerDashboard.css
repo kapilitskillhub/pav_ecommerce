@@ -16,49 +16,46 @@
   margin-right: 10px;
   margin-right: 45px;
   margin-left: 20px;
-  height: 138px;
+  height: 120px;
 }
 
 
-.card {
+.card-first,.card-second,.card-third,.card {
   flex: 1;
   background-color: #ffffff; 
-  border-radius: 8px;
-  padding: 20px; 
+  border-radius: 20px; 
+  padding: 2px; 
   text-align: center; 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 8px rgba(236, 238, 240, 0.1); 
   transition: transform 0.2s ease-in-out; 
 }
 
-.card:hover {
+.card-first,.card-second,.card-third,.card:hover {
   transform: translateY(-5px); 
 }
 
-.card h3 {
+.card-first,.card-second,.card-third,.card h3 {
   font-size: 18px; 
   color: #040405; 
   margin-bottom: 10px; 
   font-weight: 600;
 }
 
-.card p {
+.card-first,.card-second,.card-third,.card p {
   font-size: 24px;
   font-weight: bold; 
-  color: #545454; 
+  color: #0c0c0c; 
 }
 .card-first {
-  background: linear-gradient(135deg, #89ca8b, #81c784);
+ background: linear-gradient(to right, rgb(177, 241, 158), rgb(118, 198, 118));
+ 
 }
 .card-second {
-  background: linear-gradient(135deg, #f49b95, #ef9a9a);
+  background: linear-gradient(to right, rgb(224, 200, 167), rgb(240, 195, 195));
 }
 .card-third {
-  background: linear-gradient(135deg, #a4ade1, #b8c1ec);
+  background: linear-gradient(to right, rgb(167, 167, 224), rgb(189, 184, 184));
 }
-
-/* .table-content{
-  margin-right: 30px;
-} */
 
 .recent-orders {
   background-color: #ffffff; 
@@ -107,6 +104,9 @@
   white-space: nowrap; 
   overflow: hidden; 
   text-overflow: ellipsis;
+  text-align: start;
+  text-transform: capitalize;
+
 }
 
 .customer-table th {
@@ -145,7 +145,7 @@ display: inline-block;
 }
 
 .status-btn.inactivated {
-  background-color: #f8b7b7; 
+background-color: #f8b7b7; 
 color: #d10000;
 padding: 5px 10px;
 border-radius: 5px;
@@ -216,6 +216,7 @@ display: inline-block;
 }
 .total-icon{
   color: #4450A2;
+  
 }
 .inactivated-icon{
   color:#d10000
@@ -224,5 +225,8 @@ display: inline-block;
   color: #007a00;
 }
 .dashboard-icon{
-  font-size:25px;
+  font-size:28px;
+  margin-left: 7px;
+  display: flex;
 }
+

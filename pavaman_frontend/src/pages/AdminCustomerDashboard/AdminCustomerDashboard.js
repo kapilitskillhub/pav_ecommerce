@@ -96,18 +96,18 @@ const Customer = () => {
     return (
         <>
             <div className="dashboard-cards">
-                <div className="card card-first">
-                     <FaUserCheck className="dashboard-icon activated-icon" />
+                <div className=" card-first">
+                <div><FaUserCheck className="dashboard-icon activated-icon" /></div>
                     <h3>Activated</h3>
                     <p>{activatedCount}</p>
                 </div>
-                <div className="card card-second">
-                    <FaUserTimes className="dashboard-icon inactivated-icon" />
+                <div className="card-second">
+                  <div> <FaUserTimes className="dashboard-icon inactivated-icon" /></div>
                     <h3>Inactivated</h3>
                     <p>{inactivatedCount}</p>
                 </div>
-                <div className="card card-third">
-                    <FaUsers className="dashboard-icon total-icon" />
+                <div className=" card-third">
+                <div><FaUsers className="dashboard-icon total-icon" /></div>
                     <h3>Total</h3>
                     <p>{totalCount}</p>
                 </div>

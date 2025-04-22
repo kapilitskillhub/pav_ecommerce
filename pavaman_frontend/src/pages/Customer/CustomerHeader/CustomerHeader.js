@@ -11,8 +11,9 @@ import { Link } from "react-router-dom";
 import { BiCategory } from "react-icons/bi";
 import MobileHeader from "./MobileHeader";
 import { IoMdClose } from "react-icons/io"
+import { LuBriefcaseBusiness } from "react-icons/lu";
 
-const CustomerHeader = (onSearch ) => {
+const CustomerHeader = (onSearch) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,7 +31,7 @@ const CustomerHeader = (onSearch ) => {
   const [showPopup, setShowPopup] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search...");
-
+  // const [hovered, setHovered] = useState(false);
 
   const customerId = localStorage.getItem("customer_id");
 
@@ -184,7 +185,7 @@ const CustomerHeader = (onSearch ) => {
 
   const isUserLoggedIn = false;
 
- 
+
 
   return (
     <>
@@ -312,7 +313,7 @@ const CustomerHeader = (onSearch ) => {
       />
       <FaSearch className="customer-search-icon" onClick={handleSearch} />
     </div> */}
-{/* 
+        {/* 
 <div className="customer-search-bar" >
   <input
     type="text"
@@ -340,36 +341,36 @@ const CustomerHeader = (onSearch ) => {
     />
   )}
 </div> */}
-{(
-  location.pathname.includes("/categories/view-sub-categories") ||
-  location.pathname.includes("/categories/") ||
-  location.pathname.includes("/filtered-products") ||
-  location.pathname === "/"
-) && (
-  <div className="customer-search-bar">
-    <input
-      type="text"
-      placeholder={searchPlaceholder}
-      value={searchInput}
-      onChange={(e) => setSearchInput(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-    />
-    {searchInput ? (
-      <IoMdClose
-        className="customer-search-icon"
-        onClick={() => {
-          setSearchInput("");
-          window.dispatchEvent(new CustomEvent("customerCategorySearch", { detail: "" }));
-        }}
-      />
-    ) : (
-      <FaSearch
-        className="customer-search-icon"
-        onClick={handleSearch}
-      />
-    )}
-  </div>
-)}
+        {(
+          location.pathname.includes("/categories/view-sub-categories") ||
+          location.pathname.includes("/categories/") ||
+          location.pathname.includes("/filtered-products") ||
+          location.pathname === "/"
+        ) && (
+            <div className="customer-search-bar">
+              <input
+                type="text"
+                placeholder={searchPlaceholder}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+              {searchInput ? (
+                <IoMdClose
+                  className="customer-search-icon"
+                  onClick={() => {
+                    setSearchInput("");
+                    window.dispatchEvent(new CustomEvent("customerCategorySearch", { detail: "" }));
+                  }}
+                />
+              ) : (
+                <FaSearch
+                  className="customer-search-icon"
+                  onClick={handleSearch}
+                />
+              )}
+            </div>
+          )}
 
         <div className="nav-icon-wrapper">
           <div className="nav-item" onClick={() => navigate("/")}>
@@ -429,11 +430,29 @@ const CustomerHeader = (onSearch ) => {
             <FiPhone className="nav-icon" />
             <span>Contact</span>
           </div>
-        </div>
+          {/* <div
+                 onMouseEnter={() => setHovered(true)}
+                 onMouseLeave={() => setHovered(false)}>
+
+          <div className="nav-item" 
+     
+           >
+            <LuBriefcaseBusiness className="nav-icon" />
+            <span>B2B</span>
+          </div>
+          {hovered && (
+            <div>
+              <p>Want to customize your drones</p>
+              <p>Reach out to us</p>
+              <button  onClick={() => navigate("/CustomizePage")}>Reachout</button>
+            </div>
+          )}
+        </div> */}
+          </div>
       </header>
       <div className="mobile-header-section">
 
-   <MobileHeader cartCount={cartCount} />
+        <MobileHeader cartCount={cartCount} />
       </div>
 
     </>

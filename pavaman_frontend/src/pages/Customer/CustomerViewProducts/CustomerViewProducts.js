@@ -5,6 +5,7 @@ import { BiSolidCartAdd } from "react-icons/bi";
 import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
 import { Range } from 'react-range';
+import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
 
 const CustomerViewProducts = () => {
     const { categoryName, subCategoryName } = useParams();
@@ -244,6 +245,7 @@ const CustomerViewProducts = () => {
 
     return (
         <div className="customer-dashboard container">
+            < CarouselLanding />
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
 

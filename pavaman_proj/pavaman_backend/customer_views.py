@@ -1937,6 +1937,7 @@ def order_multiple_products(request):
             data = json.loads(request.body.decode('utf-8'))
             customer_id = data.get('customer_id')
             products = data.get('products', [])
+            from_cart = data.get('from_cart', False)
 
             if not customer_id or not products:
                 return JsonResponse({"error": "customer_id and products are required.", "status_code": 400}, status=400)
@@ -1995,19 +1996,34 @@ def order_multiple_products(request):
                     created_at=current_time,
                     admin=admin
                 )
-                # Save to cart as well
-                cart_item, created = CartProducts.objects.get_or_create(
-                    customer=customer,
-                    product=product,
-                    admin=admin,
-                    category=product.category,
-                    sub_category=product.sub_category,
-                    defaults={"quantity": quantity, "added_at": current_time}
-                )
+                # Cart update - only if not from_cart
+                if not from_cart:
+                    cart_item, created = CartProducts.objects.get_or_create(
+                        customer=customer,
+                        product=product,
+                        admin=admin,
+                        category=product.category,
+                        sub_category=product.sub_category,
+                        defaults={"quantity": quantity, "added_at": current_time}
+                    )
 
-                if not created:
-                    cart_item.quantity += quantity
-                    cart_item.save()
+                    if not created:
+                        cart_item.quantity += quantity
+                        cart_item.save()
+
+                # Save to cart as well
+                # cart_item, created = CartProducts.objects.get_or_create(
+                #     customer=customer,
+                #     product=product,
+                #     admin=admin,
+                #     category=product.category,
+                #     sub_category=product.sub_category,
+                #     defaults={"quantity": quantity, "added_at": current_time}
+                # )
+
+                # if not created:
+                #     cart_item.quantity += quantity
+                #     cart_item.save()
 
 
                 # product.quantity -= quantity
