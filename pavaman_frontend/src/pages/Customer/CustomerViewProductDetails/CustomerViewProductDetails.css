@@ -399,3 +399,13 @@
 }
 
 
+.title-share-div{
+    display: flex;
+    gap: 80px;
+    justify-content: space-between;
+}
+
+.customer-share-button{
+    color: #4450A2;
+    font-size: 24px;
+}
