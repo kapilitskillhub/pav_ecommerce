@@ -23,6 +23,8 @@ const Header = ({ setIsAuthenticated, setCategories, setSubcategories, setProduc
 
     const handleLogout = () => {
         sessionStorage.clear();
+        localStorage.clear();
+
         setIsAuthenticated(false);
         navigate("/admin-login");
     };

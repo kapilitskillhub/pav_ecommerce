@@ -175,6 +175,8 @@ const CustomerHeader = (onSearch) => {
   const handleLogout = () => {
     localStorage.removeItem("customer_id");
     localStorage.clear();
+    sessionStorage.clear();
+
     setIsLoggedIn(false);
     navigate("/");
   };
