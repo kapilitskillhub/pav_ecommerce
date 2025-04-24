@@ -44,7 +44,9 @@ const MobileHeader = ({ handleLogout, cartCount, }) => {
           setSearchPlaceholder("Search for Products...");
         } else if (location.pathname.includes("/filtered-products") || location.pathname.includes("/all-products")) {
           setSearchPlaceholder("Search for Products...");
-        } else if (location.pathname.includes("/") || location.pathname.includes("/all-categories")) {
+        }else if( location.pathname.includes("/view-cart-products")){
+          setSearchPlaceholder("Search Cart Products ...");
+        }else if (location.pathname.includes("/") || location.pathname.includes("/all-categories")) {
           setSearchPlaceholder("Search for Categories...");
         }
       }, [location]);
@@ -102,7 +104,8 @@ const MobileHeader = ({ handleLogout, cartCount, }) => {
                         location.pathname.includes("/filtered-products") ||
                         location.pathname === "/" ||
                         location.pathname.includes("/all-categories") ||
-                       location.pathname.includes("/all-products")
+                       location.pathname.includes("/all-products") ||
+                       location.pathname.includes("/view-cart-products")
                       ) && (
                         <div className="mobile-search-bar">
                             <input

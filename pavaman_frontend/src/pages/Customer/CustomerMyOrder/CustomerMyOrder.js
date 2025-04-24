@@ -11,6 +11,12 @@ const CustomerMyOrders = () => {
   const customerId = localStorage.getItem("customer_id");
   const navigate = useNavigate();
   const highlightedRef = useRef(null);
+  const [statusFilters, setStatusFilters] = useState([]);
+  const [timeFilters, setTimeFilters] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+const isMobile = window.innerWidth <= 425;
+
 
   const fetchOrders = async () => {
     if (!customerId) return;
@@ -72,53 +78,104 @@ const CustomerMyOrders = () => {
     );
   }
 
-  return (
-    <div>
-      <div className="breadcrumb-order">
-        <span className="breadcrumb-order-home" onClick={() => navigate("/")}>Home</span>&gt;{" "}
-        <span className="breadcrumb-myaccount" onClick={() => navigate("/my-account")}>My Account</span>&gt;{" "}
-        <span className="current-my-orders">My Orders</span>
-      </div>
+  const toggleFilter = () => {
 
-      <div className="my-orders-container">
-        <h2 className='heading-my-order'>My Orders</h2>
-        {products.length === 0 ? (
-          <p>Loading...</p>
-        ) : (
-          products.map((product, index) => (
-            <div
-              key={index}
-              ref={product.order_product_id === selected_product_id ? highlightedRef : null}
-              className={`order-card ${product.order_product_id === selected_product_id ? 'highlight-product' : ''}`}
-            >
-              <div className="product-summary">
-                <img
-                  src={`http://127.0.0.1:8000/${product.product_image}`}
-                  alt={product.product_name}
-                  className="product-image"
-                />
-                <div className="product-info">
-                  <p className='product-name'><strong>{product.product_name}</strong></p>
-                  <div>
-                    <p className='product-orderid'>Order ID: {product.order.product_order_id}</p>
-                  </div>
-                  <p>Price: ₹{product.final_price}</p>
-                  <div className="toggle-container">
-                    <span
-                      className="toggle-details"
-                      onClick={() => goToOrderDetails(product)}
-                    >
-                      <FaCircleArrowRight />
-                    </span>
+  }
+return (
+  <div className="my-orders-wrapper container">
+    <div className="breadcrumb-order">
+      <span onClick={() => navigate("/")}>Home</span> &gt; 
+      <span className="current-my-orders">My Orders</span>
+    </div>
+
+    <div className="order-page-container">
+      {/* Sidebar Filters */}
+    {/* Toggle Filters for Mobile */}
+{isMobile && (
+  <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
+    {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
+  </div>
+)}
+
+<aside className={`filters-sidebar ${isMobile ? "mobile" : ""} ${showFilters ? "open" : ""}`}>
+  <div className='filter-heading'>Filters</div>
+
+  <div className="filter-section">
+    <div className='filter-header'>ORDER STATUS</div>
+    {["On the way", "Delivered", "Cancelled", "Returned"].map(status => (
+      <label key={status}>
+        <input type="checkbox" disabled /> {status}
+      </label>
+    ))}
+  </div>
+
+  <div className="filter-section">
+    <div className='filter-header'>ORDER TIME</div>
+    {["Last 30 days", "2024", "2023", "2022", "Older"].map(time => (
+      <label key={time}>
+        <input type="checkbox" disabled /> {time}
+      </label>
+    ))}
+  </div>
+</aside>
+
+
+      {/* Orders Section */}
+      <section className="orders-section">
+        {/* Search Bar */}
+        <div className="orders-search">
+          <input
+            type="text"
+            placeholder="Search your orders..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="search-btn" disabled>Search</button>
+        </div>
+
+        {/* Heading */}
+        <h2 className="heading-my-order">My Orders</h2>
+
+        {/* Order Cards */}
+        <div className="orders-list">
+          {products.length === 0 ? (
+            <p>No orders found.</p>
+          ) : (
+            products.map((product, index) => (
+              <div
+                key={index}
+                ref={product.order_product_id === selected_product_id ? highlightedRef : null}
+                className={`order-card ${product.order_product_id === selected_product_id ? 'highlight-product' : ''}`}
+              >
+                <div className="product-summary">
+                  <img
+                    src={`http://127.0.0.1:8000/${product.product_image}`}
+                    alt={product.product_name}
+                    className="product-image"
+                  />
+                  <div className="product-info">
+                    <p className="product-name">{product.product_name}</p>
+                    <p>Order ID: {product.order.product_order_id}</p>
+                    <p>Price: ₹{product.final_price}</p>
+                    <div className="toggle-container">
+                      <span
+                        className="toggle-details"
+                        onClick={() => goToOrderDetails(product)}
+                      >
+                        <FaCircleArrowRight />
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            ))
+          )}
+        </div>
+      </section>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default CustomerMyOrders;

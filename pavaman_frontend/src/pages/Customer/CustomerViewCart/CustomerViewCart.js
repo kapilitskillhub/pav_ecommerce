@@ -21,6 +21,24 @@ const CustomerViewCart = () => {
         fetchCartData();
     }, []);
 
+    useEffect(() => {
+        fetchCartData();
+
+        const handleSearch = (e) => {
+            console.log("Search event triggered with query:", e.detail);
+            const query = e.detail;
+            if (!query) {
+              fetchCartData(); 
+            } else {
+              searchCart(query);
+            }
+          };
+        
+          window.addEventListener("customerCategorySearch", handleSearch);
+          return () => window.removeEventListener("customerCategorySearch", handleSearch);
+        }, []);
+  
+
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
         setShowPopup(true);
@@ -66,6 +84,43 @@ const CustomerViewCart = () => {
         }
     };
 
+    const searchCart = async (query) => {
+        setLoading(true);
+        const customer_id = localStorage.getItem("customer_id");
+    
+        if (!customer_id) {
+            displayPopup(
+                <>
+                    Please <Link to="/customer-login" className="popup-link">log in</Link> to search your cart.
+                </>,
+                "error"
+            );
+            setLoading(false);
+            return;
+        }
+    
+        try {
+            const response = await fetch("http://127.0.0.1:8000/customer-cart-view-search", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ customer_id, product_name: query }),
+            });
+    
+            const data = await response.json();
+    
+            if (data.status_code === 200) {
+                setCartItems(data.cart_items || []);
+                setTotalPrice(data.cart_items?.reduce((acc, item) => acc + (item.final_price * item.quantity), 0) || 0);
+            } else {
+                setError(data.message || "Failed to search cart.");
+            }
+        } catch (error) {
+            setError("An unexpected error occurred during search.");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     const handleDeleteCartItem = async (product_id) => {
         const customer_id = localStorage.getItem("customer_id");
         if (!customer_id) {
