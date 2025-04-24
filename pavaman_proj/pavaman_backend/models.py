@@ -9,6 +9,8 @@ from django.db.models import JSONField
 class PavamanAdminDetails(models.Model):
     username = models.CharField(max_length=120, unique=True)
     email = models.EmailField(unique=True)
+    mobile_no = models.CharField(max_length=15, default='')
+    otp = models.IntegerField(null=True, blank=True)
     password = models.CharField(max_length=255)
     status = models.IntegerField(default=1)
 
@@ -67,7 +69,7 @@ class CustomerRegisterDetails(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    mobile_no = models.CharField(max_length=15, unique=True)
+    mobile_no = models.CharField(max_length=15, default='')
     password = models.CharField(max_length=255,null=True, blank=True)
     status = models.IntegerField(default=1)
     register_status = models.IntegerField(default=0)

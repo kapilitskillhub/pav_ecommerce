@@ -9,7 +9,8 @@ from pavaman_backend.models import PavamanAdminDetails, CategoryDetails,SubCateg
 from datetime import datetime,timedelta
 import shutil
 from django.contrib.sessions.models import Session
-
+import random 
+from .sms_utils import send_bulk_sms 
 
 @csrf_exempt
 def add_admin(request):
@@ -18,6 +19,7 @@ def add_admin(request):
             data = json.loads(request.body)
             username = data.get('username')
             email = data.get('email')
+            mobile_no = data.get('mobile_no')
             password = data.get('password')
             status = data.get('status', 1)
 
@@ -63,12 +65,19 @@ def admin_login(request):
 
             if admin.status != 1:
                 return JsonResponse({"error": "Your account is inactive. Contact support.", "status_code": 403}, status=403)
-            request.session['admin_id'] = admin.id
-            request.session['admin_email'] = admin.email
-            request.session['admin_username'] = admin.username
-            request.session.modified = True
-
-            return JsonResponse({"message": "Login successful.", "username": admin.username, "email": admin.email, "id": admin.id, "status_code": 200}, status=200)
+            otp = random.randint(100000, 999999)
+            admin.otp = otp
+            admin.save()
+            
+            success = send_otp_sms(admin.mobile_no, otp)
+            if not success:
+                return JsonResponse({"error": "Failed to send OTP. Try again later.", "status_code": 500}, status=500)
+            return JsonResponse({
+                "message": "OTP sent to your registered mobile number.",
+                "status_code": 200,
+                "email": admin.email  # Use this to verify in the next step
+            }, status=200)
+            # return JsonResponse({"message": "Login successful.", "username": admin.username, "email": admin.email, "id": admin.id, "status_code": 200}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON data in the request body.", "status_code": 400}, status=400)
@@ -77,6 +86,47 @@ def admin_login(request):
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
+@csrf_exempt
+def admin_verify_otp(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+            otp = data.get("otp")
+
+            if not email or not otp:
+                return JsonResponse({"error": "Email and OTP are required.", "status_code": 400}, status=400)
+
+            admin = PavamanAdminDetails.objects.filter(email=email).first()
+            if not admin:
+                return JsonResponse({"error": "Invalid email.", "status_code": 404}, status=404)
+            if str(admin.otp) != str(otp):
+                return JsonResponse({"error": "Invalid OTP.", "status_code": 401}, status=401)
+            admin.otp = None
+            admin.save()
+
+            request.session['admin_id'] = admin.id
+            request.session['admin_email'] = admin.email
+            request.session['admin_username'] = admin.username
+            request.session.modified = True
+
+            # return JsonResponse({"message": "OTP verified. Login successful.", "status_code": 200}, status=200)
+            return JsonResponse({"message": "OTP verified.Login successful.", "username": admin.username, "email": admin.email, "id": admin.id, "status_code": 200}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data.", "status_code": 400}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Unexpected error: {str(e)}", "status_code": 500}, status=500)
+
+    return JsonResponse({"error": "Only POST method allowed.", "status_code": 405}, status=405)
+
+def send_otp_sms(mobile_no, otp):
+    message = f"Your OTP for admin login is: {otp}"
+    try:
+        send_bulk_sms([mobile_no], message)
+        return True
+    except Exception as e:
+        print(f"Failed to send OTP to {mobile_no}: {e}")
+        return False
 
 @csrf_exempt
 def admin_logout(request):

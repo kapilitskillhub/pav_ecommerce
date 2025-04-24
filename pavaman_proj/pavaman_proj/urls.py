@@ -21,7 +21,7 @@ from pavaman_backend.views import (add_admin,admin_login,admin_logout,
     add_subcategory,view_subcategories,edit_subcategory,delete_subcategory,
     add_product,add_product_specifications,edit_product_specifications,view_products,
     view_product_details,edit_product,delete_product,
-    search_categories,search_subcategories,search_products
+    search_categories,search_subcategories,search_products,admin_verify_otp
     )
 
     #admin_logout,
@@ -59,6 +59,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('add-admin',add_admin,name='add_admin'),
     path('admin-login',admin_login,name='admin_login'),
+    path('admin-verify-otp',admin_verify_otp,name='admin_verify_otp'),
     path('admin-logout',admin_logout,name='admin_logout'),
     path('add-category', add_category, name='add_category'),
     path('view-categories', view_categories, name='view_categories'),
