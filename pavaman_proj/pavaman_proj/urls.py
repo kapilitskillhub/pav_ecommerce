@@ -21,7 +21,7 @@ from pavaman_backend.views import (add_admin,admin_login,admin_logout,
     add_subcategory,view_subcategories,edit_subcategory,delete_subcategory,
     add_product,add_product_specifications,edit_product_specifications,view_products,
     view_product_details,edit_product,delete_product,
-    search_categories,search_subcategories,search_products
+    search_categories,search_subcategories,search_products,admin_verify_otp
     )
 
     #admin_logout,
@@ -42,7 +42,8 @@ from pavaman_backend.customer_views import (customer_register,customer_login,vie
     get_payment_details_by_order, download_material_file,customer_get_payment_details_by_order,customer_logout,
     report_monthly_revenue_by_year,report_sales_summary, edit_customer_profile,get_customer_profile,
     top_five_selling_products,get_all_category_subcategory,not_selling_products,
-    generate_invoice_for_customer,order_status_summary
+    generate_invoice_for_customer,admin_order_status,customer_cart_view_search
+
 )
 
 
@@ -59,6 +60,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('add-admin',add_admin,name='add_admin'),
     path('admin-login',admin_login,name='admin_login'),
+    path('admin-verify-otp',admin_verify_otp,name='admin_verify_otp'),
     path('admin-logout',admin_logout,name='admin_logout'),
     path('add-category', add_category, name='add_category'),
     path('view-categories', view_categories, name='view_categories'),
@@ -139,8 +141,9 @@ urlpatterns = [
     path("get-all-category-subcategory",get_all_category_subcategory, name="get_all_category_subcategory"),
     path("not-selling-products",not_selling_products, name="not_selling_products"),
     path("generate-invoice-for-customer",generate_invoice_for_customer, name="generate_invoice_for_customer"),
-    path("order-status-summary",order_status_summary, name="order_status_summary"),
 
+    path("order-status-summary",admin_order_status, name="admin_order_status"),
+    path('customer-cart-view-search', customer_cart_view_search, name='customer_cart_view_search'),
 
 
 

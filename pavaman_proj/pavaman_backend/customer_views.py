@@ -3280,7 +3280,7 @@ def get_payment_details_by_order(request):
         if not admin_id:
                 return JsonResponse({"error": "admin_id is required.", "status_code": 400}, status=400)
      
-        payments = PaymentDetails.objects.filter(admin_id=admin_id)
+        payments = PaymentDetails.objects.filter(admin_id=admin_id).order_by('-created_at')
         if not payments.exists():
             return JsonResponse({"error": "No payment details found on this admin.", "status_code": 404}, status=404)
 
@@ -3412,17 +3412,7 @@ def customer_get_payment_details_by_order(request):
                     "product_image": product_image,
                     "product_name":product.product_name
                 })
-            # customer_data=[]
-            # if payment.customer_id:
-            #     customer_obj = CustomerRegisterDetails.objects.filter(id=payment.customer_id).first()
-            #     if customer_obj:
-            #         customer_data.append({
-            #             "customer_id":customer_obj.id,
-            #             "customer_name": f"{customer_obj.first_name} {customer_obj.last_name}",
-            #             "email":customer_obj.email,
-            #             "mobile_no":customer_obj.mobile_no,
-            #         })
-
+          
             address_data = []
             if payment.customer_address_id:
                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
@@ -3470,106 +3460,6 @@ def customer_get_payment_details_by_order(request):
         return JsonResponse(response_data, status=200)    
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)    
-
-
-# @csrf_exempt
-# def customer_get_payment_details_by_order(request):
-#     if request.method != "POST":
-#         return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-#     try:
-#         data = json.loads(request.body.decode("utf-8"))
-#         customer_id = data.get('customer_id')
-       
-#         if not customer_id:
-#                 return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
-     
-#         # payments = PaymentDetails.objects.filter(customer_id=customer_id)
-#         payments = PaymentDetails.objects.filter(customer_id=customer_id).order_by('-created_at')
-
-#         if not payments.exists():
-#             return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
-
-#         payment_list = []
-#         for payment in payments:
-#             order_ids = payment.order_product_ids  # Assuming this is a list
-            
-#             order_products = OrderProducts.objects.filter(id__in=order_ids)
-            
-#             order_product_list = []
-#             for order in order_products:
-#                 product = ProductsDetails.objects.filter(id=order.product_id).first()
-#                 product_image = product.product_images[0] if product and product.product_images else ""
-                
-#                 order_product_list.append({
-#                     "order_product_id": order.id,
-#                     "quantity": order.quantity,
-#                     "price": order.price,
-#                     "discount":product.discount,
-#                     "final_price": order.final_price,
-#                     "order_status": order.order_status,
-#                     "product_id": order.product_id,
-#                     "product_image": product_image,
-#                     "product_name":product.product_name
-#                 })
-#             # customer_data=[]
-#             # if payment.customer_id:
-#             #     customer_obj = CustomerRegisterDetails.objects.filter(id=payment.customer_id).first()
-#             #     if customer_obj:
-#             #         customer_data.append({
-#             #             "customer_id":customer_obj.id,
-#             #             "customer_name": f"{customer_obj.first_name} {customer_obj.last_name}",
-#             #             "email":customer_obj.email,
-#             #             "mobile_no":customer_obj.mobile_no,
-#             #         })
-
-#             address_data = []
-#             if payment.customer_address_id:
-#                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
-#                 if address_obj:
-#                     address_data.append({
-#                         "address_id": address_obj.id,
-#                         "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
-#                         "email": address_obj.email,
-#                         "mobile_number": address_obj.mobile_number,
-#                         "alternate_mobile": address_obj.alternate_mobile,
-#                         "address_type": address_obj.address_type,
-#                         "pincode": address_obj.pincode,
-#                         "street": address_obj.street,
-#                         "landmark": address_obj.landmark,
-#                         "village": address_obj.village,
-#                         "mandal": address_obj.mandal,
-#                         "postoffice": address_obj.postoffice,
-#                         "district": address_obj.district,
-#                         "state": address_obj.state,
-#                         "country": address_obj.country,
-                        
-#                     })
-                    
-#             payment_list.append({
-#                 "razorpay_order_id": payment.razorpay_order_id,
-#                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
-#                 "email": payment.customer.email,
-#                 "mobile_number": payment.customer.mobile_no,
-#                 "payment_mode": payment.payment_mode,
-#                 "total_quantity":payment.quantity,
-#                 "total_amount": payment.total_amount,
-#                 "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-#                 "product_order_id":payment.product_order_id,
-#                 "customer_address": address_data,
-#                 "order_products": order_product_list
-#             })
-#         response_data = {
-#             "message": "Placed Order retrieved successfully.",
-#             "payments": payment_list,
-#             "status_code": 200
-#         }
-
-#         if customer_id:
-#             response_data["customer_id"] = str(customer_id)
-#         return JsonResponse(response_data, status=200)    
-#     except Exception as e:
-#         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
 
 def download_material_file(request, product_id):
@@ -3756,45 +3646,7 @@ def report_monthly_revenue_by_year(request):
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500})
 
-
-# @csrf_exempt
-# def report_monthly_revenue_by_year(request):
-#     if request.method != "POST":
-#         return JsonResponse({"error": "Only POST method allowed", "status_code": 405}, status=405)
-
-#     try:
-#         data = json.loads(request.body.decode("utf-8"))
-#         admin_id = data.get('admin_id')
-#         year = data.get('year')
-
-#         if not admin_id or not year:
-#             return JsonResponse({"error": "admin_id and year are required", "status_code": 400}, status=400)
-
-#         # Filter payments for that admin and year
-#         payments = PaymentDetails.objects.filter(
-#             admin_id=admin_id,
-#             created_at__year=year
-#         )
-
-#            # Monthly revenue initialized
-#         monthly_revenue = {str(i): 0 for i in range(1, 13)}
-
-#         for payment in payments:
-#             month = payment.created_at.month
-#             monthly_revenue[str(month)] += float(payment.total_amount)
-       
-#         return JsonResponse({
-#             "year": year,
-#             "monthly_revenue": monthly_revenue,
-#             "status_code": 200,
-#              "admin_id":admin_id
-#         })
-
-#     except Exception as e:
-#         return JsonResponse({"error": str(e), "status_code": 500})
-
 from collections import Counter
-
 
 @csrf_exempt
 def top_five_selling_products(request):
@@ -3941,8 +3793,6 @@ def generate_invoice_for_customer(request):
             return JsonResponse({"error": "No invoices found for this customer", "status_code": 404}, status=404)
 
         invoice_list = []
-        
-
         for payment in payments:
             # Generate custom invoice number
             # today = payment.created_at.date()
@@ -3987,9 +3837,11 @@ def generate_invoice_for_customer(request):
                     "product_name": product.product_name,
                     "sku":product.sku_number,
                     "quantity": order.quantity,
+                    "price" :product.price,
+                    "discount": product.discount,
                     "gross_amount": order.final_price,
-                    "discount":float(0.00),
-                    # "discount": product.discount,
+                    # "discount":float(0.00),
+                    
                     "taxable_value": base_price,
                     "igst": gst_amount,
                     "total": order.final_price,
@@ -4029,68 +3881,9 @@ def generate_invoice_for_customer(request):
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
-
-
-
-# @csrf_exempt
-# def order_status_summary(request):
-#     try:
-#         data = json.loads(request.body.decode("utf-8"))
-#         admin_id = data.get("admin_id")
-
-#         if not admin_id:
-#             return JsonResponse({"error": "admin_id is required.", "status_code": 400}, status=400)
-
-#         # Step 1: Fetch all PaymentDetails by this admin
-#         payment_entries = PaymentDetails.objects.filter(admin_id=admin_id)
-
-#         if not payment_entries.exists():
-#             return JsonResponse({
-#                 "error": "No payment records found for this admin.",
-#                 "status_code": 404
-#             }, status=404)
-
-#         # Step 2: Collect all order_product_ids from these entries
-#         all_order_product_ids = []
-#         for entry in payment_entries:
-#             if isinstance(entry.order_product_ids, list):
-#                 all_order_product_ids.extend(entry.order_product_ids)
-
-#         if not all_order_product_ids:
-#             return JsonResponse({
-#                 "error": "No order_product_ids found in PaymentDetails for this admin.",
-#                 "status_code": 404
-#             }, status=404)
-
-#         all_order_product_ids = list(set(all_order_product_ids))  # Deduplicate
-
-#         # Step 3: Get all OrderProducts that match these order_product_ids
-#         related_orders = OrderProducts.objects.filter(id__in=all_order_product_ids)
-
-#         # Step 4: Count order statuses using Counter
-#         status_counter = Counter(order.order_status for order in related_orders)
-
-#         # Prepare the result
-#         result = {
-#             "Paid": status_counter.get("Paid", 0),
-#             "Pending": status_counter.get("Pending", 0),
-#             "Cancelled": status_counter.get("Cancelled", 0),
-#         }
-
-#         return JsonResponse({
-#             "admin_id": admin_id,
-#             "total_related_orders": related_orders.count(),
-#             "order_status_summary": result,
-#             "status_code": 200
-#         }, status=200)
-
-#     except Exception as e:
-#         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-
-
+#pie chart order status
 @csrf_exempt
-def order_status_summary(request):
+def admin_order_status(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
         admin_id = data.get("admin_id")
@@ -4148,3 +3941,59 @@ def order_status_summary(request):
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
 
+@csrf_exempt
+def customer_cart_view_search(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            customer_id = data.get('customer_id')
+            product_name = data.get('product_name', '').strip()
+
+            if not customer_id:
+                return JsonResponse({"error": "Customer ID is required.", "status_code": 400}, status=400)
+
+            cart_items = CartProducts.objects.filter(customer_id=customer_id)
+
+            if product_name:
+                cart_items = cart_items.filter(product__product_name__icontains=product_name)
+
+            if not cart_items.exists():
+                return JsonResponse({
+                    "message": "No cart items found.",
+                    "status_code": 200,
+                    "customer_id": str(customer_id)
+                }, status=200)
+
+            cart_list = []
+            for item in cart_items:
+                product = item.product
+                image_url = ""
+                if isinstance(product.product_images, list):
+                    image_url = f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}" if product.product_images else ""
+                elif isinstance(product.product_images, str):
+                    image_url = f"/static/images/products/{os.path.basename(product.product_images.replace('\\', '/'))}"
+
+                cart_list.append({
+                    "product_id": str(product.id),
+                    "product_name": product.product_name,
+                    "product_image_url": image_url,
+                    "sku_number": product.sku_number,
+                    "price": float(product.price),
+                    "discount": float(product.discount or 0),
+                    "final_price": float(product.price) - float(product.discount or 0),
+                    "quantity": item.quantity,
+                })
+
+            return JsonResponse({
+                "message": "Cart items retrieved successfully.",
+                "cart_items": cart_list,
+                "status_code": 200,
+                "customer_id": str(customer_id)
+            }, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data.", "status_code": 400}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
+
+    return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
