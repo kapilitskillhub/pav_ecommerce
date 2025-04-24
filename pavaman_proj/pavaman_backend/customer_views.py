@@ -3883,7 +3883,7 @@ def generate_invoice_for_customer(request):
 
 #pie chart order status
 @csrf_exempt
-def order_status_summary(request):
+def admin_order_status(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
         admin_id = data.get("admin_id")
@@ -3941,3 +3941,59 @@ def order_status_summary(request):
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
 
+@csrf_exempt
+def customer_cart_view_search(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            customer_id = data.get('customer_id')
+            product_name = data.get('product_name', '').strip()
+
+            if not customer_id:
+                return JsonResponse({"error": "Customer ID is required.", "status_code": 400}, status=400)
+
+            cart_items = CartProducts.objects.filter(customer_id=customer_id)
+
+            if product_name:
+                cart_items = cart_items.filter(product__product_name__icontains=product_name)
+
+            if not cart_items.exists():
+                return JsonResponse({
+                    "message": "No cart items found.",
+                    "status_code": 200,
+                    "customer_id": str(customer_id)
+                }, status=200)
+
+            cart_list = []
+            for item in cart_items:
+                product = item.product
+                image_url = ""
+                if isinstance(product.product_images, list):
+                    image_url = f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}" if product.product_images else ""
+                elif isinstance(product.product_images, str):
+                    image_url = f"/static/images/products/{os.path.basename(product.product_images.replace('\\', '/'))}"
+
+                cart_list.append({
+                    "product_id": str(product.id),
+                    "product_name": product.product_name,
+                    "product_image_url": image_url,
+                    "sku_number": product.sku_number,
+                    "price": float(product.price),
+                    "discount": float(product.discount or 0),
+                    "final_price": float(product.price) - float(product.discount or 0),
+                    "quantity": item.quantity,
+                })
+
+            return JsonResponse({
+                "message": "Cart items retrieved successfully.",
+                "cart_items": cart_list,
+                "status_code": 200,
+                "customer_id": str(customer_id)
+            }, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data.", "status_code": 400}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
+
+    return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
