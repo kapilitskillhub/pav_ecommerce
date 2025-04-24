@@ -3883,7 +3883,7 @@ def generate_invoice_for_customer(request):
 
 #pie chart order status
 @csrf_exempt
-def order_status_summary(request):
+def admin_order_status(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
         admin_id = data.get("admin_id")
@@ -3939,8 +3939,6 @@ def order_status_summary(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-
 
 
 @csrf_exempt

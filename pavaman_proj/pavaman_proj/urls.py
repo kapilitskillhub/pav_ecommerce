@@ -42,7 +42,8 @@ from pavaman_backend.customer_views import (customer_register,customer_login,vie
     get_payment_details_by_order, download_material_file,customer_get_payment_details_by_order,customer_logout,
     report_monthly_revenue_by_year,report_sales_summary, edit_customer_profile,get_customer_profile,
     top_five_selling_products,get_all_category_subcategory,not_selling_products,
-    generate_invoice_for_customer,order_status_summary,customer_cart_view_search
+    generate_invoice_for_customer,admin_order_status,customer_cart_view_search
+
 )
 
 
@@ -140,10 +141,9 @@ urlpatterns = [
     path("get-all-category-subcategory",get_all_category_subcategory, name="get_all_category_subcategory"),
     path("not-selling-products",not_selling_products, name="not_selling_products"),
     path("generate-invoice-for-customer",generate_invoice_for_customer, name="generate_invoice_for_customer"),
-    path("order-status-summary",order_status_summary, name="order_status_summary"),
+
+    path("order-status-summary",admin_order_status, name="admin_order_status"),
     path('customer-cart-view-search', customer_cart_view_search, name='customer_cart_view_search'),
-
-
 
 
 
