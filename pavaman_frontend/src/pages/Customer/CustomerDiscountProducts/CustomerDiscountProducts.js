@@ -109,7 +109,7 @@ const ViewDiscountedProducts = () => {
 
         infinite: true,
         speed: 1000,
-        slidesToShow: 5,
+        slidesToShow: 4,
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 3000,
@@ -141,7 +141,7 @@ const ViewDiscountedProducts = () => {
 
 
     return (
-        <div className="customer-dashboard container">
+        <div className="customer-dashboard container discount-dashboard">
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
 

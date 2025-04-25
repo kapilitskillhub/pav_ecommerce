@@ -3544,8 +3544,8 @@ def edit_customer_profile(request):
             
             customer.first_name = data.get("first_name", customer.first_name)
             customer.last_name = data.get("last_name", customer.last_name)
-            customer.email = data.get("email", customer.email)
-            customer.mobile_no = data.get("mobile_no", customer.mobile_no)
+            # customer.email = data.get("email", customer.email)
+            # customer.mobile_no = data.get("mobile_no", customer.mobile_no)
 
             customer.save(update_fields=["first_name", "last_name", "email", "mobile_no"])
 
@@ -3556,8 +3556,8 @@ def edit_customer_profile(request):
                 "updated_details": {
                     "first_name": customer.first_name,
                     "last_name": customer.last_name,
-                    "email": customer.email,
-                    "mobile_no": customer.mobile_no,
+                    # "email": customer.email,
+                    # "mobile_no": customer.mobile_no,
                 }
             }, status=200)
 
@@ -3920,7 +3920,8 @@ def admin_order_status(request):
         # Step 4: Count order statuses using Counter for 'Paid' and 'Cancelled'
         status_counter = Counter(order.order_status for order in related_orders)
 
-        # Step 5: Count pending orders from the entire OrderProducts table (no filter based on order_product_ids)
+        # Step 5: Count pending orders from
+        #  the entire OrderProducts table (no filter based on order_product_ids)
         pending_orders = OrderProducts.objects.filter(order_status="Pending").count()
 
         # Prepare the result
@@ -3939,8 +3940,6 @@ def admin_order_status(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-
 @csrf_exempt
 def customer_cart_view_search(request):
     if request.method == 'POST':
@@ -3967,21 +3966,27 @@ def customer_cart_view_search(request):
             cart_list = []
             for item in cart_items:
                 product = item.product
-                image_url = ""
-                if isinstance(product.product_images, list):
-                    image_url = f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}" if product.product_images else ""
-                elif isinstance(product.product_images, str):
-                    image_url = f"/static/images/products/{os.path.basename(product.product_images.replace('\\', '/'))}"
+
+                # Calculate totals
+                price = float(product.price)
+                discount = float(product.discount or 0)
+                discount_price = price - discount
+                item_total_price = discount_price * item.quantity
 
                 cart_list.append({
-                    "product_id": str(product.id),
+                    "cart_id": item.id,
+                    "product_id": product.id,
                     "product_name": product.product_name,
-                    "product_image_url": image_url,
-                    "sku_number": product.sku_number,
-                    "price": float(product.price),
-                    "discount": float(product.discount or 0),
-                    "final_price": float(product.price) - float(product.discount or 0),
                     "quantity": item.quantity,
+                    "price_per_item": price,
+                    "discount": discount,
+                    "discount_price": discount_price,
+                    "total_price": item_total_price,
+                    "original_quantity": product.quantity,
+                    "availability": product.availability,
+                    "image": product.product_images if product.product_images else None,
+                    "category": product.category.category_name if product.category else None,
+                    "sub_category": product.sub_category.sub_category_name if product.sub_category else None
                 })
 
             return JsonResponse({
@@ -3997,3 +4002,234 @@ def customer_cart_view_search(request):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+
+@csrf_exempt
+def edit_profile_mobile_otp_handler(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            action = data.get("action")
+            customer_id = data.get("customer_id")
+
+            if not action or not customer_id:
+                return JsonResponse({"error": "Action and Customer ID are required."}, status=400)
+
+            if action == "send":
+                mobile = data.get("mobile_no")
+                if not mobile:
+                    return JsonResponse({"error": "Mobile number is required."}, status=400)
+
+                customer = CustomerRegisterDetails.objects.filter(id=customer_id).first()
+                if not customer:
+                    return JsonResponse({"error": "Customer not found."}, status=404)
+
+                if customer.otp and customer.mobile_no == mobile:
+                    return JsonResponse({"message": "OTP already sent to this mobile number."})
+
+                otp = str(random.randint(100000, 999999))
+                message = f"Your OTP for profile update is: {otp}"
+                send_bulk_sms([mobile], message)  # Send OTP via SMS
+
+                customer.otp = otp
+                customer.mobile_no = mobile  # Save the mobile number
+                customer.save(update_fields=["otp", "mobile_no"])
+
+                return JsonResponse({"message": "OTP sent to mobile successfully."})
+
+            elif action == "verify":
+                otp = data.get("otp")
+                customer_id = data.get("customer_id")
+                if not otp:
+                    return JsonResponse({"error": "OTP is required for verification."}, status=400)
+
+                customer = CustomerRegisterDetails.objects.filter(id=customer_id).first()
+                if not customer:
+                    return JsonResponse({"error": "Customer not found."}, status=404)
+
+                # Verify the OTP
+                if str(customer.otp) != str(otp):
+                    return JsonResponse({"error": "Invalid OTP provided."}, status=400)
+
+                # OTP is correct; now you can update the customer's mobile number if necessary
+                customer.otp = None  # Clear OTP after successful verification
+                customer.save(update_fields=["otp"])
+
+                return JsonResponse({"message": "OTP verified successfully. Mobile number updated."})
+
+            else:
+                return JsonResponse({"error": "Invalid action type. Use 'send' or 'verify'."}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+@csrf_exempt
+def edit_profile_email_otp_handler(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            action = data.get("action")
+            customer_id = data.get("customer_id")
+
+            if not action or not customer_id:
+                return JsonResponse({"error": "Action and Customer ID are required."}, status=400)
+
+            customer = CustomerRegisterDetails.objects.filter(id=customer_id).first()
+            if not customer:
+                return JsonResponse({"error": "Customer not found."}, status=404)
+
+            if action == "send_email_otp":
+                email = data.get("email")
+                first_name = data.get("first_name", "User")  
+
+                if not email:
+                    return JsonResponse({"error": "Email is required."}, status=400)
+
+                verification_link = str(uuid.uuid4())  
+                customer.email = email
+                customer.verification_link = verification_link
+                customer.save(update_fields=["email", "verification_link"])
+
+               
+                send_verification_email(email, first_name, verification_link)
+
+                return JsonResponse({"message": "Verification email sent successfully."})
+
+            elif action == "verify_email_otp":
+                verification_link = data.get("verification_link")
+
+                if not verification_link:
+                    return JsonResponse({"error": "Verification link is required."}, status=400)
+
+                if customer.verification_link != verification_link:
+                    return JsonResponse({"error": "Invalid or expired verification link."}, status=400)
+
+                customer.account_status = 1
+                customer.verification_link = None
+                customer.save(update_fields=["account_status", "verification_link"])
+
+                return JsonResponse({"message": "Email verified successfully."})
+
+            else:
+                return JsonResponse({"error": "Invalid action type."}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+
+@csrf_exempt
+def filter_and_sort_products(request):
+    if request.method == "POST":
+        try:
+          
+            data = json.loads(request.body.decode('utf-8'))
+
+            category_id = data.get("category_id")
+            category_name = data.get("category_name")
+            subcategory_id = data.get("sub_category_id")
+            sub_category_name = data.get("sub_category_name")
+            min_price = data.get("min_price")
+            max_price = data.get("max_price")
+            sort_by = data.get("sort_by")
+
+           
+            customer_id = data.get("customer_id") or request.session.get('customer_id')
+
+         
+            if not category_id or not category_name:
+                return JsonResponse({"error": "category_id and category_name are required.", "status_code": 400}, status=400)
+
+            if not subcategory_id or not sub_category_name:
+                return JsonResponse({"error": "sub_category_id and sub_category_name are required.", "status_code": 400}, status=400)
+            
+        
+            try:
+                category = CategoryDetails.objects.get(id=category_id)
+                if category.category_name != category_name:
+                    return JsonResponse({"error": "Incorrect category_name for the given category_id.", "status_code": 400}, status=400)
+            except CategoryDetails.DoesNotExist:
+                return JsonResponse({"error": "Invalid category_id. Category not found.", "status_code": 404}, status=404)
+
+         
+            try:
+                subcategory = SubCategoryDetails.objects.get(id=subcategory_id, category_id=category_id, sub_category_status=1)
+                if subcategory.sub_category_name != sub_category_name:
+                    return JsonResponse({"error": "Incorrect sub_category_name for the given sub_category_id.", "status_code": 400}, status=400)
+            except SubCategoryDetails.DoesNotExist:
+                return JsonResponse({"error": "Invalid sub_category_id for the given category.", "status_code": 404}, status=404)
+
+          
+            products_query = ProductsDetails.objects.filter(
+                category_id=category_id,
+                sub_category_id=subcategory_id,
+                product_status=1
+            )
+
+            if min_price is not None and isinstance(min_price, (int, float)):
+                products_query = products_query.filter(price__gte=min_price)
+
+            if max_price is not None and isinstance(max_price, (int, float)):
+                products_query = products_query.filter(price__lte=max_price)
+
+            if sort_by == "latest":
+                products_query = products_query.order_by("-created_at")
+            elif sort_by == "low_to_high":
+                products_query = products_query.order_by("price")
+            elif sort_by == "high_to_low":
+                products_query = products_query.order_by("-price")
+            else:
+                return JsonResponse({"error": "Invalid sort_by value. Use 'latest', 'low_to_high', or 'high_to_low'.", "status_code": 400}, status=400)
+
+          
+            products_list = []
+            for product in products_query:
+                product_data = {
+                    "id": product.id,
+                    "product_name": product.product_name,
+                    "price": float(product.price),
+                }
+                products_list.append(product_data)
+
+        
+            price_range = products_query.aggregate(
+                min_price=Min("price"),
+                max_price=Max("price")
+            )
+
+            if price_range["min_price"] is None:
+                price_range["min_price"] = min_price if min_price is not None else 0
+            if price_range["max_price"] is None:
+                price_range["max_price"] = max_price if max_price is not None else 0
+
+          
+            response_data = {
+                "message": "Filtered products retrieved successfully.",
+                "category_id": category_id,
+                "category_name": category.category_name,
+                "sub_category_id": subcategory_id,
+                "sub_category_name": subcategory.sub_category_name,
+                "min_price": price_range["min_price"],
+                "max_price": price_range["max_price"],
+                "products": products_list,
+                "status_code": 200
+            }
+
+            if customer_id:
+                response_data["customer_id"] = customer_id
+
+            return JsonResponse(response_data, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format.", "status_code": 400}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {str(e)}", "status_code": 500}, status=500)
+
+    return JsonResponse({"error": "Invalid request method. Use POST.", "status_code": 405}, status=405)

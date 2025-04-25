@@ -86,29 +86,29 @@ const CustomerEditProfile = () => {
 
             <form onSubmit={handleSubmit} className="edit-profile-form">
                 <div className="input-row">
-  <div className="input-single">
-    <h3 className="profile-edit-heading-first">First Name</h3>
-    <input
-      type="text"
-      name="first_name"
-      value={formData.first_name}
-      onChange={handleChange}
-      className="Customer-input-row-edit-profile"
-      required
-    />
-  </div>
-  <div className="input-single">
-    <h3 className="profile-edit-heading-first">Last Name</h3>
-    <input
-      type="text"
-      name="last_name"
-      value={formData.last_name}
-      onChange={handleChange}
-      className="Customer-input-row-edit-profile"
-      required
-    />
-  </div>
-</div>
+                    <div className="input-single">
+                        <h3 className="profile-edit-heading-first">First Name</h3>
+                        <input
+                            type="text"
+                            name="first_name"
+                            value={formData.first_name}
+                            onChange={handleChange}
+                            className="Customer-input-row-edit-profile"
+                            required
+                        />
+                    </div>
+                    <div className="input-single">
+                        <h3 className="profile-edit-heading-first">Last Name</h3>
+                        <input
+                            type="text"
+                            name="last_name"
+                            value={formData.last_name}
+                            onChange={handleChange}
+                            className="Customer-input-row-edit-profile"
+                            required
+                        />
+                    </div>
+                </div>
                 <div className="input-single">
                     <h3 className="profile-edit-heading-first">Email</h3>
                     <input

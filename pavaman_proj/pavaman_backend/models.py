@@ -211,12 +211,11 @@ class PaymentDetails(models.Model):
     product_order_id = models.CharField(default="")
     invoice_number = models.CharField(default="")
     invoice_date = models.DateTimeField(auto_now_add=True,null=True)
-    invoice_status = models.BooleanField(default=False)
+    order_status= models.CharField(default="")
+    Delivery_status = models.CharField(default="")
     
     def str(self):
         return f"Order {self.razorpay_order_id} - {self.payment_type} ({self.payment_mode})"
-
-
 # class PaymentDetails(models.Model):
 #     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
 #     customer = models.ForeignKey(CustomerRegisterDetails, on_delete=models.CASCADE)

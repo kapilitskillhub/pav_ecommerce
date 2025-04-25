@@ -6,6 +6,7 @@ import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
 import { Range } from 'react-range';
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
+import "./CustomerViewProducts.css";
 
 const CustomerViewProducts = () => {
     const { categoryName, subCategoryName } = useParams();
@@ -16,9 +17,6 @@ const CustomerViewProducts = () => {
     const [sortOrder, setSortOrder] = useState(""); // Sorting state
     const navigate = useNavigate();
     const location = useLocation();
-
-
-
     const category_id = location.state?.category_id || localStorage.getItem("category_id");
     const sub_category_id = location.state?.sub_category_id || localStorage.getItem("sub_category_id");
     const customer_id = localStorage.getItem("customer_id") || null;
@@ -38,12 +36,6 @@ const CustomerViewProducts = () => {
             setShowPopup(false);
         }, 10000);
     };
-
-    // useEffect(() => {
-    //     setMinPrice(values[0]);
-    //     setMaxPrice(values[1]);
-    // }, [values]);
-
 
     useEffect(() => {
         fetchProducts();
@@ -156,9 +148,6 @@ const CustomerViewProducts = () => {
             return;
         }
 
-        // sessionStorage.setItem("category_id", category_id);
-        // sessionStorage.setItem("sub_category_id", sub_category_id);
-
         localStorage.setItem("category_id", category_id);
         localStorage.setItem("sub_category_id", sub_category_id);
         localStorage.setItem("category_name", categoryName);
@@ -205,44 +194,44 @@ const CustomerViewProducts = () => {
         }
     };
 
-    const handleFilterProducts = async () => {
+    const fetchFilteredAndSortedProducts = async () => {
         setLoading(true);
-        setError("");
-
+        setError(null);
+      
+        const requestBody = {
+          category_id: category_id,  // Replace categoryId with category_id
+          category_name: categoryName,  // Replace with actual category name
+          sub_category_id: sub_category_id,  // Replace subcategoryId with sub_category_id
+          sub_category_name: subCategoryName,  // Replace with actual subcategory name
+          min_price: minPrice,
+          max_price: maxPrice,
+          sort_by: sortOrder,  // Replace sortBy with sortOrder
+          customer_id: customer_id,  // Replace customerId with customer_id
+        };
+      
         try {
-            const response = await fetch("http://127.0.0.1:8000/filter-product-price", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    category_id,
-                    category_name: categoryName,
-                    sub_category_id,
-                    sub_category_name: subCategoryName,
-                    customer_id,
-                    min_price: values[0],
-                    max_price: values[1],
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.status_code === 200) {
-                setAllProducts(data.products);
-                setProducts(data.products);
-            } else {
-                setError(data.error || "Failed to fetch products.");
-                setProducts([]); // Clear display if nothing found
-            }
+          const response = await fetch('http://127.0.0.1:8000/filter-and-sort-products', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+          });
+          const data = await response.json();
+      
+          if (response.ok) {
+            setProducts(data.products);
+          } else {
+            setError(data.error || 'Failed to fetch products');
+          }
         } catch (error) {
-            setError("An unexpected error occurred.");
+          setError('An error occurred while fetching products.');
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
     };
-
-
+    
+      
     return (
         <div className="customer-dashboard container">
             < CarouselLanding />
@@ -280,135 +269,138 @@ const CustomerViewProducts = () => {
 
             {!loading && !error && (
                 <div className="customer-products">
-                    <div className="header-filter">
-                        <div className="customer-products-heading">{subCategoryName} - Products</div>
-                        {/* Price Range Filter */}
-                        <div className="filter-sort-section">
+                    <div className="customer-products-heading">{subCategoryName} - Products</div>
 
-                            <div className="price-slider-container">
-                                <label className="price-range-label">
-                                    Price Range
-                                    <div> ₹{values[0]} - ₹{values[1]}</div>
-                                </label>
-                                <div className="slider-btn">
-                                    <Range
-                                        className="price-slider-range"
-                                        values={values}
-                                        step={100}
-                                        min={minPrice}
-                                        max={maxPrice}
-                                        onChange={(newValues) => {
-                                            setValues(newValues);
-                                        }}
-                                        renderTrack={({ props, children }) => (
-                                            <div
-                                                {...props}
-                                                style={{
-                                                    ...props.style,
-                                                    width: '100%',
-                                                    background: 'white',
-                                                    borderRadius: '4px',
-                                                    margin: '20px 0',
-                                                    border: '0.5px solid grey',
-                                                }}
-                                            >
-                                                {children}
-                                            </div>
-                                        )}
-                                        renderThumb={({ props }) => (
-                                            <div
-                                                {...props}
-                                                style={{
-                                                    ...props.style,
-                                                    height: '15px',
-                                                    width: '15px',
-                                                    backgroundColor: '#4450A2',
-                                                    borderRadius: '50%',
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                    <button className="filter-button" onClick={handleFilterProducts}>
-                                        Filter
-                                    </button>
-                                </div>
-                            </div>
+                    <div className="product-filter-dashboard">
+                        <div className="header-filter">
+                            {/* Price Range Filter */}
+                            <div className="filter-sort-section">
 
-                            {/* Sorting Dropdown */}
-                            <div className="sorting-section">
-                                <label>Sort by:   </label>
-                                <select onChange={(e) => setSortOrder(e.target.value)} value={sortOrder}>
-                                    <option value=""> Select</option>
-                                    <option value="low_to_high"> Price : Low to High</option>
-                                    <option value="high_to_low"> Price : High to Low</option>
-                                    <option value="latest"> Latest</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="popup-discount">
-                        {showPopup && (
-                            <PopupMessage
-                                message={popupMessage.text}
-                                type={popupMessage.type}
-                                onClose={() => setShowPopup(false)}
-                            />
-                        )}
-                    </div>
-
-                    <div className="customer-products-section">
-
-                        {products.length > 0 ? (
-                            products.map((product) => (
-                                <div
-                                    key={product.product_id}
-                                    className="customer-product-card"
-                                    onClick={() => handleViewProductDetails(product)}
-                                >
-                                    <img
-                                        src={product.product_image_url ? `http://127.0.0.1:8000${product.product_image_url}` : defaultImage}
-                                        alt={product.product_name}
-                                        className="customer-product-image"
-                                        onError={(e) => (e.target.src = defaultImage)}
-                                    />
-                                    <div className="customer-product-name">{product.product_name}</div>
-                                    <div className="customer-discount-section-price">₹{product.final_price}.00 (incl. GST)</div>
-                                    <div >
-                                        <div className="customer-discount-section-original-price">₹{product.price}.00 (incl. GST)</div>
-                                        <div className="add-cart-section">
-                                            <span
-                                                className={`availability ${product.availability === "Out of Stock"
-                                                    ? "out-of-stock"
-                                                    : product.availability === "Very Few Products Left"
-                                                        ? "few-left"
-                                                        : "in-stock"
-                                                    }`}
-                                            >
-                                                {product.availability === "Out of Stock"
-                                                    ? "Out of Stock"
-                                                    : product.availability === "Very Few Products Left"
-                                                        ? "Very Few Products Left"
-                                                        : "In Stock"}
-                                            </span>
-                                            {(product.availability === "Very Few Products Left" || product.availability === "In Stock") && (
-
-                                                <BiSolidCartAdd
-                                                    className="add-to-cart-button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation(); // Prevents navigation when clicking on the cart icon
-                                                        handleAddCart(product.product_id);
+                                <div className="price-slider-container">
+                                    <label className="price-range-label">
+                                        Price Range
+                                        <div> ₹{values[0]} - ₹{values[1]}</div>
+                                    </label>
+                                    <div className="slider-btn">
+                                        <Range
+                                            className="price-slider-range"
+                                            values={values}
+                                            step={100}
+                                            min={minPrice}
+                                            max={maxPrice}
+                                            onChange={(newValues) => {
+                                                setValues(newValues);
+                                            }}
+                                            renderTrack={({ props, children }) => (
+                                                <div
+                                                    {...props}
+                                                    style={{
+                                                        ...props.style,
+                                                        width: '100%',
+                                                        background: 'white',
+                                                        borderRadius: '4px',
+                                                        margin: '20px 0',
+                                                        border: '0.5px solid grey',
+                                                    }}
+                                                >
+                                                    {children}
+                                                </div>
+                                            )}
+                                            renderThumb={({ props }) => (
+                                                <div
+                                                    {...props}
+                                                    style={{
+                                                        ...props.style,
+                                                        height: '15px',
+                                                        width: '15px',
+                                                        backgroundColor: '#4450A2',
+                                                        borderRadius: '50%',
                                                     }}
                                                 />
                                             )}
-                                        </div>
+                                        />
+                                        <button className="filter-button" onClick={fetchFilteredAndSortedProducts}>
+                                            Filter
+                                        </button>
                                     </div>
                                 </div>
-                            ))
-                        ) : (
-                            <div>
 
-                                <div>No products available.</div></div>
-                        )}
+                                {/* Sorting Dropdown */}
+                                <div className="sorting-section">
+                                    <label>Sort by:   </label>
+                                    <select onChange={(e) => setSortOrder(e.target.value)} value={sortOrder}>
+                                        {/* <option value=""> Select</option> */}
+                                        <option value="low_to_high"> Price : Low to High</option>
+                                        <option value="high_to_low"> Price : High to Low</option>
+                                        <option value="latest"> Latest</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="popup-discount">
+                            {showPopup && (
+                                <PopupMessage
+                                    message={popupMessage.text}
+                                    type={popupMessage.type}
+                                    onClose={() => setShowPopup(false)}
+                                />
+                            )}
+                        </div>
+
+                        <div className="customer-products-section">
+
+                            {products.length > 0 ? (
+                                products.map((product) => (
+                                    <div
+                                        key={product.product_id}
+                                        className="customer-product-card"
+                                        onClick={() => handleViewProductDetails(product)}
+                                    >
+                                        <img
+                                            src={product.product_image_url ? `http://127.0.0.1:8000${product.product_image_url}` : defaultImage}
+                                            alt={product.product_name}
+                                            className="customer-product-image"
+                                            onError={(e) => (e.target.src = defaultImage)}
+                                        />
+                                        <div className="customer-product-name">{product.product_name}</div>
+                                        <div className="customer-discount-section-price">₹{product.final_price}.00 (incl. GST)</div>
+                                        <div >
+                                            <div className="customer-discount-section-original-price">₹{product.price}.00 (incl. GST)</div>
+                                            <div className="add-cart-section">
+                                                <span
+                                                    className={`availability ${product.availability === "Out of Stock"
+                                                        ? "out-of-stock"
+                                                        : product.availability === "Very Few Products Left"
+                                                            ? "few-left"
+                                                            : "in-stock"
+                                                        }`}
+                                                >
+                                                    {product.availability === "Out of Stock"
+                                                        ? "Out of Stock"
+                                                        : product.availability === "Very Few Products Left"
+                                                            ? "Very Few Products Left"
+                                                            : "In Stock"}
+                                                </span>
+                                                {(product.availability === "Very Few Products Left" || product.availability === "In Stock") && (
+
+                                                    <BiSolidCartAdd
+                                                        className="add-to-cart-button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // Prevents navigation when clicking on the cart icon
+                                                            handleAddCart(product.product_id);
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div>
+
+                                    <div>No products available.</div></div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
