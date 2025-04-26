@@ -110,7 +110,15 @@ const CustomerViewCart = () => {
     
             if (data.status_code === 200) {
                 setCartItems(data.cart_items || []);
-                setTotalPrice(data.cart_items?.reduce((acc, item) => acc + (item.final_price * item.quantity), 0) || 0);
+                // setTotalPrice(data.cart_items?.reduce((acc, item) => acc + (item.final_price * item.quantity), 0) || 0);
+                setTotalPrice(
+                    data.cart_items?.reduce(
+                      (acc, item) => acc + (item.discount_price * item.quantity), 
+                      0
+                    ) || 0
+                  );
+                  
+                  
             } else {
                 setError(data.message || "Failed to search cart.");
             }

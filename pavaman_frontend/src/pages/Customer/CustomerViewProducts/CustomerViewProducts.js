@@ -37,10 +37,14 @@ const CustomerViewProducts = () => {
         }, 10000);
     };
 
-    useEffect(() => {
-        fetchProducts();
-    }, [sortOrder]); // Refetch products when sorting order changes
+    // useEffect(() => {
+    //     fetchProducts();
+    // }, [sortOrder]); // Refetch products when sorting order changes
 
+    useEffect(() => {
+        fetchFilteredAndSortedProducts();
+      }, [sortOrder]);
+      
     useEffect(() => {
         if (categoryName) {
             fetchProducts(categoryName); // Fetch initial products
@@ -193,43 +197,67 @@ const CustomerViewProducts = () => {
             displayPopup("An unexpected error occurred while adding to cart.", "error");
         }
     };
-
     const fetchFilteredAndSortedProducts = async () => {
         setLoading(true);
         setError(null);
-      
-        const requestBody = {
-          category_id: category_id,  // Replace categoryId with category_id
-          category_name: categoryName,  // Replace with actual category name
-          sub_category_id: sub_category_id,  // Replace subcategoryId with sub_category_id
-          sub_category_name: subCategoryName,  // Replace with actual subcategory name
-          min_price: minPrice,
-          max_price: maxPrice,
-          sort_by: sortOrder,  // Replace sortBy with sortOrder
-          customer_id: customer_id,  // Replace customerId with customer_id
+    
+        const hasMin = values[0] !== '';
+        const hasMax = values[1] !== '';
+        const hasSort = sortOrder !== '';
+    
+        let requestBody = {
+            category_id: category_id,
+            category_name: categoryName,
+            sub_category_id: sub_category_id,
+            sub_category_name: subCategoryName,
+            customer_id: customer_id
         };
-      
+    
+        // Include price range and sorting order if present
+        if (hasMin && hasMax && hasSort) {
+            requestBody = {
+                ...requestBody,
+                min_price: values[0],  // Use the min value from the slider
+                max_price: values[1],  // Use the max value from the slider
+                sort_by: sortOrder
+            };
+        } else if (hasMin && hasMax) {
+            requestBody = {
+                ...requestBody,
+                min_price: values[0],  // Use the min value from the slider
+                max_price: values[1],  // Use the max value from the slider
+                sort_by: 'low_to_high' // Default sorting when no sort is selected
+            };
+        } else if (hasSort) {
+            requestBody = {
+                ...requestBody,
+                sort_by: sortOrder
+            };
+        }
+    
         try {
-          const response = await fetch('http://127.0.0.1:8000/filter-and-sort-products', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-          });
-          const data = await response.json();
-      
-          if (response.ok) {
-            setProducts(data.products);
-          } else {
-            setError(data.error || 'Failed to fetch products');
-          }
+            const response = await fetch('http://127.0.0.1:8000/filter-and-sort-products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                setProducts(data.products);
+            } else {
+                setError(data.error || 'Failed to fetch products');
+            }
         } catch (error) {
-          setError('An error occurred while fetching products.');
+            setError('An error occurred while fetching products.');
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
     };
+    
     
       
     return (
@@ -275,6 +303,7 @@ const CustomerViewProducts = () => {
                         <div className="header-filter">
                             {/* Price Range Filter */}
                             <div className="filter-sort-section">
+                            <div className="filter-heading-products">Filters</div>
 
                                 <div className="price-slider-container">
                                     <label className="price-range-label">
