@@ -223,6 +223,10 @@
     height: 35px;
 }
 
+.discount-dashboard{
+    overflow: hidden;
+}
+
 @keyframes fadeInOut {
     0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
     10% { opacity: 1; transform: translateX(-50%) translateY(0); }

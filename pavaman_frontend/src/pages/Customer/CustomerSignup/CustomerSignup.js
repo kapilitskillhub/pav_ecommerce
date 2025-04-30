@@ -185,6 +185,7 @@ const CustomerSignup = () => {
                             onMouseLeave={() => setShowTooltip(false)}
 
                         >
+                            <span className="required-star">*</span>
                             <FaInfoCircle />
                         </span>
                     </label>
@@ -216,7 +217,7 @@ const CustomerSignup = () => {
                 </div>
 
                 <div className="signup-form-fields">
-                    <label className="signup-label">Confirm Password</label>
+                    <label className="signup-label">Confirm Password<span className="required-star">*</span></label>
                     <div className="signup-password-input-wrapper">
                         <input
                             type={showPassword ? "text" : "password"}

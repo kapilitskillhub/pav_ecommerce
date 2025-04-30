@@ -115,7 +115,7 @@ const ViewCategoriesAndDiscountedProducts = () => {
                                 onClick={() => handleViewSubCategory(category)}
 >
                                     <img
-                                        src={`http://127.0.0.1:8000${category.category_image_url}`}
+                                        src={category.category_image_url}
                                         alt={category.category_name}
                                         className="customer-product-image"
                                         onError={(e) => e.target.src = defaultImage}
