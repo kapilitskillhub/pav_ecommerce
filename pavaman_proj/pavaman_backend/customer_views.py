@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 from .models import (CustomerRegisterDetails, PavamanAdminDetails,CategoryDetails,ProductsDetails,
-    SubCategoryDetails,CartProducts,CustomerAddress,OrderProducts,PaymentDetails)
+    SubCategoryDetails,CartProducts,CustomerAddress,OrderProducts,PaymentDetails,FeedbackRating)
 import threading
 import random
 from django.utils import timezone
@@ -22,10 +22,8 @@ import razorpay
 from datetime import datetime
 import string
 from django.http import FileResponse, JsonResponse
-# from .helpers import send_sms 
 from decimal import Decimal
 
-# Password validation function
 def is_valid_password(password):
     if len(password) < 8:
         return "Password must be at least 8 characters long."
@@ -39,7 +37,7 @@ def is_valid_password(password):
         return "Password must contain at least one special character."
     return None  # Valid password
 
-# Ensure passwords match
+
 def match_password(password, re_password):
     if password != re_password:
         return "Passwords must be same."
@@ -58,9 +56,8 @@ def customer_register(request):
             re_password = data.get('re_password')
             status = 1
             register_status = 0
-            verification_link = str(uuid.uuid4())  # Unique verification link
-            
-            # Validate required fields
+            verification_link = str(uuid.uuid4())
+         
             if not all([first_name, last_name, email, mobile_no, password, re_password]):
                 return JsonResponse(
                     {"error": "first_name,last_name, email, mobile_no and password are required.", "status_code": 400}, status=400
@@ -91,6 +88,7 @@ def customer_register(request):
                 return JsonResponse({"error": "No admin found in the system.", "status_code": 500}, status=500)
 
             # Convert time to IST timezone
+            
             current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
 
             # Create & Save customer
@@ -398,107 +396,6 @@ def google_login(request):
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-# @csrf_exempt
-# def google_login(request):
-#     if request.method == "POST":
-#         try:
-#             data = json.loads(request.body)
-#             token = data.get("token")
-
-#             if not token:
-#                 return JsonResponse({"error": "Token is required"}, status=400)
-            
-#             # Verify Google token
-#             google_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
-#             response = requests.get(google_url)
-            
-#             if response.status_code != 200:
-#                 return JsonResponse({"error": "Failed to verify token"}, status=400)
-
-#             user_info = response.json()
-
-#             if "error" in user_info:
-#                 return JsonResponse({"error": "Invalid Token"}, status=400)
-
-#             # Extract user details
-#             email = user_info.get("email")
-#             first_name = user_info.get("given_name", "")
-#             last_name = user_info.get("family_name", "")
-
-#             if not email:
-#                 return JsonResponse({"error": "Email is required"}, status=400)
-
-          
-
-#             # Check if customer exists
-#             customer = CustomerRegisterDetails.objects.filter(email=email).first()
-
-#             if customer:
-#                 if customer.account_status == 1:  # Verified Account
-#                     return JsonResponse({
-#                         "message": "Login successful",
-#                         "existing_user": True,
-#                         "customer_id": customer.id,
-#                         "email": customer.email,
-#                         "first_name": customer.first_name,
-#                         "last_name": customer.last_name,
-#                         "register_status": customer.register_status,
-#                     })
-#                 else:
-#                     return JsonResponse({"error": "Account is not verified","email":customer.email}, status=403)
-#                     # return JsonResponse({"error": "Account is not verified"}, status=403)
-           
-#             # # If no existing user, create a new Google account entry
-#             # customer = CustomerRegisterDetails.objects.create(
-#             #     email=email,
-#             #     first_name=first_name,
-#             #     last_name=last_name,
-#             #     password=None  # Google login users don't have a password
-#             # )
-            
-#             # Assign first admin (Ensure an admin exists)
-#             admin = PavamanAdminDetails.objects.order_by('id').first()
-#             if not admin:
-#                 return JsonResponse({"error": "No admin found in the system.", "status_code": 500}, status=500)
-
-#             # If no existing user, create a new Google account entry
-#             verification_link = str(uuid.uuid4())  # Generate verification link
-#             customer = CustomerRegisterDetails.objects.create(
-#                 email=email,
-#                 first_name=first_name,
-#                 last_name=last_name,
-#                 password=None,  # Google login users don't have a password
-#                 verification_link=verification_link,
-#                 register_type="Google",
-#                 admin=admin,
-#             )
-
-#             # Send verification email
-#             send_verification_email(email,first_name,verification_link)
-
-#             # return JsonResponse({
-#             #     "message": "Account Created Successfully.Submit your mobile number.",
-#             #     "new_user": True,
-#             #     "customer_id": customer.id,
-#             #     "email": customer.email,
-#             #     "first_name": customer.first_name,
-#             #     "last_name": customer.last_name,
-#             # })
-#             return JsonResponse({
-#                 "message": "Account Created Successfully. Verification email sent. Submit your mobile number after verification.",
-#                 "new_user": True,
-#                 "customer_id": customer.id,
-#                 "email": customer.email,
-#                 "first_name": customer.first_name,
-#                 "last_name": customer.last_name,
-#                 "register_status": customer.register_status,
-#             })
-#         except json.JSONDecodeError:
-#             return JsonResponse({"error": "Invalid JSON data"}, status=400)
-
-#     return JsonResponse({"error": "Invalid request method"}, status=405)
-
-
 @csrf_exempt
 def resend_verification_email(request):
     if request.method == "POST":
@@ -717,16 +614,16 @@ def otp_generate(request):
 
                 return JsonResponse({
                     "message": "OTP sent to email",
-                    "otp":customer.otp,
-                    "reset_token":customer.reset_link
+                    # "otp":customer.otp,
+                    # "reset_token":customer.reset_link
 
                     })
             else:
                 send_bulk_sms([identifier], f"Your OTP for password reset is: {otp}. Do not share this with anyone.")
                 return JsonResponse({
                     "message": "OTP sent to mobile number",
-                    "otp":customer.otp,
-                    "reset_token":customer.reset_link
+                    # "otp":customer.otp,
+                    # "reset_token":customer.reset_link
                     })
 
         except json.JSONDecodeError:
@@ -742,6 +639,10 @@ def send_password_reset_otp_email(customer):
     email = customer.email
     first_name = customer.first_name
     reset_token = customer.reset_link
+
+     # Construct S3 image URL
+    logo_url = f"{settings.AWS_S3_BUCKET_URL}/static/images/aviation-logo.png"
+
 
     subject = "[Pavaman] Your OTP for Password Reset 🔐"
     text_content = f"Hello {first_name},\n\nYour OTP for password reset is: {otp}"
@@ -768,9 +669,7 @@ def send_password_reset_otp_email(customer):
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f5f5f5;">
         <div class="container" style="margin: 40px auto; background-color: #ffffff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 40px 30px; text-align: center; max-width: 480px;">
-            <img src="cid:logo_image" alt="Pavaman Logo" class="logo" style="max-width: 280px; height: auto; margin-bottom: 20px;" />
-            
-            <h2 style="margin-top: 0; color: #222;">Your OTP for Password Reset</h2>
+            <img src="{logo_url}" alt="Pavaman Logo" class="logo" style="max-width: 280px; height: auto; margin-bottom: 20px;" />            <h2 style="margin-top: 0; color: #222;">Your OTP for Password Reset</h2>
             <p style="color: #555; margin-bottom: 30px;">
                 Hello <strong>{first_name}</strong>, use the OTP below to reset your password. This OTP is valid for 2 minutes.
             </p>
@@ -793,16 +692,16 @@ def send_password_reset_otp_email(customer):
     )
     email_message.attach_alternative(html_content, "text/html")
 
-    # Attach logo
-    logo_path = r"C:\Users\admin\Desktop\new_pav\pavaman_proj\static\images\aviation-logo.png"
-    try:
-        with open(logo_path, 'rb') as img_file:
-            logo = MIMEImage(img_file.read())
-            logo.add_header('Content-ID', '<logo_image>')
-            logo.add_header('Content-Disposition', 'inline', filename="aviation-logo.png")
-            email_message.attach(logo)
-    except Exception as e:
-        print(f"Failed to attach logo image: {e}")
+    # # Attach logo
+    # logo_path = r"C:\Users\admin\Desktop\new_pav\pavaman_proj\static\images\aviation-logo.png"
+    # try:
+    #     with open(logo_path, 'rb') as img_file:
+    #         logo = MIMEImage(img_file.read())
+    #         logo.add_header('Content-ID', '<logo_image>')
+    #         logo.add_header('Content-Disposition', 'inline', filename="aviation-logo.png")
+    #         email_message.attach(logo)
+    # except Exception as e:
+    #     print(f"Failed to attach logo image: {e}")
 
     email_message.send()
 
@@ -928,40 +827,6 @@ def customer_logout(request):
     }, status=405)
 
 
-# @csrf_exempt
-# def customer_logout(request):
-#     if request.method == "POST":
-#         try:
-#             # Try from session first
-#             customer_id = request.session.get('customer_id')
-
-#             # If not in session, try from request body
-#             if not customer_id:
-#                 data = json.loads(request.body)
-#                 customer_id = data.get('customer_id')
-
-#             if not customer_id:
-#                 return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
-
-#             # Clear session if exists
-#             if request.session.get('customer_id'):
-#                 request.session.flush()
-
-#             return JsonResponse({
-#                 "message": "Logout successful.",
-#                 "customer_id": customer_id,
-#                 "status_code": 200
-#             }, status=200)
-
-#         except json.JSONDecodeError:
-#             return JsonResponse({"error": "Invalid JSON data.", "status_code": 400}, status=400)
-#         except Exception as e:
-#             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-#     else:
-#         return JsonResponse({"error": "Invalid request method. Only POST allowed.", "status_code": 405}, status=405)
-
-
-
 @csrf_exempt
 def view_categories_and_discounted_products(request):
     if request.method == 'POST':
@@ -973,7 +838,8 @@ def view_categories_and_discounted_products(request):
                 {
                     "category_id": str(category.id),
                     "category_name": category.category_name,
-                    "category_image_url": f"/static/images/category/{os.path.basename(category.category_image.replace('\\', '/'))}"
+                    "category_image_url": f"{settings.AWS_S3_BUCKET_URL}/{category.category_image}"
+                    # "category_image_url": f"/static/images/category/{os.path.basename(category.category_image.replace('\\', '/'))}"
                 }
                 for category in categories
             ] if categories.exists() else []
@@ -983,21 +849,27 @@ def view_categories_and_discounted_products(request):
             product_list = []
             for product in products:
                 if isinstance(product.product_images, list) and product.product_images:
-                    product_image_url = f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}"
+                     product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product.product_images[0]}"
+
+                    # product_image_url = f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}"
                 else:
                     product_image_url = ""
 
                 category_name = product.category.category_name if product.category else None
                 sub_category_name = product.sub_category.sub_category_name if product.sub_category else None
 
+                discounted_amount = (product.price * (product.discount or 0)) / 100
+                final_price = round(product.price - discounted_amount)
+
                 product_list.append({
                     "product_id": str(product.id),
                     "product_name": product.product_name,
                     "product_image_url": product_image_url,
                     "price": product.price,
-                    "discount": product.discount,
+                    "discount": f"{int(product.discount)}%" if product.discount else "0%",
+                    "discounted_amount": round(discounted_amount, 2),
                     # "final_price": round(product.price - product.discount, 2),
-                    "final_price": round(product.price - (product.discount or 0), 2),
+                    "final_price": final_price,
                     "category_id": str(product.category_id) if product.category_id else None,
                     "category_name": category_name,
                     "sub_category_id": str(product.sub_category_id) if product.sub_category_id else None,
@@ -1022,7 +894,6 @@ def view_categories_and_discounted_products(request):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
 
 
 @csrf_exempt
@@ -1050,7 +921,8 @@ def view_sub_categories_and_discounted_products(request):
                 {
                     "sub_category_id": str(subcategory.id),
                     "sub_category_name": subcategory.sub_category_name,
-                    "sub_category_image_url": f"/static/images/subcategory/{os.path.basename(subcategory.sub_category_image.replace('\\', '/'))}" 
+                    "sub_category_image_url": f"{settings.AWS_S3_BUCKET_URL}/{subcategory.sub_category_image}"
+                    # "sub_category_image_url": f"/static/images/subcategory/{os.path.basename(subcategory.sub_category_image.replace('\\', '/'))}" 
                     if subcategory.sub_category_image else ""
                 }
                 for subcategory in subcategories
@@ -1061,25 +933,44 @@ def view_sub_categories_and_discounted_products(request):
                 discount__gt=0,
                 product_status=1
             )
+            product_list = []
+            for product in products:
+                discounted_amount = (product.price * (product.discount or 0)) / 100
+                final_price = round(product.price - discounted_amount)
 
-            product_list = [
-                {
-                    "product_id": str(product.id),
-                    "product_name": product.product_name,
-                    "product_image_url": f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}" 
-                    if isinstance(product.product_images, list) and product.product_images else "",
-                    "price": product.price,
-                    "discount": product.discount,
-                    # "final_price": round(product.price - product.discount, 2),
-                    "final_price": round(product.price - (product.discount or 0), 2),
-                    "category_id": str(category.id),
-                    "category_name": category.category_name,
-                    "sub_category_id": str(product.sub_category.id),
-                    "sub_category_name": product.sub_category.sub_category_name
-                }
-                for product in products
-            ]
-            # Fetch overall price range for the category
+                product_image_url = ""
+                if isinstance(product.product_images, list) and product.product_images:
+                    product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product.product_images[0]}"
+                product_list.append({
+                        "product_id": str(product.id),
+                        "product_name": product.product_name,
+                        "product_image_url": product_image_url,
+                        "price": product.price,
+                        "discount": f"{int(product.discount)}%" if product.discount else "0%",
+                        "final_price": final_price,
+                        "category_id": str(category.id),
+                        "category_name": category.category_name,
+                        "sub_category_id": str(product.sub_category.id),
+                        "sub_category_name": product.sub_category.sub_category_name
+                    })
+            # product_list = [
+            #     {
+            #         "product_id": str(product.id),
+            #         "product_name": product.product_name,
+            #         "product_image_url": f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}" 
+            #         if isinstance(product.product_images, list) and product.product_images else "",
+            #         "price": product.price,
+            #         "discount": f"{int(product.discount)}%" if product.discount else "0%",
+            #         # "final_price": round(product.price - (product.discount or 0),2)
+            #         "final_price": final_price,
+            #         "category_id": str(category.id),
+            #         "category_name": category.category_name,
+            #         "sub_category_id": str(product.sub_category.id),
+            #         "sub_category_name": product.sub_category.sub_category_name
+            #     }
+            #     for product in products
+            # ]
+            # # Fetch overall price range for the category
             all_products = ProductsDetails.objects.filter(category=category, product_status=1)
 
             if not all_products.exists():
@@ -1123,6 +1014,8 @@ def view_sub_categories_and_discounted_products(request):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid request method. Use POST.", "status_code": 405}, status=405)
+
+
 
 @csrf_exempt
 def view_products_by_category_and_subcategory(request, category_name, sub_category_name):
@@ -1175,20 +1068,28 @@ def view_products_by_category_and_subcategory(request, category_name, sub_catego
 
             product_list = []
             for product in products:
-                image_url = product['product_images'][0] if isinstance(product['product_images'], list) and product['product_images'] else None
-                final_price = float(product['price']) - float(product.get('discount', 0))
+                image_path = product['product_images'][0] if isinstance(product['product_images'], list) and product['product_images'] else None
+                image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+                # image_url = product['product_images'][0] if isinstance(product['product_images'], list) and product['product_images'] else None
+                # final_price = float(product['price']) - float(product.get('discount', 0))
+                # discounted_amount = (product.price * (product.discount or 0)) / 100
+                # final_price = round(product.price - discounted_amount)
+                discounted_amount = (float(product['price']) * (float(product['discount']) or 0)) / 100
+                final_price = round(float(product['price']) - discounted_amount)
 
                 product_list.append({
                     "product_id": str(product['id']),
                     "product_name": product['product_name'],
                     "sku_number": product['sku_number'],
                     "price": float(product['price']),
-                    "discount": float(product.get('discount', 0)),
+                    "discount": f"{int(product['discount'])}%" if product['discount'] else "0%",
+                    "discounted_amount": round(discounted_amount, 2),
                     "final_price": final_price,
                     "availability": product['availability'],
                     "quantity": product['quantity'],
                     "product_image_url": image_url,
                     "cart_status": product['cart_status']
+                    
                 })
 
             response_data = {
@@ -1212,6 +1113,8 @@ def view_products_by_category_and_subcategory(request, category_name, sub_catego
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Use POST.", "status_code": 405}, status=405)
+
+
 
 
 @csrf_exempt
@@ -1251,19 +1154,31 @@ def view_products_details(request, product_name):
                 return JsonResponse({"error": "Subcategory not found.", "status_code": 404}, status=404)
             except ProductsDetails.DoesNotExist:
                 return JsonResponse({"error": "Product not found.", "status_code": 404}, status=404)
+            discount = float(product.discount) if product.discount else 0.0
+            discounted_amount = (float(product.price) * discount) / 100
+            final_price = round(float(product.price) - discounted_amount, 2)
+            
+            product_images = []
+            if isinstance(product.product_images, list):
+                for image_path in product.product_images:
+                    if image_path:
+                        product_images.append(f"{settings.AWS_S3_BUCKET_URL}/{image_path}")
+
+            material_file_url = f"{settings.AWS_S3_BUCKET_URL}/{product.material_file}" if product.material_file else ""
 
             product_data = {
                 "product_id": str(product.id),
                 "product_name": product.product_name,
                 "sku_number": product.sku_number,
                 "price": float(product.price),
-                "discount":float(product.discount),
-                "final_price":float(product.price)-float(product.discount or 0),
+                "discount": f"{int(product.discount)}%" if product.discount else "0%",
+                "discounted_amount": round(discounted_amount, 2),
+                "final_price": final_price,  
                 "availability": product.availability,
                 "quantity": product.quantity,
                 "description": product.description,
-                "product_images": product.product_images,
-                "material_file": product.material_file,
+                "product_images":product_images,
+                "material_file": material_file_url,
                 "number_of_specifications": product.number_of_specifications,
                 "specifications": product.specifications,
             }
@@ -1287,6 +1202,9 @@ def view_products_details(request, product_name):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+
+
 
 @csrf_exempt
 def add_product_to_cart(request):
@@ -1349,6 +1267,9 @@ def add_product_to_cart(request):
             if not created:
                 cart_item.quantity += quantity
                 cart_item.save()
+                discounted_amount = (float(product.price) * (float(product.discount) or 0)) / 100
+                final_price = float(product.price) - discounted_amount
+                total_price = round(final_price * cart_item.quantity, 2)
 
             return JsonResponse({
                 "message": "Product added to cart successfully.",
@@ -1357,7 +1278,7 @@ def add_product_to_cart(request):
                 "product_id": product.id,
                 "product_name": product.product_name,
                 "quantity": cart_item.quantity,
-                "total_price": (float(product.price)-float(product.discount or 0)) * cart_item.quantity,
+                "total_price": total_price,
                 "cart_status": True,  # This should be determined dynamically
                 "category_id": product.category.id,
                 "category_name": product.category.category_name,
@@ -1391,21 +1312,28 @@ def view_product_cart(request):
 
             for item in cart_items:
                 product = item.product
-                item_total_price = (float(product.price)-float(product.discount or 0)) * item.quantity
-                # item_total_price = float(product.price) * item.quantity
+                discounted_amount = (float(product.price) * (float(product.discount) or 0)) / 100
+                final_price = float(product.price) - discounted_amount
+                item_total_price = round(final_price * item.quantity, 2)
+
                 total_price += item_total_price
+                
+                image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
+                image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+
                 cart_data.append({
                     "cart_id": item.id,
                     "product_id": product.id,
                     "product_name": product.product_name,
                     "quantity": item.quantity,
                     "price_per_item": float(product.price),
-                    "discount":float(product.discount),
-                    "discount_price": (float(product.price)-float(product.discount or 0)) ,
+                    "discount":f"{int(product.discount)}%" if product.discount else "0%",
+                    "discounted_amount": round(discounted_amount, 2),
+                    "discount_price":round(final_price, 2),
                     "total_price": item_total_price,
                     "original_quantity":product.quantity,
                     "availability":product.availability,
-                    "image": product.product_images if product.product_images else None,
+                    "image":image_url,
                     "category": product.category.category_name if product.category else None,
                     "sub_category": product.sub_category.sub_category_name if product.sub_category else None
                 })
@@ -1852,14 +1780,14 @@ def order_product_details(request):
                 admin=admin
             )
 
-            # product.quantity -= quantity
-            # product.save()
+            image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
+            image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
 
             return JsonResponse({
                 "message": "Order Created successfully!",
                 "order_id": order.id,
                 "product_name":product.product_name,
-                "product_images": product.product_images[0] if product.product_images else None,
+                "product_images": image_url,
                 "number_of_quantities": quantity,
                 "product_price": price,
                 "total_price": final_price,
@@ -1870,6 +1798,8 @@ def order_product_details(request):
             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+
 @csrf_exempt
 def order_summary(request):
     if request.method == 'POST':
@@ -1896,6 +1826,10 @@ def order_summary(request):
                 return JsonResponse({"error": "Customer not found.", "status_code": 404}, status=404)
             except CustomerAddress.DoesNotExist:
                 return JsonResponse({"error": "Address not found.", "status_code": 404}, status=404)
+            
+            image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
+            image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+
 
             return JsonResponse({
                 "message": "Order summary fetched successfully!",
@@ -1910,7 +1844,7 @@ def order_summary(request):
                 "total_price": order.final_price,
                 "order_status": order.order_status,
                 "order_date": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "product_images": product.product_images[0] if product.product_images else None,
+                "product_images": image_url,
                 "shipping_address": {
                     "address_type": address.address_type,
                     "street": address.street,
@@ -1979,7 +1913,11 @@ def order_multiple_products(request):
 
                 price = product.price
                 discount=product.discount
-                final_price = (price - (discount or 0) )* quantity
+                # final_price = (price - (discount or 0) )* quantity
+                discounted_amount = (price * discount) / 100
+                final_price_per_item = price - discounted_amount
+                final_price = round(final_price_per_item * quantity, 2)
+                
 
                 print(final_price)
 
@@ -2028,17 +1966,22 @@ def order_multiple_products(request):
 
                 # product.quantity -= quantity
                 # product.save()
+                image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
+                image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+
 
                 successful_orders.append({
                     "order_id": order.id,
                     "product_id": product_id,
                     "product_name": product.product_name,
-                    "product_images": product.product_images[0] if product.product_images else None,
+                    "product_images": image_url,
                     "number_of_quantities": quantity,
                     "product_price": price,
-                    "discount":float(product.discount),
-                    "discount_price": (float(product.price)-float(product.discount or 0)) ,
-                    "total_price": final_price
+                    "discount_price": round(discounted_amount, 2),
+                    "total_price": final_price,
+                    "discount":f"{int(product.discount)}%" if product.discount else "0%"
+                    # "discounted_amount": round(discounted_amount, 2),
+
                 })
 
             return JsonResponse({
@@ -2086,6 +2029,14 @@ def multiple_order_summary(request):
                 try:
                     order = OrderProducts.objects.get(id=order_id, product_id=product_id, customer_id=customer_id)
                     product = ProductsDetails.objects.get(id=product_id)
+                    price = float(product.price)
+                    discount = float(product.discount or 0)
+                    discounted_amount = (price * discount) / 100
+                    discount_price = price - discounted_amount
+                    image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
+                    image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+
+
                     
                     order_list.append({
                         "order_id": order.id,
@@ -2098,12 +2049,13 @@ def multiple_order_summary(request):
                         "product_id":product_id,
                         "product_price": order.price,
                         "quantity": order.quantity,
-                        "discount":product.discount,
-                        "discount_price": (float(product.price)-float(product.discount or 0)),
+                        "discount":f"{int(discount)}%" if discount else "0%",
+                        "discount_price": round(discount_price, 2),
+                        # "discount_price": (float(product.price)-float(product.discount or 0)),
                         "total_price": order.final_price,
                         "order_status": order.order_status,
                         "order_date": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                        "product_images": product.product_images[0] if product.product_images else None,
+                        "product_images": image_url,
                     })
 
                 except OrderProducts.DoesNotExist:
@@ -2402,11 +2354,14 @@ def razorpay_callback(request):
                             product_details = ProductsDetails.objects.get(id=order.product.id)
 
                             # Take only the first image from the list if available
-                            image_url = (
-                                request.build_absolute_uri(product_details.product_images[0])
-                                if isinstance(product_details.product_images, list) and product_details.product_images
-                                else ""
-                            )
+                            # image_url = (
+                            #     request.build_absolute_uri(product_details.product_images[0])
+                            #     if isinstance(product_details.product_images, list) and product_details.product_images
+                            #     else ""
+                            # )
+                            image_path = product_details.product_images[0] if isinstance(product_details.product_images, list) and product_details.product_images else None
+                            image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+
 
                             product_name = product_details.product_name
 
@@ -2712,13 +2667,20 @@ def filter_product_price_each_category(request):
 
                 products_list = []
                 for product in products_query:
+                    price = float(product.price)
+                    discount = float(product.discount or 0)
+                    discounted_amount = (price * discount) / 100
+                    final_price = price - discounted_amount
+
                     product_data = {
                         "product_id": str(product.id),
                         "product_name": product.product_name,
                         "sku_number": product.sku_number,
                         "price": float(product.price),
-                        "discount": float(product.discount or 0),
-                        "final_price": float(product.price) - float(product.discount or 0),
+                        # "discount": float(product.discount or 0),
+                        # "final_price": float(product.price) - float(product.discount or 0),
+                        "discount":f"{int(discount)}%" if discount else "0%",
+                        "final_price": round(final_price),
                         "availability": product.availability,
                         "quantity": product.quantity,
                         "product_image_url": product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None,
@@ -2818,13 +2780,20 @@ def filter_product_price(request):
            
             products_list = []
             for product in products_query:
+                price = float(product.price)
+                discount = float(product.discount or 0)
+                discounted_amount = (price * discount) / 100
+                final_price = price - discounted_amount
+
                 product_data = {
                     "product_id": str(product.id),
                     "product_name": product.product_name,
                     "sku_number": product.sku_number,
                     "price": float(product.price),
-                    "discount": float(product.discount or 0),
-                    "final_price": float(product.price) - float(product.discount or 0),
+                    # "discount": float(product.discount or 0),
+                    # "final_price": float(product.price) - float(product.discount or 0),
+                    "discount":f"{int(discount)}%" if discount else "0%",
+                    "final_price": round(final_price),
                     "availability": product.availability,
                     "quantity": product.quantity,
                     "product_image_url": product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None,
@@ -2911,10 +2880,16 @@ def sort_products_inside_subcategory(request):
             #     product_max_price=Max("price")
             # )
 
-            all_prices = [
-                round(float(product.price) - float(product.discount or 0), 2)
-                for product in products
-            ]
+            all_prices = []
+            for product in products:
+                price = float(product.price)
+                discount = float(product.discount or 0)
+
+                discounted_amount = (price * discount) / 100
+                final_price = price - discounted_amount
+
+                all_prices.append(int(final_price))
+            
             min_price = min(all_prices)
             max_price = max(all_prices)
 
@@ -2959,8 +2934,10 @@ def format_product_list(products):
             "product_name": product.product_name,
             "sku_number": product.sku_number,
             "price": float(product.price),
-            "discount": float(product.discount or 0),
-            "final_price": float(product.price) - float(product.discount or 0),
+            # "discount": float(product.discount or 0),
+            "discount":f"{int(product.discount)}%" if product.discount else "0%",
+            # "final_price": float(product.price) - float(product.discount or 0),
+            "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
             "availability": product.availability,
             "quantity": product.quantity,
             "product_image_url": product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None,
@@ -3171,8 +3148,10 @@ def customer_search_products(request):
                     "product_image_url": product_image_url,
                     "sku_number": product.sku_number,
                     "price": float(product.price),
-                    "discount": float(product.discount or 0),
-                    "final_price": float(product.price) - float(product.discount or 0),
+                    # "discount": float(product.discount or 0),
+                    # "final_price": float(product.price) - float(product.discount or 0),
+                    "discount":f"{int(product.discount)}%" if product.discount else "0%",
+                    "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "availability": product.availability,
                     "quantity": product.quantity,
                     "cart_status": product.cart_status
@@ -3267,7 +3246,7 @@ def customer_search_products(request):
 
 #     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
-
+#order admin
 @csrf_exempt
 def get_payment_details_by_order(request):
     if request.method != "POST":
@@ -3299,9 +3278,12 @@ def get_payment_details_by_order(request):
                     "id": order.id,
                     "quantity": order.quantity,
                     "price": order.price,
-                    "discount":product.discount,
-                    "final_price": order.final_price,
+                    # "discount":product.discount,
+                    # "final_price": order.final_price,
+                    "discount":f"{int(product.discount)}%" if product.discount else "0%",
+                    "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100)),
                     "order_status": order.order_status,
+                    "delivery_status": payment.Delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image,
                     "product_name":product.product_name
@@ -3372,6 +3354,114 @@ def get_payment_details_by_order(request):
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
+
+# @csrf_exempt
+# def get_payment_details_by_order(request):
+#     if request.method != "POST":
+#         return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+#     try:
+#         data = json.loads(request.body.decode("utf-8"))
+#         admin_id = data.get('admin_id')
+#         product_order_id = data.get('product_order_id')
+
+#         if not admin_id:
+#             return JsonResponse({"error": "admin_id is required.", "status_code": 400}, status=400)
+
+#         if not product_order_id:
+#             return JsonResponse({"error": "product_order_id is required.", "status_code": 400}, status=400)
+
+#         # Fetch payment details based on product_order_id
+#         payments = PaymentDetails.objects.filter(admin_id=admin_id, product_order_id=product_order_id).order_by('-created_at')
+        
+#         if not payments.exists():
+#             return JsonResponse({"error": "No payment details found for this product order.", "status_code": 404}, status=404)
+
+#         payment_list = []
+#         for payment in payments:
+#             order_ids = payment.order_product_ids  # Assuming this is a list
+            
+#             # Fetch the orders associated with the payment
+#             order_products = OrderProducts.objects.filter(id__in=order_ids)
+            
+#             order_product_list = []
+#             for order in order_products:
+#                 product = ProductsDetails.objects.filter(id=order.product_id).first()
+#                 product_image = product.product_images[0] if product and product.product_images else ""
+
+#                 # Check if the order status is "Paid" and update it to "Dispatched"
+#                 if order.order_status == "Paid":
+#                     order.order_status = "Dispatched"
+#                     order.save()
+
+#                 # Check if the order has been dispatched, update delivery status to "Delivered"
+#                 if order.order_status == "Dispatched":
+#                     order.delivery_status = "Delivered"
+#                     order.save()
+
+#                 order_product_list.append({
+#                     "id": order.id,
+#                     "quantity": order.quantity,
+#                     "price": order.price,
+#                     "discount": product.discount,
+#                     "final_price": order.final_price,
+#                     "order_status": order.order_status,
+#                     "delivery_status": order.delivery_status,  # Updated delivery status
+#                     "product_id": order.product_id,
+#                     "product_image": product_image,
+#                     "product_name": product.product_name
+#                 })
+
+#             address_data = []
+#             if payment.customer_address_id:
+#                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
+#                 if address_obj:
+#                     address_data.append({
+#                         "address_id": address_obj.id,
+#                         "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
+#                         "email": address_obj.email,
+#                         "mobile_number": address_obj.mobile_number,
+#                         "alternate_mobile": address_obj.alternate_mobile,
+#                         "address_type": address_obj.address_type,
+#                         "pincode": address_obj.pincode,
+#                         "street": address_obj.street,
+#                         "landmark": address_obj.landmark,
+#                         "village": address_obj.village,
+#                         "mandal": address_obj.mandal,
+#                         "postoffice": address_obj.postoffice,
+#                         "district": address_obj.district,
+#                         "state": address_obj.state,
+#                         "country": address_obj.country,
+#                     })
+            
+#             payment_list.append({
+#                 "razorpay_order_id": payment.razorpay_order_id,
+#                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
+#                 "email": payment.customer.email,
+#                 "mobile_number": payment.customer.mobile_no,
+#                 "payment_mode": payment.payment_mode,
+#                 "total_quantity": payment.quantity,
+#                 "total_amount": payment.total_amount,
+#                 "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+#                 "product_order_id": payment.product_order_id,
+#                 "customer_address": address_data,
+#                 "order_products": order_product_list,
+#             })
+
+#         response_data = {
+#             "message": "Placed Order retrieved successfully.",
+#             "payments": payment_list,
+#             "status_code": 200
+#         }
+
+#         return JsonResponse(response_data, status=200)
+
+#     except Exception as e:
+#         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
+
+
+
+
 @csrf_exempt
 def customer_get_payment_details_by_order(request):
     if request.method != "POST":
@@ -3405,9 +3495,12 @@ def customer_get_payment_details_by_order(request):
                     "order_product_id": order.id,
                     "quantity": order.quantity,
                     "price": order.price,
-                    "discount":product.discount,
-                    "final_price": order.final_price,
+                    # "discount":product.discount,
+                    # "final_price": order.final_price,
+                    "discount":f"{int(product.discount)}%" if product.discount else "0%",
+                    "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "order_status": order.order_status,
+                    "delivery_status":payments.Delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image,
                     "product_name":product.product_name
@@ -3544,10 +3637,10 @@ def edit_customer_profile(request):
             
             customer.first_name = data.get("first_name", customer.first_name)
             customer.last_name = data.get("last_name", customer.last_name)
-            customer.email = data.get("email", customer.email)
-            customer.mobile_no = data.get("mobile_no", customer.mobile_no)
+            # customer.email = data.get("email", customer.email)
+            # customer.mobile_no = data.get("mobile_no", customer.mobile_no)
 
-            customer.save(update_fields=["first_name", "last_name", "email", "mobile_no"])
+            customer.save(update_fields=["first_name", "last_name"])
 
             return JsonResponse({
                 "message": "Customer profile updated successfully.",
@@ -3556,8 +3649,8 @@ def edit_customer_profile(request):
                 "updated_details": {
                     "first_name": customer.first_name,
                     "last_name": customer.last_name,
-                    "email": customer.email,
-                    "mobile_no": customer.mobile_no,
+                    # "email": customer.email,
+                    # "mobile_no": customer.mobile_no,
                 }
             }, status=200)
 
@@ -3829,8 +3922,15 @@ def generate_invoice_for_customer(request):
                 if not product:
                     continue
                 # GST calculation based on 5% rate
+                # base_price = round(order.final_price / Decimal("1.05"), 2)
+                # # base_price = round(order.final_price / 1.05, 2)
+                # gst_amount = round(order.final_price - base_price, 2)
+                price = float(product.price)
+                discount_percent = float(product.discount or 0)
+
+                discount_amount = (price * discount_percent) / 100
+                final_price = price - discount_amount
                 base_price = round(order.final_price / Decimal("1.05"), 2)
-                # base_price = round(order.final_price / 1.05, 2)
                 gst_amount = round(order.final_price - base_price, 2)
 
                 items.append({
@@ -3838,10 +3938,13 @@ def generate_invoice_for_customer(request):
                     "sku":product.sku_number,
                     "quantity": order.quantity,
                     "price" :product.price,
-                    "discount": product.discount,
-                    "gross_amount": order.final_price,
+                    "discount_percent": f"{int(discount_percent)}%",
+                    "discount": round(discount_amount, 2),
+                    # "discount": product.discount,
+                    # "gross_amount": order.final_price,
                     # "discount":float(0.00),
                     
+                    "gross_amount": round(final_price),
                     "taxable_value": base_price,
                     "igst": gst_amount,
                     "total": order.final_price,
@@ -3920,7 +4023,8 @@ def admin_order_status(request):
         # Step 4: Count order statuses using Counter for 'Paid' and 'Cancelled'
         status_counter = Counter(order.order_status for order in related_orders)
 
-        # Step 5: Count pending orders from the entire OrderProducts table (no filter based on order_product_ids)
+        # Step 5: Count pending orders from
+        #  the entire OrderProducts table (no filter based on order_product_ids)
         pending_orders = OrderProducts.objects.filter(order_status="Pending").count()
 
         # Prepare the result
@@ -3939,8 +4043,6 @@ def admin_order_status(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-
 @csrf_exempt
 def customer_cart_view_search(request):
     if request.method == 'POST':
@@ -3967,21 +4069,35 @@ def customer_cart_view_search(request):
             cart_list = []
             for item in cart_items:
                 product = item.product
-                image_url = ""
-                if isinstance(product.product_images, list):
-                    image_url = f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}" if product.product_images else ""
-                elif isinstance(product.product_images, str):
-                    image_url = f"/static/images/products/{os.path.basename(product.product_images.replace('\\', '/'))}"
+
+                # Calculate totals
+                # price = float(product.price)
+                # discount = float(product.discount or 0)
+                # discount_price = price - discount
+                # item_total_price = discount_price * item.quantity
+
+                price = float(product.price)
+                discount_percent = float(product.discount or 0)  
+                discount_amount = (price * discount_percent) / 100  
+                final_price = price - discount_amount  
+                item_total_price = final_price * item.quantity  
+
 
                 cart_list.append({
-                    "product_id": str(product.id),
+                    "cart_id": item.id,
+                    "product_id": product.id,
                     "product_name": product.product_name,
-                    "product_image_url": image_url,
-                    "sku_number": product.sku_number,
-                    "price": float(product.price),
-                    "discount": float(product.discount or 0),
-                    "final_price": float(product.price) - float(product.discount or 0),
                     "quantity": item.quantity,
+                    "price_per_item": price,
+                    "discount_percent": f"{int(discount_percent)}%",
+                    "discount": round(discount_amount, 2),
+                    "discount_price": round(final_price, 2),
+                    "total_price": round(item_total_price, 2),
+                    "original_quantity": product.quantity,
+                    "availability": product.availability,
+                    "image": product.product_images if product.product_images else None,
+                    "category": product.category.category_name if product.category else None,
+                    "sub_category": product.sub_category.sub_category_name if product.sub_category else None
                 })
 
             return JsonResponse({
@@ -3997,3 +4113,479 @@ def customer_cart_view_search(request):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+
+
+@csrf_exempt
+def edit_profile_mobile_otp_handler(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            action = data.get("action")
+            customer_id = data.get("customer_id")
+
+            if not action or not customer_id:
+                return JsonResponse({"error": "Action and Customer ID are required.", "customer_id": customer_id}, status=400)
+
+            customer = CustomerRegisterDetails.objects.filter(id=customer_id).first()
+            if not customer:
+                return JsonResponse({"error": "Customer not found.", "customer_id": customer_id}, status=404)
+
+            if action == "send_previous_otp":
+                if not customer.mobile_no:
+                    return JsonResponse({"error": "Customer does not have a registered mobile number.", "customer_id": customer_id}, status=400)
+
+                otp = random.randint(100000, 999999)
+                customer.otp = otp
+                customer.save(update_fields=["otp"])
+
+                message = f"Your OTP for verifying your current mobile number is: {otp}"
+                send_bulk_sms([customer.mobile_no], message)
+
+                return JsonResponse({
+                    "message": "OTP sent to previous mobile number.",
+                    "customer_id": customer_id
+                })
+
+            elif action == "verify_previous_otp":
+                otp = data.get("otp")
+                if not otp:
+                    return JsonResponse({"error": "OTP is required for verification.", "customer_id": customer_id}, status=400)
+
+                if str(customer.otp) != str(otp):
+                    return JsonResponse({"error": "Invalid OTP for previous mobile number.", "customer_id": customer_id}, status=400)
+
+                customer.otp = None
+                customer.save(update_fields=["otp"])
+
+                return JsonResponse({
+                    "message": "Previous mobile verified.",
+                    "customer_id": customer_id,
+                    "previous_mobile": customer.mobile_no
+                })
+
+            elif action == "send_new_otp":
+                new_mobile = data.get("mobile_no")
+                if not new_mobile:
+                    return JsonResponse({"error": "New mobile number is required.", "customer_id": customer_id}, status=400)
+
+                otp = random.randint(100000, 999999)
+                customer.otp = otp
+                customer.mobile_no = new_mobile
+                customer.save(update_fields=["otp", "mobile_no"])
+
+                message = f"Your OTP for verifying your new mobile number is: {otp}"
+                send_bulk_sms([new_mobile], message)
+
+                return JsonResponse({
+                    "message": "OTP sent to new mobile number.",
+                    "customer_id": customer_id,
+                    "new_mobile": new_mobile
+                })
+
+            elif action == "verify_new_otp":
+                otp = data.get("otp")
+                if not otp:
+                    return JsonResponse({"error": "OTP is required for verification.", "customer_id": customer_id}, status=400)
+
+                if str(customer.otp) != str(otp):
+                    return JsonResponse({"error": "Invalid OTP for new mobile number.", "customer_id": customer_id}, status=400)
+
+                customer.otp = None
+                customer.save(update_fields=["otp"])
+
+                return JsonResponse({
+                    "message": "New mobile number verified successfully.",
+                    "customer_id": customer_id,
+                    "new_mobile": customer.mobile_no
+                })
+
+            else:
+                return JsonResponse({"error": "Invalid action type.", "customer_id": customer_id}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {str(e)}", "customer_id": customer_id}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+
+
+
+@csrf_exempt
+def edit_profile_email_otp_handler(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            action = data.get("action")
+            customer_id = data.get("customer_id")
+
+            if not action or not customer_id:
+                return JsonResponse({"error": "Action and Customer ID are required.", "customer_id": customer_id}, status=400)
+
+            customer = CustomerRegisterDetails.objects.filter(id=customer_id).first()
+            if not customer:
+                return JsonResponse({"error": "Customer not found.", "customer_id": customer_id}, status=404)
+
+            if action == "send_previous_otp":
+                if not customer.email:
+                    return JsonResponse({"error": "Customer does not have a registered email address.", "customer_id": customer_id}, status=400)
+
+                otp = random.randint(100000, 999999)
+                customer.otp = otp
+                customer.otp_send_type = 'email'
+                customer.save(update_fields=["otp", "otp_send_type"])
+
+                subject = "Verify Your Email"
+                message = f"Your OTP for verifying your current email is: {otp}"
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [customer.email])
+
+                return JsonResponse({
+                    "message": "OTP sent to previous email address.",
+                    "customer_id": customer_id
+                })
+
+            elif action == "verify_previous_otp":
+                otp = data.get("otp")
+                if not otp:
+                    return JsonResponse({"error": "OTP is required for verification.", "customer_id": customer_id}, status=400)
+
+                if str(customer.otp) != str(otp):
+                    return JsonResponse({"error": "Invalid OTP for previous email.", "customer_id": customer_id}, status=400)
+
+                customer.otp = None
+                customer.save(update_fields=["otp"])
+
+                return JsonResponse({
+                    "message": "Previous email verified.",
+                    "customer_id": customer_id,
+                    "previous_email": customer.email
+                })
+
+            elif action == "send_new_otp":
+                new_email = data.get("email")
+                if not new_email:
+                    return JsonResponse({"error": "New email address is required.", "customer_id": customer_id}, status=400)
+
+                otp = random.randint(100000, 999999)
+                customer.otp = otp
+                customer.email = new_email
+                customer.otp_send_type = 'email'
+                customer.save(update_fields=["otp", "email", "otp_send_type"])
+
+                subject = "Verify Your New Email"
+                message = f"Your OTP for verifying your new email address is: {otp}"
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_email])
+
+                return JsonResponse({
+                    "message": "OTP sent to new email address.",
+                    "customer_id": customer_id,
+                    "new_email": new_email
+                })
+
+            elif action == "verify_new_otp":
+                otp = data.get("otp")
+                if not otp:
+                    return JsonResponse({"error": "OTP is required for verification.", "customer_id": customer_id}, status=400)
+
+                if str(customer.otp) != str(otp):
+                    return JsonResponse({"error": "Invalid OTP for new email address.", "customer_id": customer_id}, status=400)
+
+                customer.otp = None
+                customer.save(update_fields=["otp"])
+
+                return JsonResponse({
+                    "message": "New email address verified successfully.",
+                    "customer_id": customer_id,
+                    "new_email": customer.email
+                })
+
+            else:
+                return JsonResponse({"error": "Invalid action type.", "customer_id": customer_id}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {str(e)}", "customer_id": customer_id}, status=500)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+
+@csrf_exempt
+def filter_and_sort_products(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+
+            category_id = data.get("category_id")
+            category_name = data.get("category_name")
+            subcategory_id = data.get("sub_category_id")
+            sub_category_name = data.get("sub_category_name")
+            min_price = data.get("min_price")
+            max_price = data.get("max_price")
+            sort_by = data.get("sort_by")
+
+            customer_id = data.get("customer_id") or request.session.get('customer_id')
+
+            if not category_id or not category_name:
+                return JsonResponse({"error": "category_id and category_name are required.", "status_code": 400}, status=400)
+
+            if not subcategory_id or not sub_category_name:
+                return JsonResponse({"error": "sub_category_id and sub_category_name are required.", "status_code": 400}, status=400)
+            
+            try:
+                category = CategoryDetails.objects.get(id=category_id)
+                if category.category_name != category_name:
+                    return JsonResponse({"error": "Incorrect category_name for the given category_id.", "status_code": 400}, status=400)
+            except CategoryDetails.DoesNotExist:
+                return JsonResponse({"error": "Invalid category_id. Category not found.", "status_code": 404}, status=404)
+
+            try:
+                subcategory = SubCategoryDetails.objects.get(id=subcategory_id, category_id=category_id, sub_category_status=1)
+                if subcategory.sub_category_name != sub_category_name:
+                    return JsonResponse({"error": "Incorrect sub_category_name for the given sub_category_id.", "status_code": 400}, status=400)
+            except SubCategoryDetails.DoesNotExist:
+                return JsonResponse({"error": "Invalid sub_category_id for the given category.", "status_code": 404}, status=404)
+
+            products_query = ProductsDetails.objects.filter(
+                category_id=category_id,
+                sub_category_id=subcategory_id,
+                product_status=1
+            )
+
+            if min_price is not None and isinstance(min_price, (int, float)):
+                products_query = products_query.filter(price__gte=min_price)
+
+            if max_price is not None and isinstance(max_price, (int, float)):
+                products_query = products_query.filter(price__lte=max_price)
+
+            if sort_by == "latest":
+                products_query = products_query.order_by("-created_at")
+            elif sort_by == "low_to_high":
+                products_query = products_query.order_by("price")
+            elif sort_by == "high_to_low":
+                products_query = products_query.order_by("-price")
+            else:
+                return JsonResponse({"error": "Invalid sort_by value. Use 'latest', 'low_to_high', or 'high_to_low'.", "status_code": 400}, status=400)
+
+            products_list = []
+            for product in products_query:
+                product_data = {
+                    "product_id": str(product.id),
+                    "product_name": product.product_name,
+                    "sku_number": product.sku_number,
+                    "price": float(product.price),
+                  
+                    "discount":f"{int(product.discount)}%" if product.discount else "0%",
+                    "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
+                    "availability": product.availability,
+                    "quantity": product.quantity,
+                    "description": product.description,
+                    "product_images": product.product_images,  
+                    "material_file": product.material_file,
+                    "number_of_specifications": product.number_of_specifications,
+                    "specifications": product.specifications,
+                }
+                products_list.append(product_data)
+
+            price_range = products_query.aggregate(
+                min_price=Min("price"),
+                max_price=Max("price")
+            )
+
+            if price_range["min_price"] is None:
+                price_range["min_price"] = min_price if min_price is not None else 0
+            if price_range["max_price"] is None:
+                price_range["max_price"] = max_price if max_price is not None else 0
+
+            response_data = {
+                "message": "Filtered products retrieved successfully.",
+                "category_id": category_id,
+                "category_name": category.category_name,
+                "sub_category_id": subcategory_id,
+                "sub_category_name": subcategory.sub_category_name,
+                "min_price": price_range["min_price"],
+                "max_price": price_range["max_price"],
+                "products": products_list,
+                "status_code": 200,
+                
+            }
+
+            if customer_id:
+                response_data["customer_id"] = customer_id
+
+            return JsonResponse(response_data, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format.", "status_code": 400}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {str(e)}", "status_code": 500}, status=500)
+
+    return JsonResponse({"error": "Invalid request method. Use POST.", "status_code": 405}, status=405)
+
+
+
+from django.db.models import Q
+
+
+@csrf_exempt
+def filter_customer_orders(request):
+    if request.method == "POST":
+        try:
+            # Parse incoming data (from the request body)
+            data = json.loads(request.body.decode('utf-8'))
+            
+            customer_id = data.get('customer_id')
+            selected_status = data.get('order_status', [])  # List of selected statuses
+            selected_years = data.get('order_year', [])     # List of selected years (including 'older' and 'last_30_days')
+
+            # Validate customer_id
+            if not customer_id:
+                return JsonResponse({"error": "Customer ID is required.", "status_code": 400}, status=400)
+
+            # Initialize query for PaymentDetails
+            payments_query = PaymentDetails.objects.filter(customer_id=customer_id)
+
+            # Apply order status filter
+            if selected_status:
+                payments_query = payments_query.filter(order_status__in=selected_status)
+
+            # Apply year filter
+            if selected_years:
+                time_filters = Q()  # Initialize an empty filter
+                current_year = datetime.now().year
+                today = datetime.now()
+
+                # Add conditions for the years filter
+                for year in selected_years:
+                    if year == "last_30_days":
+                        date_30_days_ago = today - timedelta(days=30)
+                        time_filters |= Q(created_at__gte=date_30_days_ago)
+                    elif year.lower() == "older":
+                        # Include orders older than 3 years (before 2022 in this case)
+                        time_filters |= Q(created_at__lt=datetime(current_year - 3, 1, 1))
+                    else:
+                        try:
+                            # If a valid year is selected
+                            year_int = int(year)
+                            time_filters |= Q(created_at__year=year_int)
+                        except ValueError:
+                            continue  # Ignore invalid year format
+
+                # Apply the time filter to the query
+                if time_filters:
+                    payments_query = payments_query.filter(time_filters)
+
+            # Prepare data for response
+            orders_data = []
+            for payment in payments_query:
+                order_products = OrderProducts.objects.filter(order_product_ids__contains=[payment.id])
+                products_data = []
+                for product in order_products:
+                    products_data.append({
+                        "product_name": product.product.name,
+                        "category": product.category,
+                        "sub_category": product.sub_category,
+                        "quantity": product.quantity,
+                        "price": float(product.price),
+                        "final_price": float(product.final_price),
+                    })
+                orders_data.append({
+                    "payment_id": payment.id,
+                    "razorpay_order_id": payment.razorpay_order_id,
+                    "amount": float(payment.amount),
+                    "total_amount": float(payment.total_amount),
+                    "payment_type": payment.payment_type,
+                    "payment_mode": payment.payment_mode,
+                    "order_status": payment.order_status,
+                    "delivery_status": payment.Delivery_status,
+                    "products": products_data,
+                    "created_at": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                })
+
+            # Return the filtered orders
+            return JsonResponse({"orders": orders_data, "status_code": 200}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format.", "status_code": 400}, status=400)
+        
+        except Exception as e:
+            return JsonResponse({"error": f"An error occurred: {str(e)}", "status_code": 500}, status=500)
+
+    return JsonResponse({"error": "Invalid request method.", "status_code": 405}, status=405)
+
+
+
+@csrf_exempt
+def submit_feedback_rating(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+
+            customer_id = data.get('customer_id')
+            product_id = data.get('product_id')
+            product_order_id = data.get('product_order_id')
+            rating = data.get('rating')  # Optional
+            feedback = data.get('feedback', "")  # Optional
+
+            # Validate required fields
+            if not all([customer_id, product_id, product_order_id]):
+                return JsonResponse({
+                    "error": "customer_id, product_id, and product_order_id are required.",
+                    "status_code": 400
+                }, status=400)
+
+            # Fetch related objects
+            try:
+                customer = CustomerRegisterDetails.objects.get(id=customer_id)
+                product = ProductsDetails.objects.get(id=product_id)
+                order_product = OrderProducts.objects.get(id=product_order_id)  # Changed to id
+                admin = product.admin  # Assuming ProductsDetails has 'admin' foreign key
+
+                # Query PaymentDetails using the product_order_id (which is a string)
+                payment = PaymentDetails.objects.filter(customer=customer, product_order_id=product_order_id).first()
+            except Exception as e:
+                return JsonResponse({
+                    "error": f"Related object not found: {str(e)}",
+                    "status_code": 404
+                }, status=404)
+
+            # Check for existing feedback
+            existing_feedback = FeedbackRating.objects.filter(
+                customer=customer, product=product, order_product=order_product
+            ).first()
+            if existing_feedback:
+                return JsonResponse({
+                    "error": "Feedback already submitted for this product and order.",
+                    "status_code": 400
+                }, status=400)
+
+            # Create new feedback entry
+            FeedbackRating.objects.create(
+                admin=admin,
+                customer=customer,
+                payment=payment,
+                order_product=order_product,
+                order_id=product_order_id,  # Use the correct ID
+                product=product,
+                category=product.category.category_name if product.category else "",
+                sub_category=product.sub_category.sub_category_name if product.sub_category else "",
+                rating=rating if rating else None,
+                feedback=feedback
+            )
+
+            return JsonResponse({"message": "Feedback submitted successfully.", "status_code": 201}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format.", "status_code": 400}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {str(e)}", "status_code": 500}, status=500)
+
+    else:
+        return JsonResponse({
+            "error": "Invalid HTTP method. Only POST allowed.",
+            "status_code": 405
+        }, status=405)
