@@ -60,6 +60,8 @@ class ProductsDetails(models.Model):
     availability = models.CharField(max_length=50, default="in_stock")
     product_status = models.IntegerField(default=1)
     cart_status = models.BooleanField(default=False)
+    gst = models.FloatField(default=0.0)
+
     #product_url_id = models.CharField(default="")
 
     def __str__(self):
@@ -159,6 +161,7 @@ class CustomerAddress(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.address_type} ({self.pincode})"
 
+
 class OrderProducts(models.Model):
     customer = models.ForeignKey(CustomerRegisterDetails, on_delete=models.CASCADE)
     product = models.ForeignKey(ProductsDetails, on_delete=models.CASCADE)
@@ -184,7 +187,7 @@ class PaymentDetails(models.Model):
     category_ids = JSONField(default=list)  # List of category IDs
     sub_category_ids = JSONField(default=list)  # List of sub-category IDs
     product_ids = JSONField(default=list)  # List of product IDs
-    order_product_ids = JSONField(default=list)  # List of order product IDs
+    order_product_ids = JSONField(default=list)  # List of order IDs
 
     razorpay_order_id = models.CharField(max_length=255, unique=True)
     razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)
@@ -208,7 +211,7 @@ class PaymentDetails(models.Model):
     transaction_id = models.CharField(max_length=255, blank=True, null=True)  # Transaction ID for payment
     quantity = models.PositiveIntegerField(default=1)  # Number of products purchased
     created_at = models.DateTimeField(auto_now_add=True)  # To track payment time
-    product_order_id = models.CharField(default="")
+    product_order_id = models.CharField(default="") #manually generating unique id
     invoice_number = models.CharField(default="")
     invoice_date = models.DateTimeField(auto_now_add=True,null=True)
     order_status= models.CharField(default="")
@@ -216,40 +219,20 @@ class PaymentDetails(models.Model):
     
     def str(self):
         return f"Order {self.razorpay_order_id} - {self.payment_type} ({self.payment_mode})"
-# class PaymentDetails(models.Model):
-#     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
-#     customer = models.ForeignKey(CustomerRegisterDetails, on_delete=models.CASCADE)
-#     customer_address = models.ForeignKey(CustomerAddress, on_delete=models.CASCADE)
 
-#     # Store multiple IDs as JSON
-#     category_ids = JSONField(default=list)  # List of category IDs
-#     sub_category_ids = JSONField(default=list)  # List of sub-category IDs
-#     product_ids = JSONField(default=list)  # List of product IDs
-#     order_product_ids = JSONField(default=list)  # List of order product IDs
+class FeedbackRating(models.Model):
+    admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomerRegisterDetails, on_delete=models.CASCADE)
+    payment = models.ForeignKey(PaymentDetails, on_delete=models.CASCADE)
+    order_product = models.ForeignKey(OrderProducts, on_delete=models.CASCADE)
+    order_id = models.CharField(max_length=255) 
+    product = models.ForeignKey(ProductsDetails, on_delete=models.CASCADE) 
+    category = models.CharField(max_length=255)
+    sub_category = models.CharField(max_length=255)
+    rating = models.PositiveSmallIntegerField() 
+    feedback = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-#     razorpay_order_id = models.CharField(max_length=255, unique=True)
-#     razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)
-#     razorpay_signature = models.CharField(max_length=255, blank=True, null=True)
+    def str(self):
+        return f"Rating {self.rating} by Customer {self.customer.id} for Product {self.product.name}"
 
-#     PAYMENT_TYPE_CHOICES = [
-#         ('online', 'Online'),
-#         ('offline', 'Offline'),
-#     ]
-    
-#     PAYMENT_MODE_TYPE_CHOICES = [
-#         ('cash', 'Cash'),
-#         ('upi', 'UPI'),
-#         ('card', 'Card'),
-#     ]
-
-#     amount = models.DecimalField(max_digits=10, decimal_places=2)
-#     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-#     payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE_CHOICES, default='online')
-#     payment_mode = models.CharField(max_length=40, choices=PAYMENT_MODE_TYPE_CHOICES, default='cash')
-#     transaction_id = models.CharField(max_length=255, blank=True, null=True)  # Transaction ID for payment
-#     quantity = models.PositiveIntegerField(default=1)  # Number of products purchased
-#     created_at = models.DateTimeField(auto_now_add=True)  # To track payment time
-#     product_order_id = models.CharField(max_length=100, unique=True) 
-
-#     def _str_(self):
-#         return f"Order {self.razorpay_order_id} - {self.payment_type} ({self.payment_mode})"       
