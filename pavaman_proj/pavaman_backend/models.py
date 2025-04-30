@@ -220,8 +220,6 @@ class PaymentDetails(models.Model):
     def str(self):
         return f"Order {self.razorpay_order_id} - {self.payment_type} ({self.payment_mode})"
 
-
-
 class FeedbackRating(models.Model):
     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
     customer = models.ForeignKey(CustomerRegisterDetails, on_delete=models.CASCADE)

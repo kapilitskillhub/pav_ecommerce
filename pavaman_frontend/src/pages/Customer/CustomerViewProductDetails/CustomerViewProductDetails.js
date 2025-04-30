@@ -10,6 +10,7 @@ import { PiShieldCheckBold } from "react-icons/pi";
 import { FaRupeeSign } from "react-icons/fa";
 import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
+import { PiShareFatFill } from "react-icons/pi";
 
 const CustomerViewProductDetails = () => {
     const location = useLocation();
@@ -165,7 +166,7 @@ const CustomerViewProductDetails = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     customer_id: customer_id,
-            from_cart: false,
+                    from_cart: false,
 
                     products: [{ product_id: product_id, quantity: 1 }], // Updated request format
                 }),
@@ -216,7 +217,31 @@ const CustomerViewProductDetails = () => {
         }
     };
 
+    const handleShare = (product) => {
+        const shareUrl = `${window.location.origin}/product-details/${encodeURIComponent(product.product_name)}`;
+        const message = `Take a look at this amazing product: ${product.product_name}!\n\n${shareUrl}`;
 
+        const shareData = {
+            title: product.product_name,
+            text: message,
+            url: shareUrl, // some platforms (like WhatsApp) only show the URL, but others use text too
+        };
+
+        if (navigator.share) {
+            navigator.share(shareData).catch((error) => {
+                console.error("Sharing failed:", error);
+                displayPopup("Failed to share product.", "error");
+            });
+        } else {
+            navigator.clipboard.writeText(message)
+                .then(() => {
+                    displayPopup("Product message copied to clipboard!", "success");
+                })
+                .catch(() => {
+                    displayPopup("Failed to copy message.", "error");
+                });
+        }
+    };
 
     return (
         <div className="customer-view-details-container container">
@@ -314,7 +339,17 @@ const CustomerViewProductDetails = () => {
 
                         {/* Product Info */}
                         <div className="customer-view-info">
-                            <p className="customer-view-title">{productDetails.product_name}</p>
+                            <div className="title-share-div">
+                                <p className="customer-view-title">{productDetails.product_name}</p>
+                                <div>
+
+                                    <PiShareFatFill
+                                        className="customer-share-button"
+                                        onClick={() => handleShare(productDetails)}
+                                    />
+                                    <span>Share</span>
+                                </div>
+                            </div>
                             <p className="customer-availability">
                                 Availability :
                                 <span
@@ -352,6 +387,7 @@ const CustomerViewProductDetails = () => {
                                             handleBuyNow(productDetails.product_id);
                                         }}
                                     >Buy Now</button>
+
                                 </div>
                             )}
                             <div className="customer-options">
@@ -429,8 +465,8 @@ const CustomerViewProductDetails = () => {
                                     </a>
                                 </div>
                                 <div onClick={() => handleDownloadMaterialFile(productDetails.product_id)} className="customer-material-download">
-                                    
-                                    <button className="download-btn">Download<MdCloudDownload/></button>
+
+                                    <button className="download-btn">Download<MdCloudDownload /></button>
                                 </div>
                             </div>
                             )}

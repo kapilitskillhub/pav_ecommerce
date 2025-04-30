@@ -9,10 +9,13 @@ import { IoMdPeople } from "react-icons/io";
 import { TbReportSearch } from "react-icons/tb";
 import { RiDiscountPercentLine } from "react-icons/ri";
 
-const SideMenu = () => {
+const SideMenu = ({setIsAuthenticated}) => {
     const navigate = useNavigate();
     const handleLogout = () => {
         sessionStorage.clear();
+        localStorage.clear();
+        setIsAuthenticated(false);
+
         navigate("/admin-login");
     };
     return (

@@ -51,10 +51,11 @@ const CustomerHeader = (onSearch) => {
       setSearchPlaceholder("Search for Products...");
     } else if (location.pathname.includes("/filtered-products")) {
       setSearchPlaceholder("Search for Products...");
+    }else if( location.pathname.includes("/view-cart-products")){
+      setSearchPlaceholder("Search Cart Products ...");
     } else if (location.pathname.includes("/")) {
       setSearchPlaceholder("Search for Categories...");
     }
-
     setIsLoggedIn(isValidCustomerId);
     fetchCartCount();
     fetchCategories();
@@ -66,6 +67,7 @@ const CustomerHeader = (onSearch) => {
 
   const handleSearch = () => {
     const trimmedQuery = searchInput.trim();
+    console.log("Dispatching search event with query:", trimmedQuery);
     window.dispatchEvent(new CustomEvent("customerCategorySearch", { detail: trimmedQuery }));
   };
 
@@ -175,6 +177,8 @@ const CustomerHeader = (onSearch) => {
   const handleLogout = () => {
     localStorage.removeItem("customer_id");
     localStorage.clear();
+    sessionStorage.clear();
+
     setIsLoggedIn(false);
     navigate("/");
   };
@@ -345,6 +349,7 @@ const CustomerHeader = (onSearch) => {
           location.pathname.includes("/categories/view-sub-categories") ||
           location.pathname.includes("/categories/") ||
           location.pathname.includes("/filtered-products") ||
+          location.pathname.includes("/view-cart-products")||
           location.pathname === "/"
         ) && (
             <div className="customer-search-bar">

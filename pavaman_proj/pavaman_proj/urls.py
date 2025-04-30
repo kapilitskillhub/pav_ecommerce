@@ -43,6 +43,7 @@ from pavaman_backend.customer_views import (customer_register,customer_login,vie
     report_monthly_revenue_by_year,report_sales_summary, edit_customer_profile,get_customer_profile,
     top_five_selling_products,get_all_category_subcategory,not_selling_products,
     generate_invoice_for_customer,admin_order_status,customer_cart_view_search,edit_profile_mobile_otp_handler,edit_profile_email_otp_handler,filter_and_sort_products,filter_customer_orders,submit_feedback_rating
+
 )
 
 
@@ -142,6 +143,7 @@ urlpatterns = [
     path("order-status-summary",admin_order_status, name="admin_order_status"),
     path('customer-cart-view-search', customer_cart_view_search, name='customer_cart_view_search'),
     path('edit-profile-mobile', edit_profile_mobile_otp_handler, name='edit_profile_mobile_otp_handler'),
+
     path('edit-profile-email',edit_profile_email_otp_handler,name= 'edit_profile_email_otp_handler'),
     path('discount-products',discount_products,name= 'discount_products'),
     path('filter-and-sort-products',filter_and_sort_products,name= 'filter_and_sort_products'),

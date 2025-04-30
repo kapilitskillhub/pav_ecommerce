@@ -116,7 +116,13 @@
 .address-type{
     color: #4450A2;
 }
-label {
+
+.address-label{
+    color: #4450A2;
+
+}
+
+.address-space label {
 
     color: #4450A2;
     font-weight: bold;
