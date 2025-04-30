@@ -287,7 +287,7 @@
     margin-top: 50px;
     border-radius: 20px;
     object-fit: cover;
-    max-width: 581px;
+    max-width: 500px;
     max-height: 473px;
 }
 
@@ -348,7 +348,7 @@
 }
 
 .image-text {
-    margin-top: 110px;
+    margin-top: 50px;
     font-size: 32px;
     font-weight: 600;
 }
@@ -457,6 +457,7 @@
     padding: 10px;
     margin: 10px 0;
     border: 1px solid grey;
+    border-radius: 20px;
   }
 
   .otp-verify-btn {

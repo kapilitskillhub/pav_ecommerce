@@ -17,6 +17,7 @@ import Orders from "../AdminCustomerOrders/AdminCustomerOrders";
 import Reports from "../AdminCustomerReports/AdminCustomerReports";
 import PaidOrderDetails from "../AdminCustomerOrderViewDetails/AdminCustomerOrderViewDetails";
 import AdminDiscountProducts from "../AdminDiscounts/AdminDiscounts";
+import AdminAddDiscount from "../AdminDiscounts/AdminAddDiscounts";
 
 const AdminRoutes = ({ categories, setCategories, subcategories, setSubcategories, products, setProducts }) => {
   return (
@@ -40,7 +41,7 @@ const AdminRoutes = ({ categories, setCategories, subcategories, setSubcategorie
       <Route path="/reports" element={<Reports/>} />
       <Route path="/admin-order-details/:orderId" element={<PaidOrderDetails />} />
       <Route path="/discounts" element={<AdminDiscountProducts />} />
-
+      <Route path="/add-discount" element={<AdminAddDiscount />}/>
     </Routes>
   );
 };

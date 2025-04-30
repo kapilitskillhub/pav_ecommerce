@@ -207,7 +207,7 @@ const [specMessage, setSpecMessage] = useState("");
               <div className="image-gallery">
                 <div className="arrows-div">
                   {productDetails.product_details.product_images?.length > 1 && (
-                    <button className="arrow left-arrow" onClick={prevImage}>
+                    <button className="parrow left-arrow" onClick={prevImage}>
                       <FaAngleLeft />
                     </button>
                   )}
@@ -223,7 +223,7 @@ const [specMessage, setSpecMessage] = useState("");
                   )}
 
                   {productDetails.product_details.product_images?.length > 1 && (
-                    <button className="arrow right-arrow" onClick={nextImage}>
+                    <button className="parrow right-arrow" onClick={nextImage}>
                       <FaAngleRight />
                     </button>
                   )}

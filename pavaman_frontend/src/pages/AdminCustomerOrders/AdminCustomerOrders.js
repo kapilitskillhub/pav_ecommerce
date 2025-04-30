@@ -54,26 +54,6 @@ const Report = () => {
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
   const [statusMap, setStatusMap] = useState({});
 
-  const handleOrderDispatch = (orderId) => {
-    setStatusMap((prev) => ({
-      ...prev,
-      [orderId]: {
-        ...prev[orderId],
-        dispatched: true,
-      },
-    }));
-  };
-
-  const handleOrderDelivery = (orderId) => {
-    setStatusMap((prev) => ({
-      ...prev,
-      [orderId]: {
-        ...prev[orderId],
-        delivered: true,
-      },
-    }));
-  };
-
   return (
     <div className="report-wrapper">
       <h2 className="report-title">Payment Reports</h2>
@@ -91,7 +71,7 @@ const Report = () => {
                   <th>Payment Date</th>
                   <th>Amount</th>
                   <th>Payment Method</th>
-                  <th>Rozarpay Order ID</th>
+                  <th>Razorpay Order ID</th>
                   <th>Order Status</th>
                   <th>Delivery Status</th>
                   <th>Details</th>
@@ -100,19 +80,38 @@ const Report = () => {
               <tbody>
                 {currentReports.map((report, index) => {
                   const orderId = report.razorpay_order_id;
-                  const status = statusMap[orderId] || {};
+                  // const status = statusMap[orderId] || {};
 
                   return (
                     <tr key={index}>
                       <td className="order-table-data">{indexOfFirstReport + index + 1}</td>
                       <td className="order-table-data">{report.customer_name}</td>
                       <td className="order-table-data">{report.payment_date}</td>
-                      <td  className="order-table-data">₹{report.total_amount}</td>
-                      <td  className="order-table-data payment-mode">{report.payment_mode}</td>
+                      <td className="order-table-data">₹{report.total_amount}</td>
+                      <td className="order-table-data payment-mode">{report.payment_mode}</td>
                       <td>{orderId}</td>
+                      <td className="order-table-data payment-mode">
+                        {report.order_products && report.order_products.length > 0
+                          ? report.order_products.map((product, index) => (
+                            <div key={index}>
+                              {product.order_status}
+                            </div>
+                          ))
+                          : "N/A"}
+                      </td>                     
+                      <td className="order-table-data payment-mode">
+                        {report.order_products && report.order_products.length > 0
+                          ? report.order_products.map((product, index) => (
+                            <div key={index}>
+                              {product.delivery_status}
+                            </div>
+                          ))
+                          : "N/A"}
+                      </td>
+
 
                       {/* Order Status */}
-                      <td>
+                      {/* <td>
                         {status.dispatched ? (
                           <span className="status-tag dispatched">Dispatched</span>
                         ) : (
@@ -122,10 +121,10 @@ const Report = () => {
                             checked={false}
                           />
                         )}
-                      </td>
+                      </td> */}
 
                       {/* Delivery Status */}
-                      <td>
+                      {/* <td>
                         {status.dispatched ? (
                           status.delivered ? (
                             <span className="status-tag delivered">Delivered</span>
@@ -139,7 +138,7 @@ const Report = () => {
                         ) : (
                           <span className="status-tag disabled">--</span>
                         )}
-                      </td>
+                      </td> */}
 
                       <td>
                         <Link to={`/admin-order-details/${orderId}`} className="view-link">

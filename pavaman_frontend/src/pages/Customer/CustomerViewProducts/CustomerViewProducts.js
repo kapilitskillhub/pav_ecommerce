@@ -298,7 +298,15 @@ const CustomerViewProducts = () => {
             {!loading && !error && (
                 <div className="customer-products">
                     <div className="customer-products-heading">{subCategoryName} - Products</div>
-
+                    <div className="popup-discount">
+                            {showPopup && (
+                                <PopupMessage
+                                    message={popupMessage.text}
+                                    type={popupMessage.type}
+                                    onClose={() => setShowPopup(false)}
+                                />
+                            )}
+                        </div>
                     <div className="product-filter-dashboard">
                         <div className="header-filter">
                             {/* Price Range Filter */}
@@ -366,15 +374,7 @@ const CustomerViewProducts = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="popup-discount">
-                            {showPopup && (
-                                <PopupMessage
-                                    message={popupMessage.text}
-                                    type={popupMessage.type}
-                                    onClose={() => setShowPopup(false)}
-                                />
-                            )}
-                        </div>
+                      
 
                         <div className="customer-products-section">
 

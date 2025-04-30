@@ -15,8 +15,11 @@ const CustomerMyOrders = () => {
   const [timeFilters, setTimeFilters] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-const isMobile = window.innerWidth <= 425;
-
+  const isMobile = window.innerWidth <= 425;
+  const [activeReviewId, setActiveReviewId] = useState(null);
+  const [ratings, setRatings] = useState({});
+  const [reviews, setReviews] = useState({});
+  
 
   const fetchOrders = async () => {
     if (!customerId) return;
@@ -81,105 +84,158 @@ const isMobile = window.innerWidth <= 425;
   const toggleFilter = () => {
 
   }
-return (
-  <div className="my-orders-wrapper container">
-    <div className="breadcrumb-order">
-      <span onClick={() => navigate("/")}>Home</span> &gt; 
-      <span className="current-my-orders">My Orders</span>
-    </div>
 
-    <div className="order-page-container">
-      {/* Sidebar Filters */}
-    {/* Toggle Filters for Mobile */}
-{isMobile && (
-  <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
-    {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
-  </div>
-)}
+  const handleRating = (id) => {
+    setActiveReviewId(activeReviewId === id ? null : id);
+  };
+  
+  const handleStarClick = (id, value) => {
+    setRatings(prev => ({ ...prev, [id]: value }));
+  };
 
-<aside className={`filters-sidebar ${isMobile ? "mobile" : ""} ${showFilters ? "open" : ""}`}>
-  <div className='filter-heading'>Filters</div>
+  const handleSubmitReview = (id) => {
+    const rating = ratings[id];
+    const review = reviews[id];
+    console.log("Submitting review for", id, rating, review);
+    // Send to backend if needed
+    setActiveReviewId(null); // collapse after submit
+  };
+  
 
-  <div className="filter-section">
-    <div className='filter-header'>ORDER STATUS</div>
-    {["On the way", "Delivered", "Cancelled", "Returned"].map(status => (
-      <label key={status}>
-        <input type="checkbox" disabled /> {status}
-      </label>
-    ))}
-  </div>
+  return (
+    <div className="my-orders-wrapper container">
+      <div className="breadcrumb-order">
+        <span onClick={() => navigate("/")}>Home</span> &gt;
+        <span className="current-my-orders">My Orders</span>
+      </div>
 
-  <div className="filter-section">
-    <div className='filter-header'>ORDER TIME</div>
-    {(() => {
-  const currentYear = new Date().getFullYear();
-  const years = ["Last 30 days", ...Array.from({ length: 4 }, (_, i) => `${currentYear - i}`), "Older"];
-  return years.map(time => (
-    <label key={time}>
-      <input type="checkbox" disabled /> {time}
-    </label>
-  ));
-})()}
+      <div className="order-page-container">
+        {/* Sidebar Filters */}
+        {/* Toggle Filters for Mobile */}
+        {isMobile && (
+          <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
+            {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
+          </div>
+        )}
 
-  </div>
-</aside>
+        <aside className={`filters-sidebar ${isMobile ? "mobile" : ""} ${showFilters ? "open" : ""}`}>
+          <div className='filter-heading'>Filters</div>
+
+          <div className="filter-section">
+            <div className='filter-header'>ORDER STATUS</div>
+            {["On the way", "Delivered", "Cancelled", "Returned"].map(status => (
+              <label key={status}>
+                <input type="checkbox" disabled /> {status}
+              </label>
+            ))}
+          </div>
+
+          <div className="filter-section">
+            <div className='filter-header'>ORDER TIME</div>
+            {(() => {
+              const currentYear = new Date().getFullYear();
+              const years = ["Last 30 days", ...Array.from({ length: 4 }, (_, i) => `${currentYear - i}`), "Older"];
+              return years.map(time => (
+                <label key={time}>
+                  <input type="checkbox" disabled /> {time}
+                </label>
+              ));
+            })()}
+
+          </div>
+        </aside>
 
 
-      {/* Orders Section */}
-      <section className="orders-section">
-        {/* Search Bar */}
-        <div className="orders-search">
-          <input
-            type="text"
-            placeholder="Search your orders..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button className="search-btn" disabled>Search</button>
-        </div>
+        {/* Orders Section */}
+        <section className="orders-section">
+          {/* Search Bar */}
+          <div className="orders-search">
+            <input
+              type="text"
+              placeholder="Search your orders..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="search-btn" disabled>Search</button>
+          </div>
 
-        {/* Heading */}
-        <h2 className="heading-my-order">My Orders</h2>
+          {/* Heading */}
+          <h2 className="heading-my-order">My Orders</h2>
 
-        {/* Order Cards */}
-        <div className="orders-list">
-          {products.length === 0 ? (
-            <p>No orders found.</p>
-          ) : (
-            products.map((product, index) => (
-              <div
-                key={index}
-                ref={product.order_product_id === selected_product_id ? highlightedRef : null}
-                className={`order-card ${product.order_product_id === selected_product_id ? 'highlight-product' : ''}`}
-              >
+          {/* Order Cards */}
+          <div className="orders-list">
+            {products.length === 0 ? (
+              <p>No orders found.</p>
+            ) : (
+              products.map((product, index) => (
+                <div className={`order-card ${product.order_product_id === selected_product_id ? 'highlight-product' : ''}`} ref={product.order_product_id === selected_product_id ? highlightedRef : null}>
                 <div className="product-summary">
-                  <img
-                    src={`http://127.0.0.1:8000/${product.product_image}`}
-                    alt={product.product_name}
-                    className="product-image"
-                  />
+                  <img src={`http://127.0.0.1:8000/${product.product_image}`} alt={product.product_name} className="product-image" />
                   <div className="product-info">
+                    <div>
                     <p className="product-name">{product.product_name}</p>
                     <p>Order ID: {product.order.product_order_id}</p>
                     <p>Price: ₹{product.final_price}</p>
+                  
                     <div className="toggle-container">
-                      <span
-                        className="toggle-details"
-                        onClick={() => goToOrderDetails(product)}
-                      >
+                      <span className="toggle-details" onClick={() => goToOrderDetails(product)}>
                         <FaCircleArrowRight />
                       </span>
                     </div>
+                    </div>
+                    <div>
+                      <button 
+                        onClick={() => handleRating(product.order_product_id)} 
+                        className={
+                          activeReviewId === product.order_product_id
+                            ? "cart-delete-selected"
+                            : "cart-place-order"
+                        }>
+                        {activeReviewId === product.order_product_id ? "Cancel" : "Rate and Review"}
+                      </button>
+                    </div>
+              
+                    {activeReviewId === product.order_product_id && (
+                      <div className="review-box">
+                        <div className="stars">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <span
+                              key={star}
+                              onClick={() => handleStarClick(product.order_product_id, star)}
+                              style={{ color: star <= (ratings[product.order_product_id] || 0) ? "#4450A2" : "#ccc", cursor: "pointer", fontSize: "32px" }}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                        <textarea
+                          rows="3"
+                          placeholder="Write your review..."
+                          value={reviews[product.order_product_id] || ""}
+                          onChange={(e) => setReviews(prev => ({ ...prev, [product.order_product_id]: e.target.value }))}
+                          className="review-textarea"
+                        />
+                        <button 
+                          className="cart-place-order" 
+                          onClick={() => handleSubmitReview(product.order_product_id)}
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    )}
+              
+                  
                   </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-      </section>
+              
+              ))
+            )}
+          </div>
+        </section>
+      </div>
     </div>
-  </div>
-);
+  );
 
 };
 

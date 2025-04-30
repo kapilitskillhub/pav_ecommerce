@@ -427,7 +427,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                             <button className="resend-button" onClick={handleResendVerification}>Resend Verification Email</button>
                         </div>
                     )}
-                    <label className="customer-login-label">Email</label>
+                    <label className="customer-login-label">Email<span className="required-star">*</span></label>
 
                     <input
                         type="email"
@@ -435,6 +435,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                         placeholder="Enter your email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        required
                     />
                 </div>
 
@@ -448,7 +449,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                             onMouseEnter={() => setShowTooltip(true)}
                             onMouseLeave={() => setShowTooltip(false)}
 
-                        >
+                        ><span className="required-star">*</span>
                             <FaInfoCircle />
                         </span>
                     </label>
@@ -475,6 +476,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                        required
                         />
                         <span
                             className="customer-login-password-toggle-btn"

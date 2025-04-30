@@ -116,11 +116,11 @@
 .address-type{
     color: #4450A2;
 }
-label {
+/* label {
 
     color: #4450A2;
     font-weight: bold;
-}
+} */
 .Address-type{
     display: inherit; 
 }

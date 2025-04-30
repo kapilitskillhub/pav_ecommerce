@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminDiscounts.css';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDiscountProducts = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -54,30 +56,9 @@ const AdminDiscountProducts = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+  const addDiscount = () => {
 
-  const uploadExcel = async () => {
-    if (!file) {
-      alert('Please select an Excel file first.');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('uploaded_file', file);
-    formData.append('admin_id', adminId);
-
-    try {
-      const response = await axios.post(
-        'http://127.0.0.1:8000/apply-discount-by-category',
-        formData
-      );
-      alert(response.data.message || 'Discounts applied successfully!');
-      fetchDiscountProducts(); // Refresh product list
-    } catch (error) {
-      alert('Failed to apply discounts.');
-    }
+    navigate("/add-discount")
   };
 
   const indexOfLastProduct = currentPage * itemsPerPage;
@@ -94,9 +75,11 @@ const AdminDiscountProducts = () => {
       <div className="discount-header">
   <h3>Discounted Products</h3>
   <div className="discount-buttons">
+  <button onClick={addDiscount}>Add Discount</button>
+
     <button onClick={downloadExcel}>Download Excel</button>
-    <input type="file" accept=".xlsx" onChange={handleFileChange} />
-    <button onClick={uploadExcel}>Upload Discount Excel</button>
+    {/* <input type="file" accept=".xlsx" onChange={handleFileChange} />
+    <button onClick={uploadExcel}>Upload Discount Excel</button> */}
   </div>
 </div>
 
@@ -111,26 +94,31 @@ const AdminDiscountProducts = () => {
               <thead>
                 <tr>
                   <th>S.No.</th>
+                  <th>Category Name</th>
+                  <th>SubCategory Name</th>
                   <th>Image</th>
-                  <th>Name</th>
+                  <th>Product Name</th>
                   <th>SKU</th>
                   <th>Price</th>
+                  <th>Discount(%)</th>
                   <th>Final Price</th>
-                  <th>Discount</th>
                 </tr>
               </thead>
               <tbody>
                 {currentProducts.map((product, index) => (
                   <tr key={product.product_id}>
                     <td>{indexOfFirstProduct + index + 1}</td>
+                    <td>{product.category}</td>
+                    <td>{product.sub_category}</td>
+
                     <td>
                       <img src={product.product_images[0]} alt={product.product_name} width="50" height="50" />
                     </td>
                     <td>{product.product_name}</td>
                     <td>{product.sku_number}</td>
-                    <td>₹{product.price}</td>
-                    <td>₹{product.final_price}</td>
-                    <td>₹{product.discount}</td>
+                    <td>₹ {product.price}.00</td>
+                    <td>{product.discount}%</td>
+                    <td>₹ {product.final_price}.00</td>
                   </tr>
                 ))}
               </tbody>
