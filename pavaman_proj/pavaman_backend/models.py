@@ -172,6 +172,8 @@ class OrderProducts(models.Model):
     final_price = models.DecimalField(max_digits=10, decimal_places=2)
     order_status = models.CharField(max_length=50, default='Pending')
     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
+    shipping_status= models.CharField(default="")
+    delivery_status = models.CharField(default="")
 
     created_at = models.DateTimeField(auto_now_add=True)
 

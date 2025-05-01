@@ -3283,10 +3283,13 @@ def get_payment_details_by_order(request):
                     "discount":f"{int(product.discount)}%" if product.discount else "0%",
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100)),
                     "order_status": order.order_status,
-                    "delivery_status": payment.Delivery_status,
+                    # "delivery_status": payment.Delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image,
-                    "product_name":product.product_name
+                    "product_name":product.product_name,
+                    "shipping_status":order.shipping_status,
+                    "delivery_status":order.delivery_status
+                    
                 })
             # customer_data=[]
             # if payment.customer_id:
@@ -3327,6 +3330,7 @@ def get_payment_details_by_order(request):
             payment_list.append({
                 "razorpay_order_id": payment.razorpay_order_id,
                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
+                "customer_id":payment.customer_id,
                 # "first_name": payment.customer.first_name,
                 # "last_name": payment.customer.last_name,
                 "email": payment.customer.email,
@@ -3354,112 +3358,138 @@ def get_payment_details_by_order(request):
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
+@csrf_exempt
+def filter_my_order(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
-# @csrf_exempt
-# def get_payment_details_by_order(request):
-#     if request.method != "POST":
-#         return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        customer_id = data.get('customer_id')
+        order_status_filter = data.get('delivery_status')
+        order_time_filter = data.get('order_time')
 
-#     try:
-#         data = json.loads(request.body.decode("utf-8"))
-#         admin_id = data.get('admin_id')
-#         product_order_id = data.get('product_order_id')
+        if not customer_id:
+            return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
 
-#         if not admin_id:
-#             return JsonResponse({"error": "admin_id is required.", "status_code": 400}, status=400)
+        # Filter by customer_id
+        payments = PaymentDetails.objects.filter(customer_id=customer_id)
 
-#         if not product_order_id:
-#             return JsonResponse({"error": "product_order_id is required.", "status_code": 400}, status=400)
-
-#         # Fetch payment details based on product_order_id
-#         payments = PaymentDetails.objects.filter(admin_id=admin_id, product_order_id=product_order_id).order_by('-created_at')
-        
-#         if not payments.exists():
-#             return JsonResponse({"error": "No payment details found for this product order.", "status_code": 404}, status=404)
-
-#         payment_list = []
-#         for payment in payments:
-#             order_ids = payment.order_product_ids  # Assuming this is a list
-            
-#             # Fetch the orders associated with the payment
-#             order_products = OrderProducts.objects.filter(id__in=order_ids)
-            
-#             order_product_list = []
-#             for order in order_products:
-#                 product = ProductsDetails.objects.filter(id=order.product_id).first()
-#                 product_image = product.product_images[0] if product and product.product_images else ""
-
-#                 # Check if the order status is "Paid" and update it to "Dispatched"
-#                 if order.order_status == "Paid":
-#                     order.order_status = "Dispatched"
-#                     order.save()
-
-#                 # Check if the order has been dispatched, update delivery status to "Delivered"
-#                 if order.order_status == "Dispatched":
-#                     order.delivery_status = "Delivered"
-#                     order.save()
-
-#                 order_product_list.append({
-#                     "id": order.id,
-#                     "quantity": order.quantity,
-#                     "price": order.price,
-#                     "discount": product.discount,
-#                     "final_price": order.final_price,
-#                     "order_status": order.order_status,
-#                     "delivery_status": order.delivery_status,  # Updated delivery status
-#                     "product_id": order.product_id,
-#                     "product_image": product_image,
-#                     "product_name": product.product_name
-#                 })
-
-#             address_data = []
-#             if payment.customer_address_id:
-#                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
-#                 if address_obj:
-#                     address_data.append({
-#                         "address_id": address_obj.id,
-#                         "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
-#                         "email": address_obj.email,
-#                         "mobile_number": address_obj.mobile_number,
-#                         "alternate_mobile": address_obj.alternate_mobile,
-#                         "address_type": address_obj.address_type,
-#                         "pincode": address_obj.pincode,
-#                         "street": address_obj.street,
-#                         "landmark": address_obj.landmark,
-#                         "village": address_obj.village,
-#                         "mandal": address_obj.mandal,
-#                         "postoffice": address_obj.postoffice,
-#                         "district": address_obj.district,
-#                         "state": address_obj.state,
-#                         "country": address_obj.country,
-#                     })
-            
-#             payment_list.append({
-#                 "razorpay_order_id": payment.razorpay_order_id,
-#                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
-#                 "email": payment.customer.email,
-#                 "mobile_number": payment.customer.mobile_no,
-#                 "payment_mode": payment.payment_mode,
-#                 "total_quantity": payment.quantity,
-#                 "total_amount": payment.total_amount,
-#                 "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-#                 "product_order_id": payment.product_order_id,
-#                 "customer_address": address_data,
-#                 "order_products": order_product_list,
-#             })
-
-#         response_data = {
-#             "message": "Placed Order retrieved successfully.",
-#             "payments": payment_list,
-#             "status_code": 200
-#         }
-
-#         return JsonResponse(response_data, status=200)
-
-#     except Exception as e:
-#         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
+        # Dynamic year filters (keep last 4 years + older)
+        available_years = payments.dates('created_at', 'year', order='DESC')
+        year_options = ["Last 30 days"] + [dt.year for dt in available_years if dt.year >= datetime.now().year - 3] + ["Older"]
 
 
+        # Dynamic time filtering
+        now = datetime.now()
+        if order_time_filter:
+            if order_time_filter == "Last 30 days":
+                payments = payments.filter(created_at__gte=now - timedelta(days=30))
+            elif order_time_filter == "Older":
+                payments = payments.filter(created_at__lt=datetime(now.year - 3, 1, 1))
+            elif order_time_filter.isdigit():
+                payments = payments.filter(created_at__year=int(order_time_filter))
+
+        payments = payments.order_by('-created_at')
+
+        if not payments.exists():
+            return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
+
+        payment_list = []
+        total_matched_order_products = 0
+
+        for payment in payments:
+            order_ids = payment.order_product_ids
+            order_products = OrderProducts.objects.filter(id__in=order_ids)
+
+            # Apply order status filter if provided
+            if order_status_filter:
+                order_products = order_products.filter(delivery_status=order_status_filter)
+
+            order_product_list = []
+            for order in order_products:
+                product = ProductsDetails.objects.filter(id=order.product_id).first()
+                product_image = product.product_images[0] if product and product.product_images else ""
+
+                order_product_list.append({
+                    "order_product_id": order.id,
+                    "quantity": order.quantity,
+                    "price": order.price,
+                    "discount": f"{int(product.discount)}%" if product.discount else "0%",
+                    "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
+                    "order_status": order.order_status,
+                    # "shipping_status":order.shipping_status,
+                    "delivery_status":order.delivery_status,
+                    "product_id": order.product_id,
+                    "product_image": product_image,
+                    "product_name": product.product_name
+                })
+
+            # # Skip payment if no products matched the order status filter
+            # if order_status_filter and not order_product_list:
+            #     continue
+            if order_product_list:
+                total_matched_order_products += len(order_product_list)
+            else:
+                if order_status_filter:
+                    continue  # Skip payments where no product matches the delivery status
+
+
+            address_data = []
+            if payment.customer_address_id:
+                address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
+                if address_obj:
+                    address_data.append({
+                        "address_id": address_obj.id,
+                        "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
+                        "email": address_obj.email,
+                        "mobile_number": address_obj.mobile_number,
+                        "alternate_mobile": address_obj.alternate_mobile,
+                        "address_type": address_obj.address_type,
+                        "pincode": address_obj.pincode,
+                        "street": address_obj.street,
+                        "landmark": address_obj.landmark,
+                        "village": address_obj.village,
+                        "mandal": address_obj.mandal,
+                        "postoffice": address_obj.postoffice,
+                        "district": address_obj.district,
+                        "state": address_obj.state,
+                        "country": address_obj.country,
+                    })
+
+            payment_list.append({
+                # "razorpay_order_id": payment.razorpay_order_id,
+                "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
+                "email": payment.customer.email,
+                "mobile_number": payment.customer.mobile_no,
+                "payment_mode": payment.payment_mode,
+                "total_quantity": payment.quantity,
+                "total_amount": payment.total_amount,
+                "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "time_filters": year_options,
+                "product_order_id": payment.product_order_id,
+                "customer_address": address_data,
+                "order_products": order_product_list
+            })
+
+        if order_status_filter and total_matched_order_products == 0:
+            return JsonResponse({
+                "error": "No products found for the selected delivery status.",
+                "status_code": 404,
+                "time_filters": year_options
+            }, status=404)
+        if not payment_list:
+            return JsonResponse({"error": "No order details match filters.", "status_code": 404}, status=404)
+
+        return JsonResponse({
+            "message": "Filtered Orders Retrieved Successfully.",
+            "payments": payment_list,
+            "status_code": 200,
+            "customer_id": str(customer_id)
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
 
 @csrf_exempt
@@ -3500,7 +3530,7 @@ def customer_get_payment_details_by_order(request):
                     "discount":f"{int(product.discount)}%" if product.discount else "0%",
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "order_status": order.order_status,
-                    "delivery_status":payments.Delivery_status,
+                    # "delivery_status":payments.Delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image,
                     "product_name":product.product_name
@@ -3511,6 +3541,7 @@ def customer_get_payment_details_by_order(request):
                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
                 if address_obj:
                     address_data.append({
+                        
                         "address_id": address_obj.id,
                         "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
                         "email": address_obj.email,
@@ -4501,7 +4532,7 @@ def filter_customer_orders(request):
                     "payment_type": payment.payment_type,
                     "payment_mode": payment.payment_mode,
                     "order_status": payment.order_status,
-                    "delivery_status": payment.Delivery_status,
+                    # "delivery_status": payment.Delivery_status,
                     "products": products_data,
                     "created_at": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                 })
@@ -4583,6 +4614,115 @@ def submit_feedback_rating(request):
             return JsonResponse({"error": "Invalid JSON format.", "status_code": 400}, status=400)
         except Exception as e:
             return JsonResponse({"error": f"Server error: {str(e)}", "status_code": 500}, status=500)
+
+    else:
+        return JsonResponse({
+            "error": "Invalid HTTP method. Only POST allowed.",
+            "status_code": 405
+        }, status=405)
+
+
+@csrf_exempt
+def submit_feedback_rating(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+
+            customer_id = data.get('customer_id')
+            product_id = data.get('product_id')
+            product_order_id = data.get('product_order_id')
+            rating = data.get('rating')  # Optional
+            feedback = data.get('feedback', "")  # Optional
+
+            # Validate required fields
+            if not all([customer_id, product_id, product_order_id]):
+                return JsonResponse({
+                    "error": "customer_id, product_id, and product_order_id are required.",
+                    "status_code": 400
+                }, status=400)
+
+            # Fetch related objects
+            try:
+                customer = CustomerRegisterDetails.objects.get(id=customer_id)
+                product = ProductsDetails.objects.get(id=product_id)
+                admin = product.admin  # Assuming ProductsDetails has 'admin' FK
+
+                # Get payment using product_order_id
+                payment = PaymentDetails.objects.filter(
+                    customer=customer, product_order_id=product_order_id
+                ).first()
+                if not payment:
+                    return JsonResponse({
+                        "error": "Payment not found for given product_order_id.",
+                        "status_code": 404
+                    }, status=404)
+
+                # Find matching order_product ID from payment.order_product_ids list
+                order_product = OrderProducts.objects.filter(
+                    id__in=payment.order_product_ids,
+                    product=product,
+                    customer=customer
+                ).first()
+                if not order_product:
+                    return JsonResponse({
+                        "error": "Matching order product not found.",
+                        "status_code": 404
+                    }, status=404)
+
+            except Exception as e:
+                return JsonResponse({
+                    "error": f"Related object fetch error: {str(e)}",
+                    "status_code": 404
+                }, status=404)
+
+            # Check if feedback already exists
+            existing_feedback = FeedbackRating.objects.filter(
+                customer=customer, product=product, order_product=order_product
+            ).first()
+            if existing_feedback:
+                return JsonResponse({
+                    "error": "Feedback already submitted for this product and order.",
+                    "status_code": 400
+                }, status=400)
+            current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+            # Create feedback
+            FeedbackRating.objects.create(
+                admin=admin,
+                customer=customer,
+                payment=payment,
+                order_product=order_product,
+                order_id=product_order_id,
+                product=product,
+                category=product.category.category_name if product.category else "",
+                sub_category=product.sub_category.sub_category_name if product.sub_category else "",
+                rating=rating if rating else None,
+                feedback=feedback,
+                created_at=current_time
+            )
+            # current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+
+            return JsonResponse({
+                "message": "Feedback submitted successfully.",
+                "status_code": 201,
+                "customer_id":customer_id,
+                "submitted_at": current_time
+            }, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "error": "Invalid JSON format.",
+                "status_code": 400
+            }, status=400)
+
+        except Exception as e:
+            return JsonResponse({
+                "error": f"Server error: {str(e)}",
+                "status_code": 500
+            }, status=500)
 
     else:
         return JsonResponse({

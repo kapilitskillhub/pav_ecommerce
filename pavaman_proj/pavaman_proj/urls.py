@@ -20,8 +20,9 @@ from pavaman_backend.views import (add_admin,admin_login,admin_logout,
     add_category,view_categories,edit_category,delete_category,
     add_subcategory,view_subcategories,edit_subcategory,delete_subcategory,
     add_product,add_product_specifications,edit_product_specifications,view_products,
-    view_product_details,edit_product,delete_product,
-    search_categories,search_subcategories,search_products,discount_products,download_discount_products_excel,apply_discount_by_subcategory_only,update_order_status
+    view_product_details,edit_product,delete_product,retrieve_feedback,
+    search_categories,search_subcategories,search_products,discount_products,download_discount_products_excel,
+    apply_discount_by_subcategory_only,order_or_delivery_status,admin_verify_otp
     )
 
     #admin_logout,
@@ -41,9 +42,8 @@ from pavaman_backend.customer_views import (customer_register,customer_login,vie
     create_razorpay_order,razorpay_callback,customer_search_categories,customer_search_subcategories,customer_search_products,
     get_payment_details_by_order, download_material_file,customer_get_payment_details_by_order,customer_logout,
     report_monthly_revenue_by_year,report_sales_summary, edit_customer_profile,get_customer_profile,
-    top_five_selling_products,get_all_category_subcategory,not_selling_products,
+    top_five_selling_products,get_all_category_subcategory,not_selling_products,filter_my_order,
     generate_invoice_for_customer,admin_order_status,customer_cart_view_search,edit_profile_mobile_otp_handler,edit_profile_email_otp_handler,filter_and_sort_products,filter_customer_orders,submit_feedback_rating
-
 )
 
 
@@ -60,6 +60,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('add-admin',add_admin,name='add_admin'),
     path('admin-login',admin_login,name='admin_login'),
+    path('admin-verify-otp',admin_verify_otp,name='admin_verify_otp'),
     path('admin-logout',admin_logout,name='admin_logout'),
     path('add-category', add_category, name='add_category'),
     path('view-categories', view_categories, name='view_categories'),
@@ -81,6 +82,8 @@ urlpatterns = [
     path('search-categories',search_categories,name='search_categories'),
     path('search-subcategories',search_subcategories,name='search_subcategories'),
     path('search-products',search_products,name='search_products'),
+    path('retrieve-feedback',retrieve_feedback,name= 'retrieve_feedback'),
+
   
     path('customer-register', customer_register, name='customer_register'), 
     path('customer-login',customer_login,name='customer_login'), 
@@ -143,17 +146,17 @@ urlpatterns = [
     path("order-status-summary",admin_order_status, name="admin_order_status"),
     path('customer-cart-view-search', customer_cart_view_search, name='customer_cart_view_search'),
     path('edit-profile-mobile', edit_profile_mobile_otp_handler, name='edit_profile_mobile_otp_handler'),
-
     path('edit-profile-email',edit_profile_email_otp_handler,name= 'edit_profile_email_otp_handler'),
     path('discount-products',discount_products,name= 'discount_products'),
     path('filter-and-sort-products',filter_and_sort_products,name= 'filter_and_sort_products'),
     path('download-discount-products-excel',download_discount_products_excel,name= 'download_discount_products_excel'),
     path('apply-discount-subcategory',apply_discount_by_subcategory_only,name= 'apply_discount_by_subcategory_only'),
-    path('update-order-status',update_order_status,name= 'update_order_status'),
+    # path('update-order-status',update_order_status,name= 'update_order_status'),
     path('filter-customer-orders',filter_customer_orders,name= 'filter_customer_orders'),
-    path('submit-feedback-rating',submit_feedback_rating,name= 'submit_feedback_rating'),
-    # path('retrieve-feedback',retrieve_feedback,name= 'retrieve_feedback'),
-    # path('filter-revenue',filter_revenue,name= 'filter_revenue')
+    path('submit_feedback_rating',submit_feedback_rating,name= 'submit_feedback_rating'),
+    path('order-or-delivery-status',order_or_delivery_status,name= 'order_or_delivery_status'),
+    path('filter-my-order',filter_my_order,name= 'filter_my_order'),
+
 
 
 

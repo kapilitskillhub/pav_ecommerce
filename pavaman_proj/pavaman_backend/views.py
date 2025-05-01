@@ -1,4 +1,5 @@
 
+from aiohttp import ClientError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
@@ -10,10 +11,12 @@ import shutil
 from django.contrib.sessions.models import Session
 import random 
 from .sms_utils import send_bulk_sms 
-from pavaman_backend.models import PavamanAdminDetails, CategoryDetails,SubCategoryDetails,ProductsDetails,PaymentDetails,OrderProducts
+from pavaman_backend.models import (CustomerRegisterDetails, PavamanAdminDetails, CategoryDetails,SubCategoryDetails,ProductsDetails,
+                                    PaymentDetails,OrderProducts,FeedbackRating)
 from openpyxl import Workbook
 from io import BytesIO
 from django.http import HttpResponse
+import pytz
 
 @csrf_exempt
 def add_admin(request):
@@ -2603,40 +2606,6 @@ def search_products(request):
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
 
-
-
-
-# @csrf_exempt
-# def admin_logout(request):
-#     if request.method == "POST":
-#         try:
-#             if request.session.get('admin_id'):
-#                 del request.session['admin_id']
-#                 request.session.flush()
-
-#                 return JsonResponse({
-#                     "message": "Admin logged out successfully.",
-#                     "status_code": 200
-#                 }, status=200)
-
-#             return JsonResponse({
-#                 "error": "No active admin session found.",
-#                 "status_code": 401
-#             }, status=401)
-
-#         except Exception as e:
-#             return JsonResponse({
-#                 "error": f"An unexpected error occurred: {str(e)}",
-#                 "status_code": 500
-#             }, status=500)
-
-#     return JsonResponse({
-#         "error": "Invalid HTTP method. Only POST is allowed.",
-#         "status_code": 405
-#     }, status=405)
-
-
-
 @csrf_exempt
 def discount_products(request):
     if request.method == 'POST':
@@ -2727,7 +2696,7 @@ def download_discount_products_excel(request):
             if not admin_id:
                 return JsonResponse({"error": "Admin ID is required.", "status_code": 400}, status=400)
 
-            products = ProductsDetails.objects.filter(admin_id=admin_id, discount__gt=0)
+            products = ProductsDetails.objects.filter(admin_id=admin_id)
 
             if not products.exists():
                 return JsonResponse({
@@ -2790,8 +2759,12 @@ def download_discount_products_excel(request):
             response = HttpResponse(
                 buffer,
                 content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+                # content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
             response['Content-Disposition'] = 'attachment; filename=Products_Details.xlsx'
+
+            # response['Content-Disposition'] = 'attachment; filename=Products_Details.xlsx'
             return response
 
         except json.JSONDecodeError:
@@ -2904,92 +2877,152 @@ def apply_discount_by_subcategory_only(request):
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
 @csrf_exempt
-def update_order_status(request):
-    if request.method == 'POST':
+def order_or_delivery_status(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST allowed", "status_code": 405}, status=405)
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+
+        admin_id = data.get("admin_id")
+        customer_id =data.get("customer_id")
+        product_order_id = data.get("product_order_id")
+        action = data.get("action")  # either "dispatch" or "deliver"
+        single_order_product_id = data.get("single_order_product_id")  # optional
+
+        if not all([admin_id, product_order_id,customer_id, action]):
+            return JsonResponse({"error": "Missing required fields", "status_code": 400}, status=400)
+
+        payment = PaymentDetails.objects.filter(admin_id=admin_id, product_order_id=product_order_id,customer_id=customer_id).first()
+        if not payment:
+            return JsonResponse({"error": "Payment not found", "status_code": 404}, status=404)
+
+        updated_orders = []
+
+        # DISPATCH LOGIC
+        if action == "Shipped":
+            if single_order_product_id:
+                if single_order_product_id not in payment.order_product_ids:
+                    return JsonResponse({"error": "Invalid order product ID", "status_code": 404}, status=404)
+                order = OrderProducts.objects.filter(id=single_order_product_id,customer_id=customer_id).first()
+                if order:
+                    order.shipping_status = "Shipped"
+                    order.save()
+                    updated_orders.append(order.id)
+            else:
+                for oid in payment.order_product_ids:
+                    order = OrderProducts.objects.filter(id=oid,customer_id=customer_id).first()
+                    if order:
+                        order.shipping_status = "Shipped"
+                        order.save()
+                        updated_orders.append(order.id)
+        elif action == "Delivered":
+            if single_order_product_id:
+                if single_order_product_id not in payment.order_product_ids:
+                    return JsonResponse({"error": "Invalid order product ID", "status_code": 404}, status=404)
+                order = OrderProducts.objects.filter(id=single_order_product_id, customer_id=customer_id).first()
+                if order:
+                    if order.shipping_status != "Shipped":
+                        return JsonResponse({"error": "Cannot mark as Delivered before Shipped", "status_code": 400}, status=400)
+                    order.delivery_status = "Delivered"
+                    order.save()
+                    updated_orders.append(order.id)
+            else:
+                for oid in payment.order_product_ids:
+                    order = OrderProducts.objects.filter(id=oid, customer_id=customer_id).first()
+                    if order:
+                        if order.shipping_status != "Shipped":
+                            return JsonResponse({
+                                "error": f"OrderProduct ID {oid} has not been shipped yet",
+                                "status_code": 400
+                            }, status=400)
+                        order.delivery_status = "Delivered"
+                        order.save()
+                        updated_orders.append(order.id)
+
+        else:
+            return JsonResponse({"error": "Invalid action type", "status_code": 400}, status=400)
+
+        return JsonResponse({
+            "message": f"{action.capitalize()} status updated successfully.",
+            "updated_orders": updated_orders,
+            "admin_id":str(admin_id),
+            # "delivery_status": payment.Delivery_status,
+            "status_code": 200
+        })
+
+    except Exception as e:
+        return JsonResponse({"error": str(e), "status_code": 500}, status=500)
+   
+import pytz  
+
+@csrf_exempt
+def retrieve_feedback(request):
+    if request.method == "POST":
         try:
-            data = json.loads(request.body)
+           
+            data = json.loads(request.body.decode("utf-8"))
 
             admin_id = data.get('admin_id')
-            product_order_id = data.get('product_order_id')  # optional
-            order_product_ids = data.get('order_product_ids')  # optional
-            update_type = data.get('update_type')  # 'dispatched' or 'delivered'
-            mode = data.get('mode')  # 'separate' or 'all'
 
-            if not admin_id or not update_type or not mode:
+            if not admin_id:
                 return JsonResponse({
-                    "error": "admin_id, update_type, and mode are required fields.",
-                    "status_code": 400  }, status=400)
-                
-            payment = None
-
-            if order_product_ids:
-                payment = PaymentDetails.objects.filter(order_product_ids__contains=order_product_ids).first()
-                if not payment:
-                    return JsonResponse({
-                        "error": "No payment found for given order_product_ids.",
-                        "status_code": 404}, status=404)
-               
-                if sorted(payment.order_product_ids) != sorted(order_product_ids):
-                    return JsonResponse({
-                        "error": "Provided order_product_ids do not match with payment details.",
-                        "status_code": 400
-                    }, status=400)
-
-            elif product_order_id:
-                payment = PaymentDetails.objects.filter(product_order_id=product_order_id).first()
-                if not payment:
-                    return JsonResponse({
-                        "error": "No payment found for the given product_order_id.",
-                        "status_code": 404
-                    }, status=404)
-
-                order_product_ids = payment.order_product_ids
-
-            else:
-                return JsonResponse({
-                    "error": "Either order_product_ids or product_order_id is required.",
+                    "error": "admin_id is required.",
                     "status_code": 400
                 }, status=400)
 
-          
-            if update_type == 'delivered' and payment.Delivery_status.lower() != 'dispatched':
-                return JsonResponse({
-                    "error": "Order must be dispatched before it can be delivered.",
-                    "status_code": 400
-                }, status=400)
+         
+            feedbacks = FeedbackRating.objects.filter(admin_id=admin_id)
 
-           
-            order_products = OrderProducts.objects.filter(id__in=order_product_ids)
-            if mode == 'separate':
-                for order in order_products:
-                    order.order_status = update_type
-                    order.save()
-            elif mode == 'all':
-                OrderProducts.objects.filter(id__in=payment.order_product_ids).update(order_status=update_type)
+            if not feedbacks.exists():
+                return JsonResponse({"error": "No feedback found for this admin.", "status_code": 404}, status=404)
+            feedback_data = []
+            for feedback in feedbacks:
+                try:
+                    customer = CustomerRegisterDetails.objects.get(id=feedback.customer_id)
+                    product = ProductsDetails.objects.get(id=feedback.product_id)
+                    # Get first image from list (if available)
+                    image_url = None
+                    if product.product_images and isinstance(product.product_images, list):
+                        first_image = product.product_images[0]
+                        if first_image:
+                            image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{first_image}"
 
-           
-            if update_type == 'dispatched':
-                payment.Delivery_status = 'dispatched'
-                msg = "Order dispatched successfully"
-            elif update_type == 'delivered':
-                payment.Delivery_status = 'delivered'
-                msg = "Order delivered successfully"
-            else:
-                msg = "Status updated successfully"
-            payment.save()
+                    feedback_data.append({
+                        "customer_id": customer.id,
+                        "customer_name": f"{customer.first_name} {customer.last_name}",
+                        "customer_email": customer.email,
+                        "product_image":image_url,
+                        "product_name":product.product_name,
+                        "product_id": feedback.product.id,
+                        "rating": feedback.rating,
+                        "feedback": feedback.feedback,
+                        "order_id": feedback.order_id,
+                        "created_at": feedback.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    })
+                except CustomerRegisterDetails.DoesNotExist:
+                    # If customer not found, skip or handle as needed
+                    continue
 
-            return JsonResponse({"message": msg,"status_code": 200,"admin_id":admin_id })
-              
+            return JsonResponse({
+                "feedback": feedback_data,
+                "status_code": 200,
+                "admin_id": str(admin_id)
+            }, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "error": "Invalid JSON format.",
+                "status_code": 400
+            }, status=400)
+
         except Exception as e:
-            return JsonResponse({"error": str(e),"status_code": 500}, status=500)
-               
-    else:
-        return JsonResponse({"error": "Only POST method is allowed.","status_code": 405 }, status=405)
-          
+            return JsonResponse({
+                "error": f"Server error: {str(e)}",
+                "status_code": 500
+            }, status=500)
 
-
-
-
-
-
-
+    return JsonResponse({
+        "error": "Invalid HTTP method. Only POST allowed.",
+        "status_code": 405
+    }, status=405)
