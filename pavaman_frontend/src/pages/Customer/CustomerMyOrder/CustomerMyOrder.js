@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CustomerMyOrder.css';
 import { FaCircleArrowRight } from "react-icons/fa6";
+import PopupMessage from "../../../components/Popup/Popup";
 
 const CustomerMyOrders = () => {
   const [products, setProducts] = useState([]);
@@ -19,7 +20,17 @@ const CustomerMyOrders = () => {
   const [activeReviewId, setActiveReviewId] = useState(null);
   const [ratings, setRatings] = useState({});
   const [reviews, setReviews] = useState({});
-  
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
+
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+        setShowPopup(false);
+    }, 10000);
+};
 
   const fetchOrders = async () => {
     if (!customerId) return;
@@ -85,6 +96,7 @@ const CustomerMyOrders = () => {
 
   }
 
+
   const handleRating = (id) => {
     setActiveReviewId(activeReviewId === id ? null : id);
   };
@@ -93,15 +105,53 @@ const CustomerMyOrders = () => {
     setRatings(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmitReview = (id) => {
+  const handleSubmitReview = async (id) => {
     const rating = ratings[id];
     const review = reviews[id];
-    console.log("Submitting review for", id, rating, review);
-    // Send to backend if needed
-    setActiveReviewId(null); // collapse after submit
+    const product = products.find(product => product.order_product_id === id); // Correctly fetch the product
+  
+    if (!rating || !review) {
+      displayPopup("Please provide both a rating and a review.", "error");
+      return;
+    }
+  
+    const productOrderId = product?.order?.product_order_id;
+    const productId = product?.product_id;
+  
+    if (!productOrderId || !productId) {
+      displayPopup("Missing product or order ID.", "error");
+
+      return;
+    }
+  
+    try {
+      const response = await fetch('http://127.0.0.1:8000/submit-feedback-rating', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_id: customerId,
+          product_id: productId,
+          product_order_id: productOrderId,
+          rating,
+          feedback: review,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        displayPopup("Review submitted successfully", "success");
+        setActiveReviewId(null);
+      } else {
+        displayPopup(data.error || "Error submitting review.", "error");
+      }
+    } catch (error) {
+      displayPopup(error || "Error submitting review.", "error");
+      console.error("Error submitting review", error);
+    }
   };
   
-
+  
   return (
     <div className="my-orders-wrapper container">
       <div className="breadcrumb-order">
@@ -159,9 +209,18 @@ const CustomerMyOrders = () => {
             <button className="search-btn" disabled>Search</button>
           </div>
 
+
           {/* Heading */}
           <h2 className="heading-my-order">My Orders</h2>
-
+          <div className="popup-cart">
+                {showPopup && (
+                    <PopupMessage
+                        message={popupMessage.text}
+                        type={popupMessage.type}
+                        onClose={() => setShowPopup(false)}
+                    />
+                )}
+            </div>
           {/* Order Cards */}
           <div className="orders-list">
             {products.length === 0 ? (
@@ -184,45 +243,42 @@ const CustomerMyOrders = () => {
                     </div>
                     </div>
                     <div>
-                      <button 
-                        onClick={() => handleRating(product.order_product_id)} 
-                        className={
-                          activeReviewId === product.order_product_id
-                            ? "cart-delete-selected"
-                            : "cart-place-order"
-                        }>
-                        {activeReviewId === product.order_product_id ? "Cancel" : "Rate and Review"}
-                      </button>
-                    </div>
-              
-                    {activeReviewId === product.order_product_id && (
-                      <div className="review-box">
-                        <div className="stars">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <span
-                              key={star}
-                              onClick={() => handleStarClick(product.order_product_id, star)}
-                              style={{ color: star <= (ratings[product.order_product_id] || 0) ? "#4450A2" : "#ccc", cursor: "pointer", fontSize: "32px" }}
-                            >
-                              ★
-                            </span>
-                          ))}
-                        </div>
-                        <textarea
-                          rows="3"
-                          placeholder="Write your review..."
-                          value={reviews[product.order_product_id] || ""}
-                          onChange={(e) => setReviews(prev => ({ ...prev, [product.order_product_id]: e.target.value }))}
-                          className="review-textarea"
-                        />
-                        <button 
-                          className="cart-place-order" 
-                          onClick={() => handleSubmitReview(product.order_product_id)}
+                        <button
+                          onClick={() => handleRating(product.order_product_id)}
+                          className={activeReviewId === product.order_product_id ? "cart-delete-selected" : "review-rating-button"}
                         >
-                          Submit
+                          {activeReviewId === product.order_product_id ? "Cancel" : "★ Rate and Review"}
                         </button>
                       </div>
-                    )}
+              
+                      {activeReviewId === product.order_product_id && (
+                        <div className="review-box">
+                          <div className="stars">
+                            {[1, 2, 3, 4, 5].map(star => (
+                              <span
+                                key={star}
+                                onClick={() => handleStarClick(product.order_product_id, star)}
+                                style={{ color: star <= (ratings[product.order_product_id] || 0) ? "#4450A2" : "#ccc", cursor: "pointer", fontSize: "32px" }}
+                              >
+                                ★
+                              </span>
+                            ))}
+                          </div>
+                          <textarea
+                            rows="3"
+                            placeholder="Write your review..."
+                            value={reviews[product.order_product_id] || ""}
+                            onChange={(e) => setReviews(prev => ({ ...prev, [product.order_product_id]: e.target.value }))}
+                            className="review-textarea"
+                          />
+                          <button
+                            className="cart-place-order"
+                            onClick={() => handleSubmitReview(product.order_product_id)}
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      )}
               
                   
                   </div>

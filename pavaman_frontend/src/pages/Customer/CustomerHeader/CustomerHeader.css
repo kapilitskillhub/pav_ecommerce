@@ -634,3 +634,19 @@
   padding-left: 15px;
 }
 
+
+.customer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-name {
+  font-size: 16px;
+  text-align: left;
+
+}
+
+.customer-email {
+  font-size: 11px;
+  text-align: left;
+}

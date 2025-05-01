@@ -32,7 +32,8 @@ const CustomerHeader = (onSearch) => {
   const [searchInput, setSearchInput] = useState("");
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search...");
   // const [hovered, setHovered] = useState(false);
-
+    const [customer, setCustomer] = useState(null);
+    const [loading, setLoading] = useState(true);
   const customerId = localStorage.getItem("customer_id");
 
   const isValidCustomerId = !(
@@ -189,7 +190,34 @@ const CustomerHeader = (onSearch) => {
 
   const isUserLoggedIn = false;
 
+  useEffect(() => {
+        fetchCustomerProfile();
+    }, [customerId]);
 
+  const fetchCustomerProfile = async () => {
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/get-customer-profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ customer_id: customerId }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            setCustomer(data.profile);
+        } else {
+            setError(data.error || "Failed to fetch customer profile");
+            displayPopup(data.error || "Failed to fetch customer profile", "error");
+        }
+    } catch (error) {
+        const message = "Fetch error: " + error.message;
+        setError(message);
+        displayPopup(message, "error");
+    } finally {
+        setLoading(false);
+    }
+};
 
   return (
     <>
@@ -414,6 +442,16 @@ const CustomerHeader = (onSearch) => {
                     </>
                   ) : (
                     <>
+<li>
+  <div className="customer-info">
+    <span className="customer-name">Hello {customer.first_name}</span>
+    <span className="customer-email">{customer.email}</span>
+    <span className="customer-email">+91 {customer.mobile_no}</span>
+
+  </div>
+</li>
+                     
+
                       <li onClick={() => navigate("/profile")}><FaUser /> My Profile</li>
                       <li onClick={() => navigate("/my-orders")}><FaClipboardList /> My Orders</li>
                       <li onClick={() => navigate("/address")}><FaMapMarkerAlt /> Address</li>

@@ -8,8 +8,9 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { IoMdPeople } from "react-icons/io";
 import { TbReportSearch } from "react-icons/tb";
 import { RiDiscountPercentLine } from "react-icons/ri";
+import { FaStar } from "react-icons/fa";
 
-const SideMenu = ({setIsAuthenticated}) => {
+const SideMenu = ({ setIsAuthenticated }) => {
     const navigate = useNavigate();
     const handleLogout = () => {
         sessionStorage.clear();
@@ -51,6 +52,11 @@ const SideMenu = ({setIsAuthenticated}) => {
 
                 <TbTruckDelivery className="sidemenu-img" />
                 <span className="sidemenu-label">Orders</span>
+            </Link>
+            <Link to="/ratings" className="sidemenu-item ">
+
+                <FaStar className="sidemenu-img" />
+                <span className="sidemenu-label">Ratings</span>
             </Link>
 
             <Link to="/admin-login" className="sidemenu-item logout-link" onClick={handleLogout}>

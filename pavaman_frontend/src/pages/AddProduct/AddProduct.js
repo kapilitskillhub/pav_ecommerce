@@ -141,6 +141,10 @@ const AddProduct = () => {
                         <label className="label">Discount</label>
                         <input type="number" name="discount" placeholder="Enter discount" onChange={handleChange} required className="input-field" />
                     </div>
+                    <div>
+                        <label className="label">GST</label>
+                        <input type="number" name="gst" placeholder="Enter GST" onChange={handleChange} required className="input-field" />
+                    </div>
                 </div>
                 <div>
                     <label className="label">Description</label>
