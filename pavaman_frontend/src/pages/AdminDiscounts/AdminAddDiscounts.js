@@ -108,7 +108,7 @@ const AdminAddDiscount = () => {
     };
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/apply-discount-by-subcategory-only', payload);
+      const response = await axios.post('http://127.0.0.1:8000/apply-discount-subcategory', payload);
       if (response.data.status_code === 200) {
         setSuccess('Discount applied successfully!');
         setTimeout(() => navigate('/discounts'), 2000);

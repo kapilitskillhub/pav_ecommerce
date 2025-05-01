@@ -73,6 +73,7 @@ const Report = () => {
                   <th>Payment Method</th>
                   <th>Razorpay Order ID</th>
                   <th>Order Status</th>
+                  <th>Shipping Status</th>
                   <th>Delivery Status</th>
                   <th>Details</th>
                 </tr>
@@ -95,6 +96,15 @@ const Report = () => {
                           ? report.order_products.map((product, index) => (
                             <div key={index}>
                               {product.order_status}
+                            </div>
+                          ))
+                          : "N/A"}
+                      </td> 
+                      <td className="order-table-data payment-mode">
+                        {report.order_products && report.order_products.length > 0
+                          ? report.order_products.map((product, index) => (
+                            <div key={index}>
+                              {product.shipping_status}
                             </div>
                           ))
                           : "N/A"}

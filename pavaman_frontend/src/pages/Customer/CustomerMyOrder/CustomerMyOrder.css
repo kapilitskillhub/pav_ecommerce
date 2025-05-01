@@ -281,6 +281,12 @@
   cursor: pointer;
 }
 
+.review-rating-button{
+  color: #4450A2;
+  font-size: 18px;
+  border: none;
+  background: none;
+}
 
 /* @media (max-width: 425px) { */
 
