@@ -311,11 +311,11 @@ const CustomerViewProductDetails = () => {
                                 </button>
                                 <img
                                     src={productDetails.product_images?.[activeImageIndex]
-                                        ? `http://127.0.0.1:8000/${productDetails.product_images[activeImageIndex]}`
+                                        ? productDetails.product_images[activeImageIndex]
                                         : defaultImage}
                                     alt="Product"
                                     className="customer-main-image"
-                                    onError={(e) => (e.target.src = defaultImage)}
+                                    // onError={(e) => (e.target.src = defaultImage)}
                                 />
                                 <button className=" image-arrow right-arrow" onClick={handleNextImage}>
                                     <AiOutlineRight />
@@ -327,7 +327,7 @@ const CustomerViewProductDetails = () => {
                                 {productDetails.product_images?.map((image, index) => (
                                     <img
                                         key={index}
-                                        src={`http://127.0.0.1:8000/${image}`}
+                                        src={image ? image : defaultImage} 
                                         alt="Product Thumbnail"
                                         className={`customer-thumbnail ${index === activeImageIndex ? "active" : ""}`}
                                         onClick={() => setActiveImageIndex(index)}
@@ -460,7 +460,7 @@ const CustomerViewProductDetails = () => {
 
                             {activeTab === "material" && (<div className="customer-material-section">
                                 <div>
-                                    <a className="customer-material-file" href={`http://127.0.0.1:8000/${productDetails.material_file}`} target="_blank" rel="noopener noreferrer">
+                                    <a className="customer-material-file" href={productDetails.material_file} target="_blank" rel="noopener noreferrer">
                                         View Material File
                                     </a>
                                 </div>

@@ -229,7 +229,8 @@ const CustomerMyOrders = () => {
               products.map((product, index) => (
                 <div className={`order-card ${product.order_product_id === selected_product_id ? 'highlight-product' : ''}`} ref={product.order_product_id === selected_product_id ? highlightedRef : null}>
                 <div className="product-summary">
-                  <img src={`http://127.0.0.1:8000/${product.product_image}`} alt={product.product_name} className="product-image" />
+                  <img src={product.product_image}
+                   alt={product.product_name} className="product-image" />
                   <div className="product-info">
                     <div>
                     <p className="product-name">{product.product_name}</p>

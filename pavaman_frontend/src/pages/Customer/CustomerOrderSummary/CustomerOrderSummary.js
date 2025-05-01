@@ -124,7 +124,7 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                                 order.product_images !== "null" &&
                                 order.product_images !== null &&
                                 order.product_images !== ""
-                                    ? `http://127.0.0.1:8000/${order.product_images}`
+                                    ? order.product_image
                                     : defaultImage
                             }
                             alt="Product"

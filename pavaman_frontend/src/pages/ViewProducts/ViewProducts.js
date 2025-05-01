@@ -157,7 +157,7 @@ const ViewProducts = ({ products, setProducts }) => {
         {products.map((product) => (
           <div key={product.product_id} className="category-card product-card">
             <img
-              src={`http://127.0.0.1:8000/${product.product_images}`}
+              src={product.product_images}
               alt={product.product_name}
               className="card-image"
               onClick={() => handleProductClick(product)}

@@ -152,7 +152,7 @@ const ViewCategories = ({ categories, setCategories }) => {
         {categories.map((category) => (
           <div key={category.category_id} className="category-card">
             <img
-              src={`http://127.0.0.1:8000${category.category_image_url}`}
+              src={category.category_image_url}
               alt={category.category_name}
               onClick={() => handleViewSubcategories(category)}
               className="card-image"

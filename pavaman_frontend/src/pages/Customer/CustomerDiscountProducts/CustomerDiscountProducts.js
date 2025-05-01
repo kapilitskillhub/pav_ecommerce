@@ -167,10 +167,10 @@ const ViewDiscountedProducts = () => {
                                 >
 
                                     <img
-                                        src={`http://127.0.0.1:8000${product.product_image_url}`}
+                                        src={product.product_image_url}
                                         alt={product.product_name}
                                         className="customer-discount-product-image"
-                                        onError={(e) => (e.target.src = defaultImage)}
+                                        // onError={(e) => (e.target.src = defaultImage)}
                                     />
                                     <div className="customer-product-name customer-discount-section-name">
                                         {product.product_name}

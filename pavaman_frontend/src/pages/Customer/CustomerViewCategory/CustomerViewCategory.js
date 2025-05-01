@@ -118,7 +118,7 @@ const ViewCategoriesAndDiscountedProducts = () => {
                                         src={category.category_image_url}
                                         alt={category.category_name}
                                         className="customer-product-image"
-                                        onError={(e) => e.target.src = defaultImage}
+                                        // onError={(e) => e.target.src = defaultImage}
                                     />
 
                                     <div className="customer-product-name">{category.category_name}</div>

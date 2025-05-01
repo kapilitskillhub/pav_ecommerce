@@ -157,7 +157,7 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
       <div className="category-cards">
         {subcategories.map((subcategory) => (
           <div key={subcategory.id} className="category-card">
-            <img src={`http://127.0.0.1:8000/${subcategory.sub_category_image}`}
+            <img src={subcategory.sub_category_image}
               alt={subcategory.sub_category_name}
               className="card-image"
               onClick={() => handleViewProducts(subcategory)} />
