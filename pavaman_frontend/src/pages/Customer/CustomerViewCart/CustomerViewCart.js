@@ -405,7 +405,7 @@ const CustomerViewCart = () => {
                                     />
 
                                     <img
-                                        src={item.image && item.image.length > 0 ? `http://127.0.0.1:8000/${item.image[0]}` : defaultImage}
+                                        src={item.image && item.image !== "null" && item.image !== "" ? item.image : defaultImage}
                                         alt={item.product_name}
                                         onError={(e) => (e.target.src = defaultImage)}
                                         className="cart-image"

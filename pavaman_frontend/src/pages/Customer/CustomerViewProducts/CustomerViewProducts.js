@@ -386,10 +386,10 @@ const CustomerViewProducts = () => {
                                         onClick={() => handleViewProductDetails(product)}
                                     >
                                         <img
-                                            src={product.product_image_url ? `http://127.0.0.1:8000${product.product_image_url}` : defaultImage}
+                                            src={product.product_image_url}
                                             alt={product.product_name}
                                             className="customer-product-image"
-                                            onError={(e) => (e.target.src = defaultImage)}
+                                            // onError={(e) => (e.target.src = defaultImage)}
                                         />
                                         <div className="customer-product-name">{product.product_name}</div>
                                         <div className="customer-discount-section-price">₹{product.final_price}.00 (incl. GST)</div>

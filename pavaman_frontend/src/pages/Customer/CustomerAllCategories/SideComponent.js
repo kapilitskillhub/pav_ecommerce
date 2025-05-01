@@ -13,7 +13,7 @@ const Side = ({ categories, handleSubcategoryClick }) => {
               className="all-subcategory-item"
             >
               <img 
-              src={`http://127.0.0.1:8000${sub.sub_category_image}`}
+              src={sub.sub_category_image}
               className="side-image"/>
 
 

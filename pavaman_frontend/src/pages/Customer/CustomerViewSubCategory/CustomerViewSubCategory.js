@@ -255,10 +255,10 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                                 <div key={subcategory.sub_category_id} className="customer-product-card"
                                     onClick={() => handleViewProducts(subcategory)}>
                                     <img
-                                        src={`http://127.0.0.1:8000${subcategory.sub_category_image_url}`}
+                                        src={subcategory.sub_category_image_url}
                                         alt={subcategory.sub_category_name}
                                         className="customer-product-image"
-                                        onError={(e) => e.target.src = defaultImage}
+                                        // onError={(e) => e.target.src = defaultImage}
                                     />
                                     <div className="customer-product-name">{subcategory.sub_category_name}</div>
                                 </div>

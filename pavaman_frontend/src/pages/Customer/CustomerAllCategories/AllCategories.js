@@ -118,7 +118,7 @@ const AllCategories = () => {
                       className="all-categories-image"
                       src={sub.sub_category_image || defaultImage}
                       alt={sub.sub_category_name}
-                      onError={(e) => (e.target.src = defaultImage)}
+                      // onError={(e) => (e.target.src = defaultImage)}
                     />
                     <p className="all-categories-name">{sub.sub_category_name}</p>
                   </div>

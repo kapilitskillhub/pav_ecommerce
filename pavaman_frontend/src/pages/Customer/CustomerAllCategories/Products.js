@@ -166,9 +166,9 @@ const AllProducts = () => {
                             >
                                 <img
                                     className="all-product-image"
-                                    src={`http://127.0.0.1:8000${product.product_image_url}`}
+                                    src={product.product_image_url}
                                     alt={product.product_name}
-                                    onError={(e) => (e.target.src = defaultImage)}
+                                    // onError={(e) => (e.target.src = defaultImage)}
                                 />
                                 <p className="all-product-name">{product.product_name}</p>
                                 <p className="all-product-price">₹ {product.final_price}.00</p>

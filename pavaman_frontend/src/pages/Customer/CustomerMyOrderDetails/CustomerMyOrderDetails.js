@@ -80,7 +80,7 @@ const CustomerMyOrderDetails = () => {
         <div ref={topRef}>
           <div className="custom-product-card highlight-product">
             <img
-              src={`http://127.0.0.1:8000/${selectedProduct.product_image}`}
+              src={selectedProduct.product_image}
               alt={selectedProduct.product_name}
               className="custom-product-image"
             />
@@ -132,7 +132,7 @@ const CustomerMyOrderDetails = () => {
           {otherProducts.map((product, index) => (
             <div key={index} className="custom-product-card">
               <img
-                src={`http://127.0.0.1:8000/${product.product_image}`}
+                src={product.product_image}
                 alt={product.product_name}
                 className="custom-product-image"
               />
