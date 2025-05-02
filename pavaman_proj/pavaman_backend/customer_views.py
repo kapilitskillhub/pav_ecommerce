@@ -859,17 +859,21 @@ def view_categories_and_discounted_products(request):
                 sub_category_name = product.sub_category.sub_category_name if product.sub_category else None
 
                 discounted_amount = (product.price * (product.discount or 0)) / 100
-                final_price = round(product.price - discounted_amount)
+                final_price = (product.price - discounted_amount)
+
+                gst = product.gst if product.gst else 0  # If no GST, assume 0
+                final_price += (final_price * gst) / 100
 
                 product_list.append({
                     "product_id": str(product.id),
                     "product_name": product.product_name,
                     "product_image_url": product_image_url,
                     "price": product.price,
+                    "gst": f"{gst}%",
                     "discount": f"{int(product.discount)}%" if product.discount else "0%",
                     "discounted_amount": round(discounted_amount, 2),
                     # "final_price": round(product.price - product.discount, 2),
-                    "final_price": final_price,
+                    "final_price": round(final_price, 2),
                     "category_id": str(product.category_id) if product.category_id else None,
                     "category_name": category_name,
                     "sub_category_id": str(product.sub_category_id) if product.sub_category_id else None,
@@ -937,6 +941,8 @@ def view_sub_categories_and_discounted_products(request):
             for product in products:
                 discounted_amount = (product.price * (product.discount or 0)) / 100
                 final_price = round(product.price - discounted_amount)
+                gst = product.gst if product.gst else 0  # If no GST, assume 0
+                final_price += (final_price * gst) / 100 
 
                 product_image_url = ""
                 if isinstance(product.product_images, list) and product.product_images:
@@ -945,9 +951,10 @@ def view_sub_categories_and_discounted_products(request):
                         "product_id": str(product.id),
                         "product_name": product.product_name,
                         "product_image_url": product_image_url,
-                        "price": product.price,
+                        "price": round(product.price, 2), 
+                        "gst": f"{gst}%", 
                         "discount": f"{int(product.discount)}%" if product.discount else "0%",
-                        "final_price": final_price,
+                        "final_price": round(final_price, 2),
                         "category_id": str(category.id),
                         "category_name": category.category_name,
                         "sub_category_id": str(product.sub_category.id),
@@ -1040,7 +1047,7 @@ def view_products_by_category_and_subcategory(request, category_name, sub_catego
             products = ProductsDetails.objects.filter(
                 category=category, sub_category=sub_category, product_status=1
             ).values(
-                'id', 'product_name', 'sku_number', 'price', 'availability', 'quantity', 'product_images', 'discount', 'cart_status'
+                'id', 'product_name', 'sku_number', 'price', 'availability', 'quantity', 'product_images', 'discount',  'gst','cart_status'
             )
 
             if not products.exists():
@@ -1074,15 +1081,22 @@ def view_products_by_category_and_subcategory(request, category_name, sub_catego
                 # final_price = float(product['price']) - float(product.get('discount', 0))
                 # discounted_amount = (product.price * (product.discount or 0)) / 100
                 # final_price = round(product.price - discounted_amount)
-                discounted_amount = (float(product['price']) * (float(product['discount']) or 0)) / 100
-                final_price = round(float(product['price']) - discounted_amount)
+                price = round(float(product['price']), 2)
+                discount = float(product.get('discount') or 0)
+                gst = float(product.get('gst') or 0)
+
+                discounted_amount = (price * discount) / 100
+                final_price = price - discounted_amount
+                final_price += (final_price * gst) / 100  # Add GST if available
+                final_price = round(final_price, 2)
 
                 product_list.append({
                     "product_id": str(product['id']),
                     "product_name": product['product_name'],
                     "sku_number": product['sku_number'],
-                    "price": float(product['price']),
-                    "discount": f"{int(product['discount'])}%" if product['discount'] else "0%",
+                    "price": price,
+                    "discount": f"{int(discount)}%",
+                    "gst": f"{gst}%", 
                     "discounted_amount": round(discounted_amount, 2),
                     "final_price": final_price,
                     "availability": product['availability'],
@@ -1154,10 +1168,16 @@ def view_products_details(request, product_name):
                 return JsonResponse({"error": "Subcategory not found.", "status_code": 404}, status=404)
             except ProductsDetails.DoesNotExist:
                 return JsonResponse({"error": "Product not found.", "status_code": 404}, status=404)
-            discount = float(product.discount) if product.discount else 0.0
-            discounted_amount = (float(product.price) * discount) / 100
-            final_price = round(float(product.price) - discounted_amount, 2)
             
+            price = float(product.price)
+            discount = float(product.discount or 0)
+            gst = float(product.gst or 0)
+
+            discounted_amount = round((price * discount) / 100, 2)
+            final_price = price - discounted_amount
+            final_price += (final_price * gst) / 100
+            final_price = round(final_price, 2)
+
             product_images = []
             if isinstance(product.product_images, list):
                 for image_path in product.product_images:
@@ -1170,8 +1190,9 @@ def view_products_details(request, product_name):
                 "product_id": str(product.id),
                 "product_name": product.product_name,
                 "sku_number": product.sku_number,
-                "price": float(product.price),
-                "discount": f"{int(product.discount)}%" if product.discount else "0%",
+                "price": round(price, 2),
+                "gst": f"{int(gst)}%",
+                "discount": f"{int(discount)}%",
                 "discounted_amount": round(discounted_amount, 2),
                 "final_price": final_price,  
                 "availability": product.availability,
@@ -1267,9 +1288,22 @@ def add_product_to_cart(request):
             if not created:
                 cart_item.quantity += quantity
                 cart_item.save()
-                discounted_amount = (float(product.price) * (float(product.discount) or 0)) / 100
-                final_price = float(product.price) - discounted_amount
-                total_price = round(final_price * cart_item.quantity, 2)
+
+                 # Get price, discount, and gst
+            price = float(product.price)
+            discount = float(product.discount or 0)
+            gst = float(product.gst or 0)
+
+            # Calculate discounted amount and final price
+            discounted_amount = round((price * discount) / 100, 2)
+            final_price = price - discounted_amount
+
+            # Apply GST to the final price
+            final_price += (final_price * gst) / 100
+            final_price = round(final_price, 2)
+
+            # Calculate total price based on quantity
+            total_price = round(final_price * cart_item.quantity, 2)
 
             return JsonResponse({
                 "message": "Product added to cart successfully.",
@@ -1278,6 +1312,10 @@ def add_product_to_cart(request):
                 "product_id": product.id,
                 "product_name": product.product_name,
                 "quantity": cart_item.quantity,
+                "price": round(price, 2),
+                "discount": f"{discount}%",
+                "gst": f"{gst}%",
+                "final_price": final_price,
                 "total_price": total_price,
                 "cart_status": True,  # This should be determined dynamically
                 "category_id": product.category.id,
@@ -1312,10 +1350,18 @@ def view_product_cart(request):
 
             for item in cart_items:
                 product = item.product
-                discounted_amount = (float(product.price) * (float(product.discount) or 0)) / 100
-                final_price = float(product.price) - discounted_amount
-                item_total_price = round(final_price * item.quantity, 2)
+                price = round(float(product.price), 2)
+                discount = round(float(product.discount or 0))
+                gst = round(float(product.gst or 0))
 
+                discounted_amount = round((price * discount) / 100, 2)
+                final_price = round(price - discounted_amount, 2)
+
+                # Apply GST to final price
+                final_price_with_gst = round(final_price + (final_price * gst) / 100, 2)
+
+                # Calculate total price based on quantity
+                item_total_price = round(final_price_with_gst * item.quantity, 2)
                 total_price += item_total_price
                 
                 image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
@@ -1326,10 +1372,12 @@ def view_product_cart(request):
                     "product_id": product.id,
                     "product_name": product.product_name,
                     "quantity": item.quantity,
-                    "price_per_item": float(product.price),
-                    "discount":f"{int(product.discount)}%" if product.discount else "0%",
-                    "discounted_amount": round(discounted_amount, 2),
-                    "discount_price":round(final_price, 2),
+                    "price_per_item": price,
+                    "discount": f"{discount}%" if discount else "0%",
+                    "gst": f"{gst}%" if gst else "0%",
+                    # "final_price_with_gst": final_price_with_gst,
+                    "discounted_amount": discounted_amount,
+                    "discount_price": final_price,
                     "total_price": item_total_price,
                     "original_quantity":product.quantity,
                     "availability":product.availability,
@@ -1763,8 +1811,19 @@ def order_product_details(request):
             if product.quantity < quantity:
                 return JsonResponse({"error": "Requested quantity is unavailable.", "status_code": 400}, status=400)
 
-            price = product.price
-            final_price = price * quantity
+            price = round(float(product.price), 2)
+            discount = round(float(product.discount or 0))
+            gst = round(float(product.gst or 0))
+
+            # Calculate final price and total price
+            discounted_amount = round((price * discount) / 100, 2)
+            price_after_discount = round(price - discounted_amount, 2)
+
+            # Calculate final price before applying GST
+            final_price = round(price_after_discount * quantity, 2)
+
+            # Add GST to the final price
+            final_price_with_gst = round(final_price + (final_price * gst) / 100, 2)
 
             current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
             order = OrderProducts.objects.create(
@@ -1774,7 +1833,9 @@ def order_product_details(request):
                 sub_category=product.sub_category,
                 quantity=quantity,
                 price=price,
-                final_price=final_price,
+                # discount=discount,  # Add discount here
+                # gst=gst,
+                final_price=final_price_with_gst,
                 order_status="Pending",
                 created_at=current_time,
                 admin=admin
@@ -1789,8 +1850,12 @@ def order_product_details(request):
                 "product_name":product.product_name,
                 "product_images": image_url,
                 "number_of_quantities": quantity,
-                "product_price": price,
-                "total_price": final_price,
+                "product_price": f"{price:.2f}",
+                "discount": f"{discount}%",
+                "gst": f"{gst}%",
+                "discounted_amount": f"{discounted_amount:.2f}",
+                "final_price_with_gst": f"{final_price_with_gst:.2f}",                
+                "total_price": f"{final_price_with_gst:.2f}",
                 "status_code": 201
             }, status=201)
 
@@ -2270,7 +2335,7 @@ def razorpay_callback(request):
                     else:
                         product.quantity = 0  # Ensure stock doesn't go negative
                    
-                    if product.quantity<= 5 and product.quantity!=0 and product.quantity<0:
+                    if product.quantity<= 10 and product.quantity!=0 and product.quantity<0:
                        product.availability= "Very Few Products Left"
                     elif product.quantity== 0:
                        product.availability= "Out of Stock"
@@ -2437,6 +2502,9 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
     product_html = ""
     for product in product_list:
         # delivery_date = product.get('delivery_date', 'Soon')  # Default to 'Soon' if not provided
+        image_path = product.get('image_path')
+        image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+
         product_html += f"""
         <tr>
             <td style="padding: 10px;">
@@ -2671,6 +2739,9 @@ def filter_product_price_each_category(request):
                     discount = float(product.discount or 0)
                     discounted_amount = (price * discount) / 100
                     final_price = price - discounted_amount
+                    image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
+                    image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+
 
                     product_data = {
                         "product_id": str(product.id),
@@ -2683,7 +2754,7 @@ def filter_product_price_each_category(request):
                         "final_price": round(final_price),
                         "availability": product.availability,
                         "quantity": product.quantity,
-                        "product_image_url": product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None,
+                        "product_image_url": image_url,
                         "cart_status": product.cart_status
                     }
                     products_list.append(product_data)
@@ -2784,6 +2855,9 @@ def filter_product_price(request):
                 discount = float(product.discount or 0)
                 discounted_amount = (price * discount) / 100
                 final_price = price - discounted_amount
+                image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
+                image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+
 
                 product_data = {
                     "product_id": str(product.id),
@@ -2796,7 +2870,7 @@ def filter_product_price(request):
                     "final_price": round(final_price),
                     "availability": product.availability,
                     "quantity": product.quantity,
-                    "product_image_url": product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None,
+                    "product_image_url": image_url,
                     "cart_status": product.cart_status
                 }
                 products_list.append(product_data)
@@ -2927,6 +3001,7 @@ def sort_products_inside_subcategory(request):
 
 
 def format_product_list(products):
+
     #Helper function to format product details.
     return [
         {
@@ -2940,7 +3015,11 @@ def format_product_list(products):
             "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
             "availability": product.availability,
             "quantity": product.quantity,
-            "product_image_url": product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None,
+            "product_image_url": (
+                f"{settings.AWS_S3_BUCKET_URL}/{product.product_images[0]}"
+                if isinstance(product.product_images, list) and product.product_images
+                else ""
+            ),
             "cart_status": product.cart_status
         }
         for product in products
@@ -3011,14 +3090,14 @@ def customer_search_categories(request):
                 response_data = {"message": "No category details found", "status_code": 200}
                 if customer_id:
                     response_data["customer_id"] = customer_id  # Include customer_id if available
-                return JsonResponse(response_data, status=200)           
+                return JsonResponse(response_data, status=200)  
 
 
             category_list = [
                 {
                     "category_id": str(category.id),
                     "category_name": category.category_name,
-                    "category_image_url": f"/static/images/category/{os.path.basename(category.category_image.replace('\\', '/'))}"
+                    "category_image_url": f"{settings.AWS_S3_BUCKET_URL}/{category.category_image.replace('\\', '/')}" if category.category_image else ""
                 }
                 for category in categories
             ]
@@ -3068,15 +3147,14 @@ def customer_search_subcategories(request):
                 return JsonResponse(response_data, status=200)           
 
             subcategory_list = [
-                {
-                    "sub_category_id": str(subcategory.id),
-                    "sub_category_name": subcategory.sub_category_name,
-                    "sub_category_image": f"/static/images/subcategory/{os.path.basename(subcategory.sub_category_image.replace('\\', '/'))}",
-                    "category_id": str(subcategory.category_id)
-                }
-                for subcategory in subcategories
-            ]
-        
+    {
+        "sub_category_id": str(subcategory.id),
+        "sub_category_name": subcategory.sub_category_name,
+        "sub_category_image": f"{settings.AWS_S3_BUCKET_URL}/{subcategory.sub_category_image.replace('\\', '/')}" if subcategory.sub_category_image else "",
+        "category_id": str(subcategory.category_id)
+    }
+    for subcategory in subcategories
+]
             response_data = {
                 "message": "Subcategories retrieved successfully.",
                 "categories": subcategory_list,
@@ -3132,11 +3210,11 @@ def customer_search_products(request):
                 product_images = product.product_images
                 if isinstance(product_images, list):
                     product_image_url = (
-                        f"/static/images/products/{os.path.basename(product_images[0].replace('\\', '/'))}"
+                        f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(product_images[0].replace('\\', '/'))}"
                         if product_images else ""
                     )
                 elif isinstance(product_images, str):
-                    product_image_url = f"/static/images/products/{os.path.basename(product_images.replace('\\', '/'))}"
+                     product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(product_images.replace('\\', '/'))}"
                 else:
                     product_image_url = ""      
 
@@ -3272,7 +3350,12 @@ def get_payment_details_by_order(request):
             order_product_list = []
             for order in order_products:
                 product = ProductsDetails.objects.filter(id=order.product_id).first()
-                product_image = product.product_images[0] if product and product.product_images else ""
+                # product_image = product.product_images[0] if product and product.product_images else ""
+                if product and product.product_images:
+                   product_image_path = product.product_images[0].replace('\\', '/')
+                   product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(product_image_path)}"
+                else:
+                   product_image_url = ""
                 
                 order_product_list.append({
                     "id": order.id,
@@ -3284,8 +3367,9 @@ def get_payment_details_by_order(request):
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100)),
                     "order_status": order.order_status,
                     # "delivery_status": payment.Delivery_status,
+                    # "delivery_status": payment.Delivery_status,
                     "product_id": order.product_id,
-                    "product_image": product_image,
+                    "product_image": product_image_url,
                     "product_name":product.product_name,
                     "shipping_status":order.shipping_status,
                     "delivery_status":order.delivery_status
@@ -3519,7 +3603,11 @@ def customer_get_payment_details_by_order(request):
             order_product_list = []
             for order in order_products:
                 product = ProductsDetails.objects.filter(id=order.product_id).first()
-                product_image = product.product_images[0] if product and product.product_images else ""
+                if product and product.product_images:
+                     product_image_path = product.product_images[0].replace('\\', '/')
+                     product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(product_image_path)}"
+                else:
+                     product_image_url = ""
                 
                 order_product_list.append({
                     "order_product_id": order.id,
@@ -3531,8 +3619,9 @@ def customer_get_payment_details_by_order(request):
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "order_status": order.order_status,
                     # "delivery_status":payments.Delivery_status,
+                    # "delivery_status":payments.Delivery_status,
                     "product_id": order.product_id,
-                    "product_image": product_image,
+                    "product_image": product_image_url,
                     "product_name":product.product_name
                 })
           
@@ -3586,26 +3675,39 @@ def customer_get_payment_details_by_order(request):
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)    
 
 
+import boto3
+from botocore.exceptions import ClientError
 def download_material_file(request, product_id):
     try:
         # Fetch product from the database
         product = ProductsDetails.objects.get(id=product_id)
-        material_path = product.material_file  # Path stored in the database
+        material_key = product.material_file  # Path stored in the database
 
-        if not material_path:
+        if not material_key:
             return JsonResponse({"error": "Material file not found.", "status_code": 404}, status=404)
+        
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME
+        )
 
-        # Get the absolute file path
-        full_path = os.path.join(settings.BASE_DIR, material_path)
+        try:
+            # Get the file from S3
+            file_obj = s3.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=material_key)
+            file_content = file_obj['Body'].read()
 
-        if not os.path.exists(full_path):
-            return JsonResponse({"error": "File does not exist.", "status_code": 404}, status=404)
+            # Return the file as a response
+            response = FileResponse(file_content, as_attachment=True)
+            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(material_key)}"'
+            response['Content-Type'] = file_obj['ContentType']  # Adjust the MIME type if necessary
 
-        # Open the file and return as a response
-        response = FileResponse(open(full_path, 'rb'), as_attachment=True)
-        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(full_path)}"'
-        response['Content-Type'] = 'application/pdf'  # Change if your file type is different
-        return response
+            return response
+
+        except ClientError as e:
+            return JsonResponse({"error": f"Failed to fetch material file from S3: {str(e)}", "status_code": 500}, status=500)
+
 
     except ProductsDetails.DoesNotExist:
         return JsonResponse({"error": "Product not found.", "status_code": 404}, status=404)
@@ -3871,12 +3973,16 @@ def get_all_category_subcategory(request):
             subcategories = SubCategoryDetails.objects.filter(category=category,sub_category_status=1)            
             sub_category_list = []
             for subcategory in subcategories:
-                sub_category_image= f"/static/images/subcategory/{os.path.basename(subcategory.sub_category_image.replace('\\', '/'))}"
+              sub_category_image_url = ""
+              if subcategory.sub_category_image:
+                    sub_category_image_path = subcategory.sub_category_image.replace('\\', '/')
+                    sub_category_image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{os.path.basename(sub_category_image_path)}"
 
-                sub_category_list.append({
+
+              sub_category_list.append({
                     "id": subcategory.id,
                     "sub_category_name": subcategory.sub_category_name,
-                    "sub_category_image": sub_category_image,
+                    "sub_category_image": sub_category_image_url,
                     
                 })     
             category_list.append({
@@ -4111,7 +4217,12 @@ def customer_cart_view_search(request):
                 discount_percent = float(product.discount or 0)  
                 discount_amount = (price * discount_percent) / 100  
                 final_price = price - discount_amount  
-                item_total_price = final_price * item.quantity  
+                item_total_price = final_price * item.quantity 
+                product_image_url = ""
+                if product.product_images:
+                    product_image_path = product.product_images[0].replace('\\', '/')
+                    product_image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{os.path.basename(product_image_path)}"
+ 
 
 
                 cart_list.append({
@@ -4126,7 +4237,7 @@ def customer_cart_view_search(request):
                     "total_price": round(item_total_price, 2),
                     "original_quantity": product.quantity,
                     "availability": product.availability,
-                    "image": product.product_images if product.product_images else None,
+                    "image": product_image_url,
                     "category": product.category.category_name if product.category else None,
                     "sub_category": product.sub_category.sub_category_name if product.sub_category else None
                 })
@@ -4366,7 +4477,7 @@ def filter_and_sort_products(request):
 
             if not subcategory_id or not sub_category_name:
                 return JsonResponse({"error": "sub_category_id and sub_category_name are required.", "status_code": 400}, status=400)
-            
+
             try:
                 category = CategoryDetails.objects.get(id=category_id)
                 if category.category_name != category_name:
@@ -4404,22 +4515,39 @@ def filter_and_sort_products(request):
 
             products_list = []
             for product in products_query:
+                product_images_url = []
+
+                # Safely handle product_images whether it's a string or list
+                if product.product_images:
+                    if isinstance(product.product_images, str):
+                        product_images = product.product_images.split(',')
+                    elif isinstance(product.product_images, list):
+                        product_images = product.product_images
+                    else:
+                        product_images = []
+
+                    for image in product_images:
+                        image_path = image.replace('\\', '/')
+                        product_images_url.append(f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(image_path)}")
+                else:
+                    product_images_url = []
+
                 product_data = {
                     "product_id": str(product.id),
                     "product_name": product.product_name,
                     "sku_number": product.sku_number,
                     "price": float(product.price),
-                  
-                    "discount":f"{int(product.discount)}%" if product.discount else "0%",
+                    "discount": f"{int(product.discount)}%" if product.discount else "0%",
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "availability": product.availability,
                     "quantity": product.quantity,
                     "description": product.description,
-                    "product_images": product.product_images,  
+                    "product_images": product_images_url,
                     "material_file": product.material_file,
                     "number_of_specifications": product.number_of_specifications,
                     "specifications": product.specifications,
                 }
+
                 products_list.append(product_data)
 
             price_range = products_query.aggregate(
@@ -4442,7 +4570,6 @@ def filter_and_sort_products(request):
                 "max_price": price_range["max_price"],
                 "products": products_list,
                 "status_code": 200,
-                
             }
 
             if customer_id:
@@ -4482,18 +4609,37 @@ def submit_feedback_rating(request):
             try:
                 customer = CustomerRegisterDetails.objects.get(id=customer_id)
                 product = ProductsDetails.objects.get(id=product_id)
-                order_product = OrderProducts.objects.get(id=product_order_id)  # Changed to id
-                admin = product.admin  # Assuming ProductsDetails has 'admin' foreign key
+                admin = product.admin  # Assuming ProductsDetails has 'admin' FK
 
-                # Query PaymentDetails using the product_order_id (which is a string)
-                payment = PaymentDetails.objects.filter(customer=customer, product_order_id=product_order_id).first()
+                # Get payment using product_order_id
+                payment = PaymentDetails.objects.filter(
+                    customer=customer, product_order_id=product_order_id
+                ).first()
+                if not payment:
+                    return JsonResponse({
+                        "error": "Payment not found for given product_order_id.",
+                        "status_code": 404
+                    }, status=404)
+
+                # Find matching order_product ID from payment.order_product_ids list
+                order_product = OrderProducts.objects.filter(
+                    id__in=payment.order_product_ids,
+                    product=product,
+                    customer=customer
+                ).first()
+                if not order_product:
+                    return JsonResponse({
+                        "error": "Matching order product not found.",
+                        "status_code": 404
+                    }, status=404)
+
             except Exception as e:
                 return JsonResponse({
-                    "error": f"Related object not found: {str(e)}",
+                    "error": f"Related object fetch error: {str(e)}",
                     "status_code": 404
                 }, status=404)
 
-            # Check for existing feedback
+            # Check if feedback already exists
             existing_feedback = FeedbackRating.objects.filter(
                 customer=customer, product=product, order_product=order_product
             ).first()
@@ -4502,27 +4648,45 @@ def submit_feedback_rating(request):
                     "error": "Feedback already submitted for this product and order.",
                     "status_code": 400
                 }, status=400)
+            current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
-            # Create new feedback entry
+            # Create feedback
             FeedbackRating.objects.create(
                 admin=admin,
                 customer=customer,
                 payment=payment,
                 order_product=order_product,
-                order_id=product_order_id,  # Use the correct ID
+                order_id=product_order_id,
                 product=product,
                 category=product.category.category_name if product.category else "",
                 sub_category=product.sub_category.sub_category_name if product.sub_category else "",
                 rating=rating if rating else None,
-                feedback=feedback
+                feedback=feedback,
+                created_at=current_time
             )
+            # current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
-            return JsonResponse({"message": "Feedback submitted successfully.", "status_code": 201}, status=201)
+
+            return JsonResponse({
+                "message": "Feedback submitted successfully.",
+                "status_code": 201,
+                "customer_id":customer_id,
+                "submitted_at": current_time
+            }, status=201)
 
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format.", "status_code": 400}, status=400)
+            return JsonResponse({
+                "error": "Invalid JSON format.",
+                "status_code": 400
+            }, status=400)
+
         except Exception as e:
-            return JsonResponse({"error": f"Server error: {str(e)}", "status_code": 500}, status=500)
+            return JsonResponse({
+                "error": f"Server error: {str(e)}",
+                "status_code": 500
+            }, status=500)
 
     else:
         return JsonResponse({
