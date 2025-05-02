@@ -960,24 +960,7 @@ def view_sub_categories_and_discounted_products(request):
                         "sub_category_id": str(product.sub_category.id),
                         "sub_category_name": product.sub_category.sub_category_name
                     })
-            # product_list = [
-            #     {
-            #         "product_id": str(product.id),
-            #         "product_name": product.product_name,
-            #         "product_image_url": f"/static/images/products/{os.path.basename(product.product_images[0].replace('\\', '/'))}" 
-            #         if isinstance(product.product_images, list) and product.product_images else "",
-            #         "price": product.price,
-            #         "discount": f"{int(product.discount)}%" if product.discount else "0%",
-            #         # "final_price": round(product.price - (product.discount or 0),2)
-            #         "final_price": final_price,
-            #         "category_id": str(category.id),
-            #         "category_name": category.category_name,
-            #         "sub_category_id": str(product.sub_category.id),
-            #         "sub_category_name": product.sub_category.sub_category_name
-            #     }
-            #     for product in products
-            # ]
-            # # Fetch overall price range for the category
+           
             all_products = ProductsDetails.objects.filter(category=category, product_status=1)
 
             if not all_products.exists():
@@ -2502,13 +2485,19 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
     product_html = ""
     for product in product_list:
         # delivery_date = product.get('delivery_date', 'Soon')  # Default to 'Soon' if not provided
-        image_path = product.get('image_path')
-        image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+        product_images = product.get('product_images', [])
+        image_url = ""
+
+        if product_images:
+            image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_images[0]}"  # Get the first image URL if available
+
+
 
         product_html += f"""
         <tr>
             <td style="padding: 10px;">
-                <img src="{product['image_url']}" width="80" height="80" style="border-radius: 5px;" />
+                <img src="{image_url}" width="80" height="80" style="border-radius: 5px;" />
+
             </td>
             <td style="padding: 10px;">
                 <strong>{product['name']}</strong><br>
@@ -3210,11 +3199,11 @@ def customer_search_products(request):
                 product_images = product.product_images
                 if isinstance(product_images, list):
                     product_image_url = (
-                        f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(product_images[0].replace('\\', '/'))}"
+                         f"{settings.AWS_S3_BUCKET_URL}/{product_images[0].replace('\\', '/')}"
                         if product_images else ""
                     )
                 elif isinstance(product_images, str):
-                     product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(product_images.replace('\\', '/'))}"
+                      product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_images.replace('\\', '/')}"
                 else:
                     product_image_url = ""      
 
@@ -3353,7 +3342,8 @@ def get_payment_details_by_order(request):
                 # product_image = product.product_images[0] if product and product.product_images else ""
                 if product and product.product_images:
                    product_image_path = product.product_images[0].replace('\\', '/')
-                   product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(product_image_path)}"
+                   product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_image_path}"
+
                 else:
                    product_image_url = ""
                 
@@ -3621,7 +3611,7 @@ def customer_get_payment_details_by_order(request):
                 product = ProductsDetails.objects.filter(id=order.product_id).first()
                 if product and product.product_images:
                      product_image_path = product.product_images[0].replace('\\', '/')
-                     product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(product_image_path)}"
+                     product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_image_path.lstrip('/')}"
                 else:
                      product_image_url = ""
                 
@@ -3716,7 +3706,8 @@ def download_material_file(request, product_id):
 
             # Return the file as a response
             response = FileResponse(file_content, as_attachment=True)
-            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(material_key)}"'
+            response['Content-Disposition'] = f'attachment; filename="{material_key.replace("\\", "/").split("/")[-1]}"'
+
             response['Content-Type'] = file_obj['ContentType']  # Adjust the MIME type if necessary
 
             return response
@@ -3992,7 +3983,8 @@ def get_all_category_subcategory(request):
               sub_category_image_url = ""
               if subcategory.sub_category_image:
                     sub_category_image_path = subcategory.sub_category_image.replace('\\', '/')
-                    sub_category_image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{os.path.basename(sub_category_image_path)}"
+                    sub_category_image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{sub_category_image_path}"
+
 
 
               sub_category_list.append({
@@ -4237,7 +4229,8 @@ def customer_cart_view_search(request):
                 product_image_url = ""
                 if product.product_images:
                     product_image_path = product.product_images[0].replace('\\', '/')
-                    product_image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{os.path.basename(product_image_path)}"
+                    product_image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{product_image_path}"
+
  
 
 
@@ -4544,7 +4537,8 @@ def filter_and_sort_products(request):
 
                     for image in product_images:
                         image_path = image.replace('\\', '/')
-                        product_images_url.append(f"{settings.AWS_S3_BUCKET_URL}/{os.path.basename(image_path)}")
+                        product_images_url.append(f"{settings.AWS_S3_BUCKET_URL}/{image_path.lstrip('/')}")
+
                 else:
                     product_images_url = []
 
@@ -4602,114 +4596,6 @@ def filter_and_sort_products(request):
 
 
 
-@csrf_exempt
-def submit_feedback_rating(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body.decode("utf-8"))
-
-            customer_id = data.get('customer_id')
-            product_id = data.get('product_id')
-            product_order_id = data.get('product_order_id')
-            rating = data.get('rating')  # Optional
-            feedback = data.get('feedback', "")  # Optional
-
-            # Validate required fields
-            if not all([customer_id, product_id, product_order_id]):
-                return JsonResponse({
-                    "error": "customer_id, product_id, and product_order_id are required.",
-                    "status_code": 400
-                }, status=400)
-
-            # Fetch related objects
-            try:
-                customer = CustomerRegisterDetails.objects.get(id=customer_id)
-                product = ProductsDetails.objects.get(id=product_id)
-                admin = product.admin  # Assuming ProductsDetails has 'admin' FK
-
-                # Get payment using product_order_id
-                payment = PaymentDetails.objects.filter(
-                    customer=customer, product_order_id=product_order_id
-                ).first()
-                if not payment:
-                    return JsonResponse({
-                        "error": "Payment not found for given product_order_id.",
-                        "status_code": 404
-                    }, status=404)
-
-                # Find matching order_product ID from payment.order_product_ids list
-                order_product = OrderProducts.objects.filter(
-                    id__in=payment.order_product_ids,
-                    product=product,
-                    customer=customer
-                ).first()
-                if not order_product:
-                    return JsonResponse({
-                        "error": "Matching order product not found.",
-                        "status_code": 404
-                    }, status=404)
-
-            except Exception as e:
-                return JsonResponse({
-                    "error": f"Related object fetch error: {str(e)}",
-                    "status_code": 404
-                }, status=404)
-
-            # Check if feedback already exists
-            existing_feedback = FeedbackRating.objects.filter(
-                customer=customer, product=product, order_product=order_product
-            ).first()
-            if existing_feedback:
-                return JsonResponse({
-                    "error": "Feedback already submitted for this product and order.",
-                    "status_code": 400
-                }, status=400)
-            current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
-            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-
-            # Create feedback
-            FeedbackRating.objects.create(
-                admin=admin,
-                customer=customer,
-                payment=payment,
-                order_product=order_product,
-                order_id=product_order_id,
-                product=product,
-                category=product.category.category_name if product.category else "",
-                sub_category=product.sub_category.sub_category_name if product.sub_category else "",
-                rating=rating if rating else None,
-                feedback=feedback,
-                created_at=current_time
-            )
-            # current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
-            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-
-
-            return JsonResponse({
-                "message": "Feedback submitted successfully.",
-                "status_code": 201,
-                "customer_id":customer_id,
-                "submitted_at": current_time
-            }, status=201)
-
-        except json.JSONDecodeError:
-            return JsonResponse({
-                "error": "Invalid JSON format.",
-                "status_code": 400
-            }, status=400)
-
-        except Exception as e:
-            return JsonResponse({
-                "error": f"Server error: {str(e)}",
-                "status_code": 500
-            }, status=500)
-
-    else:
-        return JsonResponse({
-            "error": "Invalid HTTP method. Only POST allowed.",
-            "status_code": 405
-        }, status=405)
-
 
 @csrf_exempt
 def submit_feedback_rating(request):
@@ -4818,6 +4704,251 @@ def submit_feedback_rating(request):
             "error": "Invalid HTTP method. Only POST allowed.",
             "status_code": 405
         }, status=405)
+
+
+@csrf_exempt
+def submit_feedback_rating(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+
+            customer_id = data.get('customer_id')
+            product_id = data.get('product_id')
+            product_order_id = data.get('product_order_id')
+            rating = data.get('rating')  # Optional
+            feedback = data.get('feedback', "")  # Optional
+
+            # Validate required fields
+            if not all([customer_id, product_id, product_order_id]):
+                return JsonResponse({
+                    "error": "customer_id, product_id, and product_order_id are required.",
+                    "status_code": 400
+                }, status=400)
+
+            # Fetch related objects
+            try:
+                customer = CustomerRegisterDetails.objects.get(id=customer_id)
+                product = ProductsDetails.objects.get(id=product_id)
+                admin = product.admin  # Assuming ProductsDetails has 'admin' FK
+
+                # Get payment using product_order_id
+                payment = PaymentDetails.objects.filter(
+                    customer=customer, product_order_id=product_order_id
+                ).first()
+                if not payment:
+                    return JsonResponse({
+                        "error": "Payment not found for given product_order_id.",
+                        "status_code": 404
+                    }, status=404)
+
+                # Find matching order_product ID from payment.order_product_ids list
+                order_product = OrderProducts.objects.filter(
+                    id__in=payment.order_product_ids,
+                    product=product,
+                    customer=customer
+                ).first()
+                if not order_product:
+                    return JsonResponse({
+                        "error": "Matching order product not found.",
+                        "status_code": 404
+                    }, status=404)
+
+            except Exception as e:
+                return JsonResponse({
+                    "error": f"Related object fetch error: {str(e)}",
+                    "status_code": 404
+                }, status=404)
+
+            # Check if feedback already exists
+            existing_feedback = FeedbackRating.objects.filter(
+                customer=customer, product=product, order_product=order_product
+            ).first()
+            if existing_feedback:
+                return JsonResponse({
+                    "error": "Feedback already submitted for this product and order.",
+                    "status_code": 400
+                }, status=400)
+            current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+            # Create feedback
+            FeedbackRating.objects.create(
+                admin=admin,
+                customer=customer,
+                payment=payment,
+                order_product=order_product,
+                order_id=product_order_id,
+                product=product,
+                category=product.category.category_name if product.category else "",
+                sub_category=product.sub_category.sub_category_name if product.sub_category else "",
+                rating=rating if rating else None,
+                feedback=feedback,
+                created_at=current_time
+            )
+            # current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+
+
+            return JsonResponse({
+                "message": "Feedback submitted successfully.",
+                "status_code": 201,
+                "customer_id":customer_id,
+                "submitted_at": current_time
+            }, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "error": "Invalid JSON format.",
+                "status_code": 400
+            }, status=400)
+
+        except Exception as e:
+            return JsonResponse({
+                "error": f"Server error: {str(e)}",
+                "status_code": 500
+            }, status=500)
+
+    else:
+        return JsonResponse({
+            "error": "Invalid HTTP method. Only POST allowed.",
+            "status_code": 405
+        }, status=405)
+
+@csrf_exempt
+def filter_my_order(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        customer_id = data.get('customer_id')
+        order_status_filter = data.get('delivery_status')
+        order_time_filter = data.get('order_time')
+
+        if not customer_id:
+            return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
+
+        # Filter by customer_id
+        payments = PaymentDetails.objects.filter(customer_id=customer_id)
+
+        # Dynamic year filters (keep last 4 years + older)
+        available_years = payments.dates('created_at', 'year', order='DESC')
+        year_options = ["Last 30 days"] + [dt.year for dt in available_years if dt.year >= datetime.now().year - 3] + ["Older"]
+
+
+        # Dynamic time filtering
+        now = datetime.now()
+        if order_time_filter:
+            if order_time_filter == "Last 30 days":
+                payments = payments.filter(created_at__gte=now - timedelta(days=30))
+            elif order_time_filter == "Older":
+                payments = payments.filter(created_at__lt=datetime(now.year - 3, 1, 1))
+            elif order_time_filter.isdigit():
+                payments = payments.filter(created_at__year=int(order_time_filter))
+
+        payments = payments.order_by('-created_at')
+
+        if not payments.exists():
+            return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
+
+        payment_list = []
+        total_matched_order_products = 0
+
+        for payment in payments:
+            order_ids = payment.order_product_ids
+            order_products = OrderProducts.objects.filter(id__in=order_ids)
+
+            # Apply order status filter if provided
+            if order_status_filter:
+                order_products = order_products.filter(delivery_status=order_status_filter)
+
+            order_product_list = []
+            for order in order_products:
+                product = ProductsDetails.objects.filter(id=order.product_id).first()
+                product_image = product.product_images[0] if product and product.product_images else ""
+
+                order_product_list.append({
+                    "order_product_id": order.id,
+                    "quantity": order.quantity,
+                    "price": order.price,
+                    "discount": f"{int(product.discount)}%" if product.discount else "0%",
+                    "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
+                    "order_status": order.order_status,
+                    # "shipping_status":order.shipping_status,
+                    "delivery_status":order.delivery_status,
+                    "product_id": order.product_id,
+                    "product_image": product_image,
+                    "product_name": product.product_name
+                })
+
+            # # Skip payment if no products matched the order status filter
+            # if order_status_filter and not order_product_list:
+            #     continue
+            if order_product_list:
+                total_matched_order_products += len(order_product_list)
+            else:
+                if order_status_filter:
+                    continue  # Skip payments where no product matches the delivery status
+
+
+            address_data = []
+            if payment.customer_address_id:
+                address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
+                if address_obj:
+                    address_data.append({
+                        "address_id": address_obj.id,
+                        "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
+                        "email": address_obj.email,
+                        "mobile_number": address_obj.mobile_number,
+                        "alternate_mobile": address_obj.alternate_mobile,
+                        "address_type": address_obj.address_type,
+                        "pincode": address_obj.pincode,
+                        "street": address_obj.street,
+                        "landmark": address_obj.landmark,
+                        "village": address_obj.village,
+                        "mandal": address_obj.mandal,
+                        "postoffice": address_obj.postoffice,
+                        "district": address_obj.district,
+                        "state": address_obj.state,
+                        "country": address_obj.country,
+                    })
+
+            payment_list.append({
+                # "razorpay_order_id": payment.razorpay_order_id,
+                "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
+                "email": payment.customer.email,
+                "mobile_number": payment.customer.mobile_no,
+                "payment_mode": payment.payment_mode,
+                "total_quantity": payment.quantity,
+                "total_amount": payment.total_amount,
+                "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "time_filters": year_options,
+                "product_order_id": payment.product_order_id,
+                "customer_address": address_data,
+                "order_products": order_product_list
+            })
+
+        if order_status_filter and total_matched_order_products == 0:
+            return JsonResponse({
+                "error": "No products found for the selected delivery status.",
+                "status_code": 404,
+                "time_filters": year_options
+            }, status=404)
+        if not payment_list:
+            return JsonResponse({"error": "No order details match filters.", "status_code": 404}, status=404)
+
+        return JsonResponse({
+            "message": "Filtered Orders Retrieved Successfully.",
+            "payments": payment_list,
+            "status_code": 200,
+            "customer_id": str(customer_id)
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e), "status_code": 500}, status=500)
+
+
+
 
 @csrf_exempt
 def edit_feedback_rating(request):

@@ -1678,9 +1678,9 @@ def view_products(request):
                 gst = round(float(product.get('gst') or 0), 2)  # Round GST to 2 decimals
 
                 discount_amount = round(price * (discount / 100), 2)  # Round discount amount to 2 decimals
-                price_after_discount = round(price - discount_amount, 2)  # Round price after discount
-                gst_amount = round(price_after_discount * (gst / 100), 2)  # Round GST amount
-                final_price = round(price_after_discount + gst_amount, 2)  # Final price rounded to 2 decimals
+                final_price = round(price - discount_amount, 2)  # Round price after discount
+                # gst_amount = round(price_after_discount * (gst / 100), 2)  # Round GST amount
+                # final_price = round(price_after_discount + gst_amount, 2)  # Final price rounded to 2 decimals
 
 
                 product_list.append({
@@ -1760,8 +1760,8 @@ def view_product_details(request):
                     price_after_discount = round(price - discount_amount, 2)
 
             # GST calculation
-                    gst_amount = round(price_after_discount * (gst / 100), 2)
-                    final_price = round(price_after_discount + gst_amount, 2)
+                    # gst_amount = round(price_after_discount * (gst / 100), 2)
+                    # final_price = round(price_after_discount + gst_amount, 2)
 
 
             product_data = {
@@ -1773,8 +1773,8 @@ def view_product_details(request):
                 "discount_amount": f"{discount_amount:.2f}",
                 "price_after_discount": f"{price_after_discount:.2f}",
                 "gst": f"{gst}%",
-                "gst_amount": f"{gst_amount:.2f}",
-                "final_price": f"{final_price:.2f}",
+                # "gst_amount": f"{gst_amount:.2f}",
+                # "final_price": f"{final_price:.2f}",
                 "availability": product.availability,
                 "quantity": product.quantity,
                 "description": product.description,
