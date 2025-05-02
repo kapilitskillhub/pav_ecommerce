@@ -43,7 +43,8 @@ from pavaman_backend.customer_views import (customer_register,customer_login,vie
     get_payment_details_by_order, download_material_file,customer_get_payment_details_by_order,customer_logout,
     report_monthly_revenue_by_year,report_sales_summary, edit_customer_profile,get_customer_profile,
     top_five_selling_products,get_all_category_subcategory,not_selling_products,filter_my_order,
-    generate_invoice_for_customer,admin_order_status,customer_cart_view_search,edit_profile_mobile_otp_handler,edit_profile_email_otp_handler,filter_and_sort_products,filter_customer_orders,submit_feedback_rating
+    generate_invoice_for_customer,admin_order_status,customer_cart_view_search,edit_profile_mobile_otp_handler,edit_profile_email_otp_handler,
+    filter_and_sort_products,submit_feedback_rating
 )
 
 
@@ -151,8 +152,6 @@ urlpatterns = [
     path('filter-and-sort-products',filter_and_sort_products,name= 'filter_and_sort_products'),
     path('download-discount-products-excel',download_discount_products_excel,name= 'download_discount_products_excel'),
     path('apply-discount-subcategory',apply_discount_by_subcategory_only,name= 'apply_discount_by_subcategory_only'),
-    # path('update-order-status',update_order_status,name= 'update_order_status'),
-    path('filter-customer-orders',filter_customer_orders,name= 'filter_customer_orders'),
     path('submit_feedback_rating',submit_feedback_rating,name= 'submit_feedback_rating'),
     path('order-or-delivery-status',order_or_delivery_status,name= 'order_or_delivery_status'),
     path('filter-my-order',filter_my_order,name= 'filter_my_order'),
