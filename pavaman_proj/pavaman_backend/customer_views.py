@@ -3451,6 +3451,7 @@ def filter_my_order(request):
         data = json.loads(request.body.decode("utf-8"))
         customer_id = data.get('customer_id')
         order_status_filter = data.get('delivery_status')
+        shipping_status_filter = data.get('shipping_status')
         order_time_filter = data.get('order_time')
 
         if not customer_id:
@@ -3486,9 +3487,20 @@ def filter_my_order(request):
             order_ids = payment.order_product_ids
             order_products = OrderProducts.objects.filter(id__in=order_ids)
 
-            # Apply order status filter if provided
+            # # Apply order status filter if provided
+            # if order_status_filter:
+            #     order_products = order_products.filter(delivery_status=order_status_filter)
+
+             # Apply delivery status filter if provided
             if order_status_filter:
-                order_products = order_products.filter(delivery_status=order_status_filter)
+                if order_status_filter == "delivered":
+                    order_products = order_products.filter(delivery_status="delivered")
+                elif order_status_filter == "shipped":
+                    order_products = order_products.filter(delivery_status="shipped")
+
+            # If shipping_status is provided, filter by it
+            if shipping_status_filter:
+                order_products = order_products.filter(shipping_status=shipping_status_filter)
 
             order_product_list = []
             for order in order_products:
@@ -3504,6 +3516,7 @@ def filter_my_order(request):
                     "order_status": order.order_status,
                     # "shipping_status":order.shipping_status,
                     "delivery_status":order.delivery_status,
+                    "shipping_status": order.shipping_status,
                     "product_id": order.product_id,
                     "product_image": product_image,
                     "product_name": product.product_name
@@ -3512,6 +3525,9 @@ def filter_my_order(request):
             # # Skip payment if no products matched the order status filter
             # if order_status_filter and not order_product_list:
             #     continue
+            # Skip payment if no products matched the order status filter
+            if order_status_filter and not order_product_list:
+                continue
             if order_product_list:
                 total_matched_order_products += len(order_product_list)
             else:
@@ -3618,8 +3634,8 @@ def customer_get_payment_details_by_order(request):
                     "discount":f"{int(product.discount)}%" if product.discount else "0%",
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "order_status": order.order_status,
-                    # "delivery_status":payments.Delivery_status,
-                    # "delivery_status":payments.Delivery_status,
+                    "shipping_status":order.shipping_status,
+                    "delivery_status":order.delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
                     "product_name":product.product_name
