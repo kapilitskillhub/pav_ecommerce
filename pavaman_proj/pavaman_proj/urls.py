@@ -44,7 +44,7 @@ from pavaman_backend.customer_views import (customer_register,customer_login,vie
     report_monthly_revenue_by_year,report_sales_summary, edit_customer_profile,get_customer_profile,
     top_five_selling_products,get_all_category_subcategory,not_selling_products,filter_my_order,
     generate_invoice_for_customer,admin_order_status,customer_cart_view_search,edit_profile_mobile_otp_handler,edit_profile_email_otp_handler,
-    filter_and_sort_products,submit_feedback_rating
+    filter_and_sort_products,submit_feedback_rating,edit_feedback_rating,view_rating
 )
 
 
@@ -155,6 +155,8 @@ urlpatterns = [
     path('submit_feedback_rating',submit_feedback_rating,name= 'submit_feedback_rating'),
     path('order-or-delivery-status',order_or_delivery_status,name= 'order_or_delivery_status'),
     path('filter-my-order',filter_my_order,name= 'filter_my_order'),
+    path('edit-feedback-rating',edit_feedback_rating,name= 'edit_feedback_rating'),
+    path('view-rating',view_rating,name= 'view_rating'),
 
 
 

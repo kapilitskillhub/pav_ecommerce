@@ -4802,3 +4802,183 @@ def submit_feedback_rating(request):
             "error": "Invalid HTTP method. Only POST allowed.",
             "status_code": 405
         }, status=405)
+
+@csrf_exempt
+def edit_feedback_rating(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+
+            customer_id = data.get('customer_id')
+            product_id = data.get('product_id')
+            product_order_id = data.get('product_order_id')
+            rating = data.get('rating')  # Optional
+            feedback = data.get('feedback')  # Optional
+
+            # Validate required fields
+            if not all([customer_id, product_id, product_order_id]):
+                return JsonResponse({
+                    "error": "customer_id, product_id, and product_order_id are required.",
+                    "status_code": 400
+                }, status=400)
+
+            # Fetch related objects
+            try:
+                customer = CustomerRegisterDetails.objects.get(id=customer_id)
+                product = ProductsDetails.objects.get(id=product_id)
+
+                payment = PaymentDetails.objects.filter(
+                    customer=customer, product_order_id=product_order_id
+                ).first()
+                if not payment:
+                    return JsonResponse({
+                        "error": "Payment not found for given product_order_id.",
+                        "status_code": 404
+                    }, status=404)
+
+                order_product = OrderProducts.objects.filter(
+                    id__in=payment.order_product_ids,
+                    product=product,
+                    customer=customer
+                ).first()
+                if not order_product:
+                    return JsonResponse({
+                        "error": "Matching order product not found.",
+                        "status_code": 404
+                    }, status=404)
+
+            except Exception as e:
+                return JsonResponse({
+                    "error": f"Related object fetch error: {str(e)}",
+                    "status_code": 404
+                }, status=404)
+
+            # Fetch existing feedback
+            existing_feedback = FeedbackRating.objects.filter(
+                customer=customer,
+                product=product,
+                order_product=order_product
+            ).first()
+
+            if not existing_feedback:
+                return JsonResponse({
+                    "error": "No existing feedback found to update.",
+                    "status_code": 404
+                }, status=404)
+
+            # Update feedback fields
+            if rating is not None:
+                existing_feedback.rating = rating
+            if feedback is not None:
+                existing_feedback.feedback = feedback
+
+            existing_feedback.updated_at = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            existing_feedback.save()
+
+            return JsonResponse({
+                "message": "Feedback updated successfully.",
+                "status_code": 200,
+                "customer_id": customer_id,
+                "updated_at": existing_feedback.updated_at,
+                "customer_id":customer_id
+            }, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "error": "Invalid JSON format.",
+                "status_code": 400
+            }, status=400)
+
+        except Exception as e:
+            return JsonResponse({
+                "error": f"Server error: {str(e)}",
+                "status_code": 500
+            }, status=500)
+
+    else:
+        return JsonResponse({
+            "error": "Invalid HTTP method. Only POST allowed.",
+            "status_code": 405
+        }, status=405)
+
+    
+
+
+@csrf_exempt
+def view_rating(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+
+            customer_id = data.get('customer_id')
+            product_id = data.get('product_id')
+            product_order_id = data.get('product_order_id')
+
+            # Validate required fields
+            if not all([customer_id, product_id, product_order_id]):
+                return JsonResponse({
+                    "error": "customer_id, product_id, and product_order_id are required.",
+                    "status_code": 400
+                }, status=400)
+
+            # Fetch related objects
+            customer = CustomerRegisterDetails.objects.get(id=customer_id)
+            product = ProductsDetails.objects.get(id=product_id)
+
+            # Get payment using product_order_id
+            payment = PaymentDetails.objects.filter(
+                customer=customer, product_order_id=product_order_id
+            ).first()
+            if not payment:
+                return JsonResponse({
+                    "error": "Payment not found for given product_order_id.",
+                    "status_code": 404
+                }, status=404)
+
+            order_product = OrderProducts.objects.filter(
+                id__in=payment.order_product_ids,
+                product=product,
+                customer=customer
+            ).first()
+            if not order_product:
+                return JsonResponse({
+                    "error": "Matching order product not found.",
+                    "status_code": 404
+                }, status=404)
+
+            # Fetch rating only
+            feedback_obj = FeedbackRating.objects.filter(
+                customer=customer,
+                product=product,
+                order_product=order_product
+            ).first()
+
+            if not feedback_obj:
+                return JsonResponse({
+                    "error": "Feedback not found.",
+                    "status_code": 404
+                }, status=404)
+
+            return JsonResponse({
+                "rating": feedback_obj.rating,
+                "customer_id":customer_id,
+                "status_code": 200
+            }, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "error": "Invalid JSON format.",
+                "status_code": 400
+            }, status=400)
+
+        except Exception as e:
+            return JsonResponse({
+                "error": f"Server error: {str(e)}",
+                "status_code": 500
+            }, status=500)
+
+    else:
+        return JsonResponse({
+            "error": "Invalid HTTP method. Only POST allowed.",
+            "status_code": 405
+        }, status=405)
