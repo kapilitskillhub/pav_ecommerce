@@ -151,8 +151,6 @@ urlpatterns = [
     path('filter-and-sort-products',filter_and_sort_products,name= 'filter_and_sort_products'),
     path('download-discount-products-excel',download_discount_products_excel,name= 'download_discount_products_excel'),
     path('apply-discount-subcategory',apply_discount_by_subcategory_only,name= 'apply_discount_by_subcategory_only'),
-    # path('update-order-status',update_order_status,name= 'update_order_status'),
-   
     path('submit-feedback-rating',submit_feedback_rating,name= 'submit_feedback_rating'),
     path('order-or-delivery-status',order_or_delivery_status,name= 'order_or_delivery_status'),
     path('filter-my-order',filter_my_order,name= 'filter_my_order'),
