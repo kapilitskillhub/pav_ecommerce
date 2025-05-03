@@ -3363,8 +3363,6 @@ def get_payment_details_by_order(request):
                     "discount":f"{int(product.discount)}%" if product.discount else "0%",
                     "final_price": "{:.2f}".format(float(product.price) - (float(product.price) * float(product.discount or 0) / 100)),
                     "order_status": order.order_status,
-                    "shipping":payments.shipping_status,
-                    "delivery_status":payments.delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
                     "product_name":product.product_name,
@@ -3447,6 +3445,8 @@ def filter_my_order(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
         customer_id = data.get('customer_id')
+        delivery_status_filter = data.get('delivery_status')
+        shipping_status_filter = data.get('shipping_status')  # new
         delivery_status_filter = data.get('delivery_status')
         shipping_status_filter = data.get('shipping_status')  # new
         order_time_filter = data.get('order_time')

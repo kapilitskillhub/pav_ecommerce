@@ -2933,8 +2933,6 @@ def report_inventory_summary(request):
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
 
-
-
 from django.db.models import Sum
 from django.db.models import Count
 
@@ -2991,14 +2989,6 @@ def top_buyers_report(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-
-
-
-
-
-
-
 
 from django.db.models import Count, F
 
