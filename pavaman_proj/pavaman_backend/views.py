@@ -12,7 +12,7 @@ from django.contrib.sessions.models import Session
 import random 
 from .sms_utils import send_bulk_sms 
 from pavaman_backend.models import (CustomerRegisterDetails, PavamanAdminDetails, CategoryDetails,SubCategoryDetails,ProductsDetails,
-                                    PaymentDetails,OrderProducts,FeedbackRating)
+                                    PaymentDetails,OrderProducts,FeedbackRating,CustomerAddress)
 from openpyxl import Workbook
 from io import BytesIO
 from django.http import HttpResponse
@@ -1757,7 +1757,7 @@ def view_product_details(request):
 
 
                     discount_amount = round(price * (discount / 100), 2)
-                    price_after_discount = round(price - discount_amount, 2)
+                    final_price = round(price - discount_amount, 2)
 
             # GST calculation
                     # gst_amount = round(price_after_discount * (gst / 100), 2)
@@ -1771,7 +1771,7 @@ def view_product_details(request):
                 "price": f"{price:.2f}",
                 "discount": f"{discount}%",
                 "discount_amount": f"{discount_amount:.2f}",
-                "price_after_discount": f"{price_after_discount:.2f}",
+                "final_price": f"{final_price:.2f}",
                 "gst": f"{gst}%",
                 # "gst_amount": f"{gst_amount:.2f}",
                 # "final_price": f"{final_price:.2f}",
@@ -1975,9 +1975,9 @@ def edit_product(request):
                     return JsonResponse({"error": f"Failed to upload material file to S3: {str(e)}", "status_code": 500}, status=500)
             
 
-            discounted_price = price - (price * discount / 100)
-            gst_amount = (discounted_price * gst) / 100
-            final_price = discounted_price + gst_amount
+            final_price = price - (price * discount / 100)
+            # gst_amount = (discounted_price * gst) / 100
+            # final_price = discounted_price + gst_amount
             # Save the updated product details
             product.save()
 
@@ -1992,10 +1992,10 @@ def edit_product(request):
                 "cart_status": product.cart_status,
                 "price": round(price, 2),
                 "discount": round(discount, 2),
-                "discounted_price": round(discounted_price, 2),
-                "gst_rate": round(gst, 2),
-                "gst_amount": round(gst_amount, 2),
-                "final_price": round(final_price, 2),
+                # "discounted_price": round(discounted_price, 2),
+                "gst": round(gst, 2),
+                # "gst_amount": round(gst_amount, 2),
+                "final_price": round(final_price , 2),
                 "status_code": 200
             }, status=200)
 
@@ -2373,9 +2373,11 @@ def discount_products(request):
                 discount = float(product.discount or 0)
                 gst = float(product.gst or 0)
 
-                discounted_price = price - discount
-                gst_amount = round((discounted_price * gst) / 100, 2)
-                final_price = round(discounted_price + gst_amount, 2)
+                
+                discounted_price = round(price - discount, 2)
+                final_price = round((discount / price) * 100, 2) if price > 0 else 0
+                # gst_amount = round((discounted_price * gst) / 100, 2)
+                # final_price = round(discounted_price + gst_amount, 2)
 
 
                 product_list.append({
@@ -2384,9 +2386,9 @@ def discount_products(request):
                     "sku_number": product.sku_number,
                     "price": round(price, 2),
                     "gst": f"{round(gst, 2)}%",
-                    "gst_amount": round(gst_amount, 2),
+                    "discount_amount": round(discounted_price, 2),
                     "discount": f"{round(discount, 2)}%",
-                    "final_price": round(float(product.price) - float(product.discount), 2),
+                    "final_price":round(final_price, 2),
                     "quantity": product.quantity,
                     "material_file": material_file_url,
                     "description": product.description,
@@ -2542,9 +2544,9 @@ def download_discount_products_excel(request):
                 price = float(product.price)
                 discount = float(product.discount)
                 gst = float(product.gst) if hasattr(product, 'gst') and product.gst else 0
-                final_price = price - discount
-                gst_amount = (final_price * gst / 100)
-                final_price = final_price + gst_amount  # Now includes GST
+                final_price =  round((discount / price) * 100, 2) if price > 0 else 0
+                # gst_amount = (final_price * gst / 100)
+                # final_price = final_price + gst_amount  # Now includes GST
 
                  # Generate the S3 URL for material file
                 material_file_url = (
@@ -2559,7 +2561,7 @@ def download_discount_products_excel(request):
                     round(price, 2),
                     f"{round(discount)}%",
                     f"{round(gst)}%",
-                    round(gst_amount, 2),
+                    # round(gst_amount, 2),
                     round(final_price, 2),
                     product.quantity,
                     material_file_url,
@@ -2667,14 +2669,17 @@ def apply_discount_by_subcategory_only(request):
                 updated_products = []
 
                 for product in products:
-                    price = product.price
-                    discount_price = price * (discount / 100)
-                    final_price = price - discount_price
+                    price = float(product.price or 0)
+                    discount = float(product.discount or 0)
+                    gst = float(product.gst or 0)
+                    discount_amount = (price * discount / 100) if price > 0 else 0
+                    final_price = round(price - discount_amount, 2)
+
 
                     # Directly check and apply the GST value (if exists)
-                    gst = product.gst if product.gst else 0
-                    gst_amount = (final_price * gst / 100)
-                    final_price_with_gst = final_price + gst_amount
+                    # gst = product.gst if product.gst else 0
+                    # gst_amount = (final_price * gst / 100)
+                    # final_price_with_gst = final_price + gst_amount
                     product.discount = discount
                     product.save(update_fields=['discount'])
 
@@ -2684,8 +2689,8 @@ def apply_discount_by_subcategory_only(request):
                         "price": round(price, 2),
                         "discount": f"{round(discount, 2)}%",  # Added discount with '%' symbol
                         "gst": f"{round(gst, 2)}%",  # GST in percentage format
-                        "gst_amount": round(gst_amount, 2),  # GST amount calculated
-                        "final_price": round(final_price_with_gst, 2)
+                        # "gst_amount": round(gst_amount, 2),  # GST amount calculated
+                        "final_price": round(final_price, 2)
                     })
 
                 response_categories.append({
@@ -2893,3 +2898,277 @@ def retrieve_feedback(request):
         "error": "Invalid HTTP method. Only POST allowed.",
         "status_code": 405
     }, status=405)
+
+
+
+@csrf_exempt
+def report_inventory_summary(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        admin_id = data.get('admin_id')
+
+        if not admin_id:
+            return JsonResponse({"error": "admin_id is required.", "status_code": 400}, status=400)
+
+        total_products = ProductsDetails.objects.filter(admin_id=admin_id).count()
+        total_customers = CustomerRegisterDetails.objects.filter(admin_id=admin_id).count()
+
+        low_stock_products = ProductsDetails.objects.filter(
+            admin_id=admin_id,
+            quantity__lt=10
+        ).values('product_name', 'sku_number', 'quantity')
+
+        return JsonResponse({
+            "total_products": total_products,
+            "total_customers": total_customers,
+            "low_stock_products": list(low_stock_products),
+            "status_code": 200,
+            "admin_id": admin_id
+        }, status=200)
+    
+    except Exception as e:
+        return JsonResponse({"error": str(e), "status_code": 500}, status=500)
+
+
+
+
+from django.db.models import Sum
+from django.db.models import Count
+
+@csrf_exempt
+def top_buyers_report(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        admin_id = data.get('admin_id')
+
+        if not admin_id:
+            return JsonResponse({"error": "admin_id is required.", "status_code": 400}, status=400)
+
+        payments = PaymentDetails.objects.filter(admin_id=admin_id)
+
+        all_order_product_ids = []
+        for p in payments:
+            if isinstance(p.order_product_ids, list):
+                all_order_product_ids.extend(p.order_product_ids)
+
+     
+        buyers_data = (
+            OrderProducts.objects
+            .filter(admin_id=admin_id, id__in=all_order_product_ids)
+            .values('customer_id')
+            .annotate(
+                product_count=Count('product_id'),      
+                total_quantity=Sum('quantity')          
+            )
+            .order_by('-total_quantity')  
+        )
+
+        result = []
+        for buyer in buyers_data:
+            try:
+                customer = CustomerRegisterDetails.objects.get(id=buyer['customer_id'])
+                result.append({
+                    "customer_id": customer.id,
+                    "name": f"{customer.first_name} {customer.last_name}",
+                    "email": customer.email,
+                    "mobile_no": customer.mobile_no,
+                    "product_count": buyer['product_count'],
+                    "total_quantity": buyer['total_quantity']
+                })
+            except CustomerRegisterDetails.DoesNotExist:
+                continue
+
+        return JsonResponse({
+            "buyers": result,
+            "status_code": 200,
+            "admin_id": admin_id
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e), "status_code": 500}, status=500)
+
+
+
+
+
+
+
+
+
+from django.db.models import Count, F
+
+@csrf_exempt
+def customer_growth_by_state(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            admin_id = data.get("admin_id")
+
+            if not admin_id:
+                return JsonResponse({
+                    "status_code": 400,
+                    "message": "admin_id is required."
+                })
+
+            # Filter customers for given admin_id with non-empty mobile number
+            customers = CustomerRegisterDetails.objects.filter(
+                admin_id=admin_id
+            ).exclude(mobile_no="")
+
+            # Filter matched addresses where mobile number is same as in CustomerRegisterDetails
+            matched_addresses = CustomerAddress.objects.filter(
+                customer__in=customers,
+                mobile_number=F('customer__mobile_no')
+            ).exclude(state="").values(
+                'state',
+                'district',
+                'pincode',
+                'mandal',
+                'village',
+                'postoffice'
+            ).annotate(
+                customer_count=Count('customer', distinct=True)
+            ).order_by('-customer_count')
+
+            return JsonResponse({
+                "status_code": 200,
+                "message": "Customer growth by state (mobile number match)",
+                "data": list(matched_addresses)
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                "status_code": 500,
+                "message": "Error occurred.",
+                "error": str(e)
+            })
+    else:
+        return JsonResponse({
+            "status_code": 405,
+            "message": "Method Not Allowed. Use POST."
+        }, status=405)
+
+
+
+
+# from django.db.models.functions import TruncMonth
+# @csrf_exempt
+# def monthly_product_orders(request):
+#     if request.method == "POST":
+#         try:
+#             data = json.loads(request.body.decode('utf-8'))
+#             admin_id = data.get("admin_id")
+
+#             if not admin_id:
+#                 return JsonResponse({
+#                     "status_code": 400,
+#                     "message": "admin_id is required."
+#                 })
+
+#             # Monthly grouping of total products ordered by quantity
+#             monthly_data = OrderProducts.objects.filter(
+#                 admin_id=admin_id
+#             ).annotate(
+#                 month=TruncMonth('created_at')
+#             ).values(
+#                 'month'
+#             ).annotate(
+#                 total_quantity=Sum('quantity')
+#             ).order_by('month')
+
+#             # Format month as string
+#             result = [
+#                 {
+#                     "month": item["month"].strftime("%Y-%m"),
+#                     "total_quantity": item["total_quantity"]
+#                 }
+#                 for item in monthly_data
+#             ]
+
+#             return JsonResponse({
+#                 "status_code": 200,
+#                 "message": "Monthly total products ordered.",
+#                 "data": result
+#             })
+
+#         except Exception as e:
+#             return JsonResponse({
+#                 "status_code": 500,
+#                 "message": "Error occurred.",
+#                 "error": str(e)
+#             })
+#     else:
+#         return JsonResponse({
+#             "status_code": 405,
+#             "message": "Method Not Allowed. Use POST."
+#         }, status=405)
+
+
+from django.db.models.functions import TruncMonth
+@csrf_exempt
+def monthly_product_orders(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            admin_id = data.get("admin_id")
+
+            if not admin_id:
+                return JsonResponse({
+                    "status_code": 400,
+                    "message": "admin_id is required."
+                })
+
+            # Get all successfully paid order IDs
+            paid_order_ids = PaymentDetails.objects.filter(
+                admin_id=admin_id,
+                razorpay_payment_id__isnull=False
+            ).values_list("order_product_ids", flat=True)
+
+            # Flatten the list of JSONField lists
+            order_ids = []
+            for item in paid_order_ids:
+                order_ids.extend(item)  # Because order_product_ids is a list (JSONField)
+
+            # Monthly grouping of only paid orders
+            monthly_data = OrderProducts.objects.filter(
+                admin_id=admin_id,
+                id__in=order_ids
+            ).annotate(
+                month=TruncMonth('created_at')
+            ).values(
+                'month'
+            ).annotate(
+                total_quantity=Sum('quantity')
+            ).order_by('month')
+
+            
+            result = [
+                {
+                    "month": item["month"].strftime("%Y-%m"),
+                    "total_quantity": item["total_quantity"]
+                }
+                for item in monthly_data
+            ]
+
+            return JsonResponse({
+                "status_code": 200,
+                "message": "Monthly total products ordered.",
+                "data": result
+            })
+
+        except Exception as e:
+            return JsonResponse({
+                "status_code": 500,
+                "message": "Error occurred.",
+                "error": str(e)
+            })
+    else:
+        return JsonResponse({
+            "status_code": 405,
+            "message": "Method Not Allowed. Use POST."
+        }, status=405)
