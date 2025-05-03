@@ -3363,8 +3363,6 @@ def get_payment_details_by_order(request):
                     "discount":f"{int(product.discount)}%" if product.discount else "0%",
                     "final_price": "{:.2f}".format(float(product.price) - (float(product.price) * float(product.discount or 0) / 100)),
                     "order_status": order.order_status,
-                    "shipping":payments.shipping_status,
-                    "delivery_status":payments.delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
                     "product_name":product.product_name,
@@ -3447,22 +3445,24 @@ def filter_my_order(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
         customer_id = data.get('customer_id')
-        order_status_filter = data.get('delivery_status')
-        shipping_status_filter = data.get('shipping_status')
+        delivery_status_filter = data.get('delivery_status')
+        shipping_status_filter = data.get('shipping_status')  # new
         order_time_filter = data.get('order_time')
+
+        if shipping_status_filter and delivery_status_filter:
+            return JsonResponse({
+                "error": "Please provide only one of 'shipping_status' or 'delivery_status', not both.",
+                "status_code": 400
+            }, status=400)
 
         if not customer_id:
             return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
 
-        # Filter by customer_id
         payments = PaymentDetails.objects.filter(customer_id=customer_id)
 
-        # Dynamic year filters (keep last 4 years + older)
         available_years = payments.dates('created_at', 'year', order='DESC')
         year_options = ["Last 30 days"] + [dt.year for dt in available_years if dt.year >= datetime.now().year - 3] + ["Older"]
 
-
-        # Dynamic time filtering
         now = datetime.now()
         if order_time_filter:
             if order_time_filter == "Last 30 days":
@@ -3484,20 +3484,13 @@ def filter_my_order(request):
             order_ids = payment.order_product_ids
             order_products = OrderProducts.objects.filter(id__in=order_ids)
 
-            # # Apply order status filter if provided
-            # if order_status_filter:
-            #     order_products = order_products.filter(delivery_status=order_status_filter)
-
-             # Apply delivery status filter if provided
-            if order_status_filter:
-                if order_status_filter == "delivered":
-                    order_products = order_products.filter(delivery_status="delivered")
-                elif order_status_filter == "shipped":
-                    order_products = order_products.filter(delivery_status="shipped")
-
-            # If shipping_status is provided, filter by it
-            if shipping_status_filter:
-                order_products = order_products.filter(shipping_status=shipping_status_filter)
+            # Apply delivery_status or shipping_status filters
+            if delivery_status_filter:
+                order_products = order_products.filter(delivery_status=delivery_status_filter)
+            elif shipping_status_filter == "Shipped":
+                order_products = order_products.filter(
+                    shipping_status="Shipped"
+                ).exclude(delivery_status="Delivered")
 
             order_product_list = []
             for order in order_products:
@@ -3508,30 +3501,21 @@ def filter_my_order(request):
                     "order_product_id": order.id,
                     "quantity": order.quantity,
                     "price": order.price,
-                    "gst": f"{int(product.gst or 0)}%",
                     "discount": f"{int(product.discount)}%" if product.discount else "0%",
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "order_status": order.order_status,
-                    # "shipping_status":order.shipping_status,
-                    "delivery_status":order.delivery_status,
                     "shipping_status": order.shipping_status,
+                    "delivery_status": order.delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image,
                     "product_name": product.product_name
                 })
 
-            # # Skip payment if no products matched the order status filter
-            # if order_status_filter and not order_product_list:
-            #     continue
-            # Skip payment if no products matched the order status filter
-            if order_status_filter and not order_product_list:
-                continue
             if order_product_list:
                 total_matched_order_products += len(order_product_list)
             else:
-                if order_status_filter:
-                    continue  # Skip payments where no product matches the delivery status
-
+                if delivery_status_filter or shipping_status_filter:
+                    continue
 
             address_data = []
             if payment.customer_address_id:
@@ -3556,7 +3540,6 @@ def filter_my_order(request):
                     })
 
             payment_list.append({
-                # "razorpay_order_id": payment.razorpay_order_id,
                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
                 "email": payment.customer.email,
                 "mobile_number": payment.customer.mobile_no,
@@ -3570,12 +3553,13 @@ def filter_my_order(request):
                 "order_products": order_product_list
             })
 
-        if order_status_filter and total_matched_order_products == 0:
+        if (delivery_status_filter or shipping_status_filter) and total_matched_order_products == 0:
             return JsonResponse({
-                "error": "No products found for the selected delivery status.",
+                "error": "No products found for the selected filters.",
                 "status_code": 404,
                 "time_filters": year_options
             }, status=404)
+
         if not payment_list:
             return JsonResponse({"error": "No order details match filters.", "status_code": 404}, status=404)
 
@@ -3588,7 +3572,6 @@ def filter_my_order(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
 
 @csrf_exempt
 def customer_get_payment_details_by_order(request):
@@ -4824,142 +4807,6 @@ def submit_feedback_rating(request):
             "error": "Invalid HTTP method. Only POST allowed.",
             "status_code": 405
         }, status=405)
-
-@csrf_exempt
-def filter_my_order(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-    try:
-        data = json.loads(request.body.decode("utf-8"))
-        customer_id = data.get('customer_id')
-        order_status_filter = data.get('delivery_status')
-        order_time_filter = data.get('order_time')
-
-        if not customer_id:
-            return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
-
-        # Filter by customer_id
-        payments = PaymentDetails.objects.filter(customer_id=customer_id)
-
-        # Dynamic year filters (keep last 4 years + older)
-        available_years = payments.dates('created_at', 'year', order='DESC')
-        year_options = ["Last 30 days"] + [dt.year for dt in available_years if dt.year >= datetime.now().year - 3] + ["Older"]
-
-
-        # Dynamic time filtering
-        now = datetime.now()
-        if order_time_filter:
-            if order_time_filter == "Last 30 days":
-                payments = payments.filter(created_at__gte=now - timedelta(days=30))
-            elif order_time_filter == "Older":
-                payments = payments.filter(created_at__lt=datetime(now.year - 3, 1, 1))
-            elif order_time_filter.isdigit():
-                payments = payments.filter(created_at__year=int(order_time_filter))
-
-        payments = payments.order_by('-created_at')
-
-        if not payments.exists():
-            return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
-
-        payment_list = []
-        total_matched_order_products = 0
-
-        for payment in payments:
-            order_ids = payment.order_product_ids
-            order_products = OrderProducts.objects.filter(id__in=order_ids)
-
-            # Apply order status filter if provided
-            if order_status_filter:
-                order_products = order_products.filter(delivery_status=order_status_filter)
-
-            order_product_list = []
-            for order in order_products:
-                product = ProductsDetails.objects.filter(id=order.product_id).first()
-                product_image = product.product_images[0] if product and product.product_images else ""
-
-                order_product_list.append({
-                    "order_product_id": order.id,
-                    "quantity": order.quantity,
-                    "price": order.price,
-                    "gst": f"{int(product.gst or 0)}%",
-                    "discount": f"{int(product.discount)}%" if product.discount else "0%",
-                    "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
-                    "order_status": order.order_status,
-                    # "shipping_status":order.shipping_status,
-                    "delivery_status":order.delivery_status,
-                    "product_id": order.product_id,
-                    "product_image": product_image,
-                    "product_name": product.product_name
-                })
-
-            # # Skip payment if no products matched the order status filter
-            # if order_status_filter and not order_product_list:
-            #     continue
-            if order_product_list:
-                total_matched_order_products += len(order_product_list)
-            else:
-                if order_status_filter:
-                    continue  # Skip payments where no product matches the delivery status
-
-
-            address_data = []
-            if payment.customer_address_id:
-                address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
-                if address_obj:
-                    address_data.append({
-                        "address_id": address_obj.id,
-                        "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
-                        "email": address_obj.email,
-                        "mobile_number": address_obj.mobile_number,
-                        "alternate_mobile": address_obj.alternate_mobile,
-                        "address_type": address_obj.address_type,
-                        "pincode": address_obj.pincode,
-                        "street": address_obj.street,
-                        "landmark": address_obj.landmark,
-                        "village": address_obj.village,
-                        "mandal": address_obj.mandal,
-                        "postoffice": address_obj.postoffice,
-                        "district": address_obj.district,
-                        "state": address_obj.state,
-                        "country": address_obj.country,
-                    })
-
-            payment_list.append({
-                # "razorpay_order_id": payment.razorpay_order_id,
-                "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
-                "email": payment.customer.email,
-                "mobile_number": payment.customer.mobile_no,
-                "payment_mode": payment.payment_mode,
-                "total_quantity": payment.quantity,
-                "total_amount": payment.total_amount,
-                "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "time_filters": year_options,
-                "product_order_id": payment.product_order_id,
-                "customer_address": address_data,
-                "order_products": order_product_list
-            })
-
-        if order_status_filter and total_matched_order_products == 0:
-            return JsonResponse({
-                "error": "No products found for the selected delivery status.",
-                "status_code": 404,
-                "time_filters": year_options
-            }, status=404)
-        if not payment_list:
-            return JsonResponse({"error": "No order details match filters.", "status_code": 404}, status=404)
-
-        return JsonResponse({
-            "message": "Filtered Orders Retrieved Successfully.",
-            "payments": payment_list,
-            "status_code": 200,
-            "customer_id": str(customer_id)
-        }, status=200)
-
-    except Exception as e:
-        return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-
 
 
 @csrf_exempt
