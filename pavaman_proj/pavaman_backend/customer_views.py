@@ -3497,7 +3497,12 @@ def filter_my_order(request):
             order_product_list = []
             for order in order_products:
                 product = ProductsDetails.objects.filter(id=order.product_id).first()
-                product_image = product.product_images[0] if product and product.product_images else ""
+                if product and product.product_images:
+                    product_image_path = product.product_images[0].replace('\\', '/')
+                    product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_image_path.lstrip('/')}"
+                else:
+                    product_image_url = ""
+                # product_image = product.product_images[0] if product and product.product_images else ""
 
                 order_product_list.append({
                     "order_product_id": order.id,
@@ -3509,7 +3514,7 @@ def filter_my_order(request):
                     "shipping_status": order.shipping_status,
                     "delivery_status": order.delivery_status,
                     "product_id": order.product_id,
-                    "product_image": product_image,
+                    "product_image": product_image_url,
                     "product_name": product.product_name
                 })
 
@@ -3834,7 +3839,89 @@ def report_sales_summary(request):
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
+# import calendar
+# from dateutil.relativedelta import relativedelta
+
+# @csrf_exempt
+# def report_monthly_revenue_by_year(request):
+#     if request.method != "POST":
+#         return JsonResponse({"error": "Only POST method allowed", "status_code": 405}, status=405)
+
+#     try:
+#         data = json.loads(request.body.decode("utf-8"))
+#         admin_id = data.get('admin_id')
+#         start_date_str = data.get('start_date_str')  # e.g., "2024-05-06"
+#         end_date_str = data.get('end_date_str')      # e.g., "2025-05-06"
+
+#         # If no start_date_str and end_date_str are provided, use the current year as default
+#         if not start_date_str or not end_date_str:
+#             current_year = datetime.now().year
+#             start_date_str = f"{current_year}-01-01"  # Start of the current year
+#             end_date_str = f"{current_year}-12-31"    # End of the current year
+
+#         if not admin_id:
+#             return JsonResponse({"error": "admin_id is required", "status_code": 400}, status=400)
+
+#         # Parse start_date and end_date
+#         try:
+#             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+#             end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+#         except ValueError:
+#             return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD.", "status_code": 400}, status=400)
+
+#         # Validate the date range (end_date should be after start_date)
+#         if end_date < start_date:
+#             return JsonResponse({"error": "End date must be after start date", "status_code": 400}, status=400)
+
+#         # Check if start and end date span multiple years
+#         if start_date.year != end_date.year:
+#             # If the start date is in one year and the end date is in the next, show the error message
+#             if start_date.month < end_date.month:  
+#                 return JsonResponse({"error": "Please choose a date range within the same year", "status_code": 400}, status=400)
+
+#         # Get the months within the range
+#         monthly_revenue = {}
+#         current = start_date
+
+#         # Loop over the months within the date range
+#         while current <= end_date:
+#             key = f"{calendar.month_abbr[current.month]} {current.year}"
+#             monthly_revenue[key] = 0  # Initialize the month with 0 revenue
+#             current += relativedelta(months=1)  # Move to the next month
+
+#         # Filter payments within the given date range
+#         payments = PaymentDetails.objects.filter(
+#             admin_id=admin_id,
+#             created_at__date__gte=start_date.date(),
+#             created_at__date__lte=end_date.date()
+#         )
+
+#         # Calculate monthly revenue
+#         for payment in payments:
+#             key = f"{calendar.month_abbr[payment.created_at.month]} {payment.created_at.year}"
+#             if key in monthly_revenue:
+#                 monthly_revenue[key] += float(payment.total_amount)
+
+#         # Create a dummy price scale for the graph's y-axis (in increments of 50,000)
+#         dummy_y_axis = [i * 50000 for i in range(1, 11)]  # [50K, 100K, 150K, ..., 500K]
+
+#         return JsonResponse({
+#             "start_date": start_date_str,
+#             "end_date": end_date_str,
+#             "monthly_revenue": monthly_revenue,
+#             "status_code": 200,
+#             "admin_id": admin_id,
+#             "dummy_y_axis": dummy_y_axis  # Adding dummy price scale for the y-axis
+#         })
+
+#     except Exception as e:
+#         return JsonResponse({"error": str(e), "status_code": 500})
+
+from django.db import models
 import calendar
+import json
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 @csrf_exempt
 def report_monthly_revenue_by_year(request):
@@ -3844,34 +3931,156 @@ def report_monthly_revenue_by_year(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
         admin_id = data.get('admin_id')
-        year = data.get('year')
+        action = data.get('action')  # "month" or "year"
 
-        if not admin_id or not year:
-            return JsonResponse({"error": "admin_id and year are required", "status_code": 400}, status=400)
+        if not admin_id:
+            return JsonResponse({"error": "admin_id is required", "status_code": 400}, status=400)
 
-        # Filter payments for that admin and year
-        payments = PaymentDetails.objects.filter(
-            admin_id=admin_id,
-            created_at__year=year
-        )
-
-        month_abbrs = list(calendar.month_abbr)[1:]
-        monthly_revenue = {month: 0 for month in month_abbrs}
-
-        for payment in payments:
-            month_index = payment.created_at.month
-            month_name = calendar.month_abbr[month_index]
-            monthly_revenue[month_name] += float(payment.total_amount)
-
-        return JsonResponse({
-            "year": year,
-            "monthly_revenue": monthly_revenue,
-            "status_code": 200,
-            "admin_id": admin_id
-        })
+        if action == "month":
+            return _report_monthly(data, admin_id)
+        elif action == "year":
+            return _report_yearly(admin_id)
+        elif action == "week":
+            return _report_weekly(data, admin_id)
+        else:
+            return JsonResponse({"error": "Invalid action. Use 'month' or 'year'.", "status_code": 400}, status=400)
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500})
+
+def _report_yearly(admin_id):
+    current_year = datetime.now().year
+    yearly_revenue = {}
+    start_year = current_year - 11  # 12 years total
+
+    for year in range(start_year, current_year + 1):
+        start_date = datetime(year, 1, 1)
+        end_date = datetime(year, 12, 31)
+        total = PaymentDetails.objects.filter(
+            admin_id=admin_id,
+            created_at__date__gte=start_date.date(),
+            created_at__date__lte=end_date.date()
+        ).aggregate(total_amount=models.Sum('total_amount'))['total_amount'] or 0
+        yearly_revenue[str(year)] = float(total)
+
+    dummy_y_axis = [i * 500000 for i in range(1, 11)]  # ₹5L, ₹10L, ..., ₹50L
+
+    return JsonResponse({
+        "report_type": "yearly",
+        "year_range": [start_year, current_year],
+        "yearly_revenue": yearly_revenue,
+        "admin_id": admin_id,
+        "dummy_y_axis": dummy_y_axis,
+        "status_code": 200
+    })
+
+def _report_monthly(data, admin_id):
+    start_date_str = data.get('start_date_str')
+    end_date_str = data.get('end_date_str')
+
+    if not start_date_str or not end_date_str:
+        current_year = datetime.now().year
+        start_date_str = f"{current_year}-01-01"
+        end_date_str = f"{current_year}-12-31"
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+    except ValueError:
+        return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD.", "status_code": 400}, status=400)
+
+    if end_date < start_date:
+        return JsonResponse({"error": "End date must be after start date", "status_code": 400}, status=400)
+
+    if start_date.year != end_date.year:
+        if start_date.month < end_date.month:
+            return JsonResponse({"error": "Please choose a date range within the same year", "status_code": 400}, status=400)
+
+    monthly_revenue = {}
+    current = start_date
+    while current <= end_date:
+        key = f"{calendar.month_abbr[current.month]} {current.year}"
+        monthly_revenue[key] = 0
+        current += relativedelta(months=1)
+
+    payments = PaymentDetails.objects.filter(
+        admin_id=admin_id,
+        created_at__date__gte=start_date.date(),
+        created_at__date__lte=end_date.date()
+    )
+
+    for payment in payments:
+        key = f"{calendar.month_abbr[payment.created_at.month]} {payment.created_at.year}"
+        if key in monthly_revenue:
+            monthly_revenue[key] += float(payment.total_amount)
+
+    dummy_y_axis = [i * 50000 for i in range(1, 11)]
+
+    return JsonResponse({
+        "report_type": "monthly",
+        "start_date": start_date_str,
+        "end_date": end_date_str,
+        "monthly_revenue": monthly_revenue,
+        "admin_id": admin_id,
+        "dummy_y_axis": dummy_y_axis,
+        "status_code": 200
+    })
+
+def _report_weekly(data, admin_id):
+# def _report_daywise_by_week(data, admin_id):
+    start_date_str = data.get('start_date_str')
+    end_date_str = data.get('end_date_str')
+
+    # Default to last 7 days (today inclusive)
+    if not start_date_str or not end_date_str:
+        end_date = datetime.now().date()
+        start_date = end_date - relativedelta(days=6)
+    else:
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD.", "status_code": 400}, status=400)
+
+    # Validate 7-day range max
+    delta_days = (end_date - start_date).days
+    if delta_days < 0:
+        return JsonResponse({"error": "End date must be after start date", "status_code": 400}, status=400)
+    if delta_days > 6:
+        return JsonResponse({"error": "Only 7-day range allowed", "status_code": 400}, status=400)
+
+    # Initialize dictionary with day name + date
+    daywise_revenue = {}
+    for i in range(delta_days + 1):
+        date = start_date + relativedelta(days=i)
+        label = f"{date.strftime('%A')} ({date.strftime('%d %b %Y')})"  # Example: "Wednesday (30 Apr 2025)"
+        daywise_revenue[label] = 0
+
+    # Get all relevant payments
+    payments = PaymentDetails.objects.filter(
+        admin_id=admin_id,
+        created_at__date__gte=start_date,
+        created_at__date__lte=end_date
+    )
+
+    # Accumulate revenue per day
+    for payment in payments:
+        pay_date = payment.created_at.date()
+        label = f"{pay_date.strftime('%A')} ({pay_date.strftime('%d %b %Y')})"
+        if label in daywise_revenue:
+            daywise_revenue[label] += float(payment.total_amount)
+
+    dummy_y_axis = [i * 10000 for i in range(1, 11)]  # ₹10K to ₹100K
+
+    return JsonResponse({
+        "report_type": "daywise_week",
+        "start_date": str(start_date),
+        "end_date": str(end_date),
+        "daywise_revenue": daywise_revenue,
+        "admin_id": admin_id,
+        "dummy_y_axis": dummy_y_axis,
+        "status_code": 200
+    })
 
 from collections import Counter
 
