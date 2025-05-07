@@ -10,7 +10,7 @@ import {FaShoppingCart} from "react-icons/fa";
 const CustomerViewCart = () => {
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
-    const [totalPrice, setTotalPrice] = useState(0);
+    const [total_price, setTotalPrice] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -431,15 +431,22 @@ const CustomerViewCart = () => {
                                             ? "few-left"
                                             : "in-stock"
                                         }`}>{item.availability}</p>
-                                    <p className="discounted-price">₹ {item.discount_price} /-</p>
+                                    <p className="discounted-price">₹ {item.final_price.toFixed(2)} /-</p>
+                                    {item.price_per_item !== item.final_price && (
+                                    <p className="original-price">₹ {item.price_per_item .toFixed(2)} /-<p className="discount-tag">
 
-                                    <p className="original-price">₹ {item.price_per_item} /-</p>
+{item.discount && parseFloat(item.discount) > 0 && `${item.discount} off`}
+
+</p></p>)}
+{item.gst && parseFloat (item.gst) > 0 &&<p className="gst">GST: {item.gst}</p>}
+                                    
+
 
 
                                 </div>
                                 <div>
 
-                                    <p className="subtotal"><b>Subtotal: ₹ </b>{(item.discount_price * item.quantity).toFixed(2)} /-</p>
+                                    <p className="subtotal"><b>Subtotal: ₹ </b>{(item.final_price * item.quantity).toFixed(2)} /-</p>
                                     {/* {!selectedProducts.includes(item.product_id) && (
                                         <button className="product-place-order" onClick={() => handlePlaceOrderProduct(item.product_id)}>
                                             Place Order
@@ -472,7 +479,7 @@ const CustomerViewCart = () => {
                             <div className="cart-prices">
                                 <div className="cart-price">
                                     <div className="cart-price-label">Price({cartItems.length} items)</div>
-                                    <div className="cart-price-value">₹ {totalPrice} /-</div>
+                                    <div className="cart-price-value">₹ {total_price} /-</div>
                                 </div>
                                 <div className="cart-price cart-pfee">
                                     <div className="cart-price-label">Platfrom Fee</div>
@@ -484,7 +491,7 @@ const CustomerViewCart = () => {
                                 </div>
                                 <div className="cart-price cart-total">
                                     <div className="cart-price-label">Total Price</div>
-                                    <div className="cart-price-value"> ₹ {totalPrice} /-</div>
+                                    <div className="cart-price-value"> ₹ {total_price} /-</div>
 
                                 </div>
                             </div>

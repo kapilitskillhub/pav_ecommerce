@@ -3109,7 +3109,75 @@ def customer_growth_by_state(request):
 #         }, status=405)
 
 
+# from django.db.models.functions import TruncMonth
+# @csrf_exempt
+# def monthly_product_orders(request):
+#     if request.method == "POST":
+#         try:
+#             data = json.loads(request.body.decode('utf-8'))
+#             admin_id = data.get("admin_id")
+
+#             if not admin_id:
+#                 return JsonResponse({
+#                     "status_code": 400,
+#                     "message": "admin_id is required."
+#                 })
+
+#             # Get all successfully paid order IDs
+#             paid_order_ids = PaymentDetails.objects.filter(
+#                 admin_id=admin_id,
+#                 razorpay_payment_id__isnull=False
+#             ).values_list("order_product_ids", flat=True)
+
+#             # Flatten the list of JSONField lists
+#             order_ids = []
+#             for item in paid_order_ids:
+#                 order_ids.extend(item)  # Because order_product_ids is a list (JSONField)
+
+#             # Monthly grouping of only paid orders
+#             monthly_data = OrderProducts.objects.filter(
+#                 admin_id=admin_id,
+#                 id__in=order_ids
+#             ).annotate(
+#                 month=TruncMonth('created_at')
+#             ).values(
+#                 'month'
+#             ).annotate(
+#                 total_quantity=Sum('quantity')
+#             ).order_by('month')
+
+            
+#             result = [
+#                 {
+#                     "month": item["month"].strftime("%Y-%m"),
+#                     "total_quantity": item["total_quantity"]
+#                 }
+#                 for item in monthly_data
+#             ]
+
+#             return JsonResponse({
+#                 "status_code": 200,
+#                 "message": "Monthly total products ordered.",
+#                 "data": result
+#             })
+
+#         except Exception as e:
+#             return JsonResponse({
+#                 "status_code": 500,
+#                 "message": "Error occurred.",
+#                 "error": str(e)
+#             })
+#     else:
+#         return JsonResponse({
+#             "status_code": 405,
+#             "message": "Method Not Allowed. Use POST."
+#         }, status=405)
+
+
 from django.db.models.functions import TruncMonth
+from django.utils import timezone
+from datetime import datetime
+
 @csrf_exempt
 def monthly_product_orders(request):
     if request.method == "POST":
@@ -3123,6 +3191,10 @@ def monthly_product_orders(request):
                     "message": "admin_id is required."
                 })
 
+            # Get first day of current month
+            now = timezone.now()
+            start_of_month = datetime(now.year, now.month, 1, tzinfo=timezone.get_current_timezone())
+
             # Get all successfully paid order IDs
             paid_order_ids = PaymentDetails.objects.filter(
                 admin_id=admin_id,
@@ -3132,12 +3204,13 @@ def monthly_product_orders(request):
             # Flatten the list of JSONField lists
             order_ids = []
             for item in paid_order_ids:
-                order_ids.extend(item)  # Because order_product_ids is a list (JSONField)
+                order_ids.extend(item)
 
-            # Monthly grouping of only paid orders
+            # Monthly data only for current month
             monthly_data = OrderProducts.objects.filter(
                 admin_id=admin_id,
-                id__in=order_ids
+                id__in=order_ids,
+                created_at__gte=start_of_month  # Filter by current month only
             ).annotate(
                 month=TruncMonth('created_at')
             ).values(
@@ -3146,7 +3219,6 @@ def monthly_product_orders(request):
                 total_quantity=Sum('quantity')
             ).order_by('month')
 
-            
             result = [
                 {
                     "month": item["month"].strftime("%Y-%m"),
@@ -3156,8 +3228,9 @@ def monthly_product_orders(request):
             ]
 
             return JsonResponse({
+                "admin_id":admin_id,
                 "status_code": 200,
-                "message": "Monthly total products ordered.",
+                "message": "Monthly total products ordered (current month).",
                 "data": result
             })
 

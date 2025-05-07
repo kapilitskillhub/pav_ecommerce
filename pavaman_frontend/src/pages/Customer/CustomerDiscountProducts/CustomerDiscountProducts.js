@@ -182,6 +182,11 @@ const ViewDiscountedProducts = () => {
                                         <div className="customer-discount-section-original-price">
                                             ₹{product.price}.00 (incl. GST)
                                         </div>
+
+                                        <div className="discount-tag">
+                                            {product.discount && `${product.discount} off`}
+                                        </div>
+                                        
                                         <div className="add-cart-section">
                                             <span
                                                 className={`availability ${product.availability === "Out of Stock"
