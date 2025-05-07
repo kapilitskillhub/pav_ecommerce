@@ -22,6 +22,14 @@ const CustomerMyOrders = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deliveryStatus, setDeliveryStatus] = useState("");
   const [orderTime, setOrderTime] = useState("");
+  const [showReviewFormFor, setShowReviewFormFor] = useState(null); // product.order_product_id
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+
+  const [editReviewFor, setEditReviewFor] = useState(null); // order_product_id
+  const [editRating, setEditRating] = useState(0);
+  const [editFeedback, setEditFeedback] = useState("");
+
 
   const displayPopup = (text, type = "success") => {
     setPopupMessage({ text, type });
@@ -169,7 +177,6 @@ const CustomerMyOrders = () => {
     setOrderTime(time);
     filterMyOrders(deliveryStatus, time);
   };
-  // At the top of your component or just before return
   const currentYear = new Date().getFullYear();
   const orderTimeOptions = [
     "Last 30 days",
@@ -180,14 +187,13 @@ const CustomerMyOrders = () => {
   const handleClearFilters = () => {
     setDeliveryStatus("");
     setOrderTime("");
-    fetchOrders(); // Refetch all orders without filters
+    fetchOrders();
   };
-
 
   const renderStars = (rating) => {
     const totalStars = 5;
     return (
-      <div className="star-rating">
+      <div className="stars-display">
         {[...Array(totalStars)].map((_, index) => (
           <span key={index} className={index < rating ? "filled-star" : "empty-star"}>
             ★
@@ -196,8 +202,98 @@ const CustomerMyOrders = () => {
       </div>
     );
   };
-  
 
+
+  const handleSubmitReview = async (product) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/submit-feedback-rating", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer_id: customerId,
+          product_id: product.product_id,
+          product_order_id: product.order.product_order_id,
+          rating,
+          feedback,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Thank you! Your review has been submitted.");
+        setProducts((prevProducts) =>
+          prevProducts.map((p) =>
+            p.order_product_id === product.order_product_id
+              ? {
+                ...p,
+                rating: rating,
+                feedback: feedback,
+              }
+              : p
+          )
+        );
+
+        setShowReviewFormFor(null);
+        setRating(0);
+        setFeedback("");
+        // Optionally refresh product list
+      } else {
+        alert(result.error || "Failed to submit review.");
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert("An error occurred while submitting your review.");
+    }
+  };
+
+
+  const handleEditReview = async (product) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/edit-feedback-rating", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer_id: customerId,
+
+          product_id: product.product_id,
+          product_order_id: product.order.product_order_id,
+          rating: editRating,
+          feedback: editFeedback,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Your review has been updated.");
+        setProducts((prevProducts) =>
+          prevProducts.map((p) =>
+            p.order_product_id === product.order_product_id
+              ? {
+                ...p,
+                rating: editRating,
+                feedback: editFeedback,
+              }
+              : p
+          )
+        );
+        setEditReviewFor(null);
+        setEditRating(0);
+        setEditFeedback("");
+        // Optionally reload or refresh product list
+      } else {
+        alert(result.error || "Failed to update review.");
+      }
+    } catch (error) {
+      console.error("Error updating review:", error);
+      alert("An error occurred while updating your review.");
+    }
+  };
 
   return (
     <div className="my-orders-wrapper container">
@@ -298,10 +394,10 @@ const CustomerMyOrders = () => {
                         <p className="product-name">{product.product_name}</p>
                         <p>Order ID: {product.order.product_order_id}</p>
                         <p>Price: ₹{product.final_price}.00 (incl. GST)
-                        <p className="discount-tag">
-                        {product.discount &&  parseFloat (product.discount) > 0 && `${product.discount} off`}
-                        </p></p>
-                        
+                          <p className="discount-tag">
+                            {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
+                          </p></p>
+
 
                         {/* <p>{product.shipping_status}</p> */}
                         <p className={product.delivery_status === "Delivered"
@@ -317,26 +413,123 @@ const CustomerMyOrders = () => {
                         </p>
                         {console.log(product.delivery_status, product.rating)} {/* Log delivery status and rating */}
 
-{product.delivery_status === "Delivered" && product.rating && (
-  <div className="product-rating">
-    {renderStars(product.rating)}
-  </div>
-)}
+                        {product.delivery_status === "Delivered" && product.rating && (
+                          <div className="product-rating">
+                            {renderStars(product.rating)}
+                          </div>
+                        )}
 
-{product.delivery_status === 'Delivered' && !product.rating && (
-  <div className="rate-review-button-container">
-    <button
-      className="rate-review-button"
-      // onClick={() => handleRateReview(product)}
-    >
-      Rate and Review
-    </button>
-  </div>
-)}
+                        {product.delivery_status === 'Delivered' && !product.rating && (
+                          <div className="rate-review-button-container">
+                            <button
+                              className="rate-review-button"
+                              onClick={() => setShowReviewFormFor(product.order_product_id)}
+                            >
+                              Rate and Review
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Review Form */}
+                        {showReviewFormFor === product.order_product_id && (
+                          <div className="review-form">
+                            <div className="stars-display">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                  key={star}
+                                  className={star <= rating ? "filled-star" : "empty-star"}
+                                  style={{ cursor: "pointer", fontSize: "24px" }}
+                                  onClick={() => setRating(star)}
+                                >
+                                  ★
+                                </span>
+                              ))}
+                            </div>
+                            <textarea
+                              placeholder="Write your review..."
+                              value={feedback}
+                              onChange={(e) => setFeedback(e.target.value)}
+                              rows={3}
+                              style={{ width: "100%", marginTop: "8px" }}
+                            />
+                            <div className='rating-buttons'>
+                              <button
+                                className="submit-review-button"
+                                onClick={() => handleSubmitReview(product)}
+                              >
+                                Submit Review
+                              </button>
+                              <button
+                                className="cart-delete-selected cancel-review-button"
+                                onClick={() => {
+                                  setShowReviewFormFor(null);
+                                  setRating(0);
+                                  setFeedback("");
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
 
 
-
+                        {product.delivery_status === "Delivered" && product.rating && (
+                          <div className="edit-review-button-container">
+                            <button
+                              className="edit-review-button"
+                              onClick={() => {
+                                setEditReviewFor(product.order_product_id);
+                                setEditRating(product.rating);
+                                setEditFeedback(product.feedback || "");
+                              }}
+                            >
+                              Edit Review
+                            </button>
+                          </div>
+                        )}
+                        {editReviewFor === product.order_product_id && (
+                          <div className="review-form">
+                            <div className="edit-stars-display stars-display">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                  key={star}
+                                  className={star <= editRating ? "filled-star" : "empty-star"}
+                                  style={{ cursor: "pointer", fontSize: "24px" }}
+                                  onClick={() => setEditRating(star)}
+                                >
+                                  ★
+                                </span>
+                              ))}
+                            </div>
+                            <textarea
+                              placeholder="Edit your review..."
+                              value={editFeedback}
+                              onChange={(e) => setEditFeedback(e.target.value)}
+                              rows={3}
+                              className='text-area-rating'
+                            />
+                            <div   className='rating-buttons'>
+                              <button
+                                className="submit-edit-review-button cart-place-order"
+                                onClick={() => handleEditReview(product)}
+                              >
+                                Update
+                              </button>
+                              <button
+                                className="cart-delete-selected cancel-review-button"
+                                onClick={() => {
+                                  setEditReviewFor(null);
+                                  setEditRating(0);
+                                  setEditFeedback("");
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
 
                         <div className="toggle-container">
