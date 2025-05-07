@@ -86,14 +86,14 @@ const CustomerMyOrderDetails = () => {
             />
             <div className="custom-product-info">
               <h5 className="custom-product-title">{selectedProduct.product_name}</h5>
-              <p><strong>Quantity:</strong> {selectedProduct.quantity}</p>
-              <p><strong>Price:</strong> ₹{selectedProduct.final_price}.00 (incl. GST)
+              <p className='custom-quantity-title'><strong>Quantity:</strong> {selectedProduct.quantity}</p>
+              <p className='custom-quantity-price'><strong>Price:</strong> ₹{selectedProduct.final_price}.00 (incl. GST)
               <p className="discount-tag">
                         {selectedProduct.discount &&  parseFloat (selectedProduct.discount) > 0 && `${selectedProduct.discount} off`}
                         </p>
               </p>
               {parseFloat(selectedProduct.price) !== parseFloat(selectedProduct.final_price) && (
-                         <p className="customer-discount-section-original-price-myorder">
+                         <p className="customer-discount-section-original-price-myorder-details">
                          ₹{selectedProduct.price} (incl. GST)
                        </p>
                      )}
@@ -121,7 +121,25 @@ const CustomerMyOrderDetails = () => {
             </h3>
             <p><strong>Payment Mode:</strong> {order.payment_mode}</p>
             <p><strong>Quantity:</strong> {selectedProduct.quantity}</p>
-            <p><strong>Price:</strong> ₹{selectedProduct.final_price}</p>
+            {/* <p><strong>original Price:</strong> {selectedProduct.price}</p>
+            <p><strong>Price:</strong> ₹{selectedProduct.final_price}.00 (incl. GST)
+            
+            </p> */}
+            <p><strong>Price:</strong> ₹{selectedProduct.price} x {selectedProduct.quantity} item(s) = ₹{(selectedProduct.price * selectedProduct.quantity).toFixed(2)}</p>
+            {selectedProduct.discount && parseFloat(selectedProduct.discount) > 0 && (
+  <p>
+    <strong>Discount:</strong> {selectedProduct.discount} = ₹{(
+      (parseFloat(selectedProduct.price) * parseFloat(selectedProduct.discount) / 100) *
+      selectedProduct.quantity
+    ).toFixed(2)}
+  </p>
+)}
+  <p><strong>Discounted Price:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity).toFixed(2)}</p>
+
+{/* <p><strong>Platform Fee:</strong> ₹0.00</p>
+<p><strong>Delivery Fee:</strong> ₹0.00</p> */}
+<p><strong>Total Amount:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity).toFixed(2)}</p>
+
 
             {/* Invoice button only for single-product orders */}
             {!orderHasMultipleProducts && (
@@ -149,7 +167,17 @@ const CustomerMyOrderDetails = () => {
               <div className="custom-product-info">
                 <h5 className="custom-product-title">{product.product_name}</h5>
                 <p><strong>Quantity:</strong> {product.quantity}</p>
-                <p><strong>Price:</strong> ₹{product.final_price}</p>
+                <p><strong>Price:</strong> ₹{product.final_price}.00 (incl. GST)
+                <span className="discount-tag">
+                        {product.discount &&  parseFloat (product.discount) > 0 && `${product.discount} off`}
+                        </span>
+                </p>
+                {parseFloat(product.price) !== parseFloat(product.final_price) && (
+                         <p className="customer-discount-section-original-price-myorder-details">
+                         ₹{product.price} (incl. GST)
+                       </p>
+                     )}
+                     {product.gst && parseFloat (product.gst) > 0 &&<p className="gst">GST: {product.gst}</p>}
               </div>
               <div className="custom-arrow-button" onClick={() => handleProductClick(product)}>
                 <FaCircleArrowRight />
@@ -161,10 +189,35 @@ const CustomerMyOrderDetails = () => {
 
       {/* Total Payment Section for Multiple Products */}
       {orderHasMultipleProducts && (
-        <div className="payment-box total-payment">
-          <h3>Total Payment</h3>
-          <p><strong>Total Quantity:</strong> {order.total_quantity}</p>
-          <p><strong>Total Price:</strong> ₹{order.total_amount}</p>
+  <div className="payment-box total-payment">
+    <h3>Total Payment</h3>
+    <p><strong>Total Quantity:</strong> {
+      order.order_products.reduce((acc, prod) => acc + parseInt(prod.quantity), 0)
+    }</p>
+
+    <p><strong>Price:</strong> ₹{
+      order.order_products.reduce((acc, prod) => acc + (parseFloat(prod.price) * prod.quantity), 0).toFixed(2)
+    }</p>
+
+    <p><strong>Total Discount:</strong> ₹{
+      order.order_products.reduce((acc, prod) => {
+        const discountAmount = prod.discount
+          ? (parseFloat(prod.price) * parseFloat(prod.discount) / 100) * prod.quantity
+          : 0;
+        return acc + discountAmount;
+      }, 0).toFixed(2)
+    }</p>
+
+    <p><strong>Discounted Price:</strong> ₹{
+      order.order_products.reduce((acc, prod) => acc + (parseFloat(prod.final_price) * prod.quantity), 0).toFixed(2)
+    }</p>
+
+    <p><strong>Platform Fee:</strong> ₹0.00</p>
+    <p><strong>Delivery Fee:</strong> ₹0.00</p>
+
+    <p><strong>Total Amount:</strong> ₹{
+      order.order_products.reduce((acc, prod) => acc + (parseFloat(prod.final_price) * prod.quantity), 0).toFixed(2)
+    }</p>
           <p><strong>Payment Date:</strong> {order.payment_date}</p>
           <div className="invoice-button-wrapper">
             <button className="invoice-button" onClick={handleGetInvoice}>
