@@ -72,16 +72,23 @@ const CustomerMyOrders = () => {
         const ratingsMap = {};
         if (ratingResponse.ok) {
           ratingData.ratings.forEach(rating => {
-            ratingsMap[rating.product_id] = rating.rating;
+            ratingsMap[rating.order_product_id] = {
+              rating: rating.rating,
+              feedback: rating.feedback || "",
+            };
           });
         }
-
+        
         // Merge ratings into products
-        const productsWithRatings = flatProducts.map(product => ({
-          ...product,
-          rating: ratingsMap[product.product_id] || null,
-        }));
-
+        const productsWithRatings = flatProducts.map(product => {
+          const ratingInfo = ratingsMap[product.order_product_id] || {};
+          return {
+            ...product,
+            rating: ratingInfo.rating || null,
+            feedback: ratingInfo.feedback || "",
+          };
+        });
+        
         // Bring selected product to the top
         const sortedProducts = productsWithRatings.sort((a, b) => {
           return a.order_product_id === selected_product_id ? -1 : b.order_product_id === selected_product_id ? 1 : 0;
@@ -123,28 +130,27 @@ const CustomerMyOrders = () => {
       </div>
     );
   }
-
   const filterMyOrders = async (status = "", orderTime = "") => {
     const requestBody = {
       customer_id: customerId,
       order_time: orderTime || null,
     };
-
+  
     if (status === "Delivered") {
       requestBody.delivery_status = "Delivered";
     } else if (status === "Shipped") {
       requestBody.shipping_status = "Shipped";
     }
-
+  
     try {
       const response = await fetch("http://127.0.0.1:8000/filter-my-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         const flatProducts = [];
         data.payments.forEach(order => {
@@ -152,8 +158,36 @@ const CustomerMyOrders = () => {
             flatProducts.push({ ...product, order });
           });
         });
-
-        setProducts(flatProducts);
+  
+        // Fetch ratings
+        const ratingResponse = await fetch('http://127.0.0.1:8000/view-rating', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customer_id: customerId }),
+        });
+  
+        const ratingData = await ratingResponse.json();
+        const ratingsMap = {};
+        if (ratingResponse.ok) {
+          ratingData.ratings.forEach(rating => {
+            ratingsMap[rating.order_product_id] = {
+              rating: rating.rating,
+              feedback: rating.feedback || "",
+            };
+          });
+        }
+  
+        // Merge ratings into products
+        const productsWithRatings = flatProducts.map(product => {
+          const ratingInfo = ratingsMap[product.order_product_id] || {};
+          return {
+            ...product,
+            rating: ratingInfo.rating || null,
+            feedback: ratingInfo.feedback || "",
+          };
+        });
+  
+        setProducts(productsWithRatings);
       } else if (response.status === 404) {
         setProducts([]);
       } else {
@@ -164,7 +198,7 @@ const CustomerMyOrders = () => {
       displayPopup("Something went wrong while filtering orders.", "error");
     }
   };
-
+  
 
 
   const handleStatusFilter = (status) => {
@@ -223,7 +257,9 @@ const CustomerMyOrders = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert("Thank you! Your review has been submitted.");
+        // alert("Thank you! Your review has been submitted.");
+      displayPopup("Thank you! Your review has been submitted.", "success");
+
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.order_product_id === product.order_product_id
@@ -241,11 +277,15 @@ const CustomerMyOrders = () => {
         setFeedback("");
         // Optionally refresh product list
       } else {
-        alert(result.error || "Failed to submit review.");
+      displayPopup(result.error || "Failed to submit review.", "error");
+
+        // alert(result.error || "Failed to submit review.");
       }
     } catch (error) {
       console.error("Error submitting review:", error);
-      alert("An error occurred while submitting your review.");
+      displayPopup("An error occurred while submitting your review.", "error");
+
+      // alert("An error occurred while submitting your review.");
     }
   };
 
@@ -270,7 +310,9 @@ const CustomerMyOrders = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert("Your review has been updated.");
+        displayPopup("Your review has been updated.", "success");
+
+        // alert("Your review has been updated.");
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.order_product_id === product.order_product_id
@@ -287,11 +329,15 @@ const CustomerMyOrders = () => {
         setEditFeedback("");
         // Optionally reload or refresh product list
       } else {
-        alert(result.error || "Failed to update review.");
+        displayPopup(result.error || "Failed to update review.", "error");
+
+        // alert(result.error || "Failed to update review.");
       }
     } catch (error) {
       console.error("Error updating review:", error);
-      alert("An error occurred while updating your review.");
+      displayPopup("An error occurred while updating your review.", "error");
+
+      // alert("An error occurred while updating your review.");
     }
   };
 
@@ -420,9 +466,9 @@ const CustomerMyOrders = () => {
                         )}
 
                         {product.delivery_status === 'Delivered' && !product.rating && (
-                          <div className="rate-review-button-container">
+                          <div className="edit-review-button-container rate-review-button-container">
                             <button
-                              className="rate-review-button"
+                              className="edit-review-button rate-review-button"
                               onClick={() => setShowReviewFormFor(product.order_product_id)}
                             >
                               Rate and Review
@@ -450,14 +496,15 @@ const CustomerMyOrders = () => {
                               value={feedback}
                               onChange={(e) => setFeedback(e.target.value)}
                               rows={3}
-                              style={{ width: "100%", marginTop: "8px" }}
+                              className='text-area-rating'
+
                             />
                             <div className='rating-buttons'>
                               <button
-                                className="submit-review-button"
+                                className="cart-place-order submit-review-button"
                                 onClick={() => handleSubmitReview(product)}
                               >
-                                Submit Review
+                                Submit
                               </button>
                               <button
                                 className="cart-delete-selected cancel-review-button"
