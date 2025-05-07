@@ -5,7 +5,7 @@ import "../CustomerViewCart/CustomerViewCart.css"
 import { RiDeleteBinLine } from "react-icons/ri";
 import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
-import {FaShoppingCart} from "react-icons/fa";
+import { FaShoppingCart } from "react-icons/fa";
 
 const CustomerViewCart = () => {
     const navigate = useNavigate();
@@ -28,16 +28,16 @@ const CustomerViewCart = () => {
             console.log("Search event triggered with query:", e.detail);
             const query = e.detail;
             if (!query) {
-              fetchCartData(); 
+                fetchCartData();
             } else {
-              searchCart(query);
+                searchCart(query);
             }
-          };
-        
-          window.addEventListener("customerCategorySearch", handleSearch);
-          return () => window.removeEventListener("customerCategorySearch", handleSearch);
-        }, []);
-  
+        };
+
+        window.addEventListener("customerCategorySearch", handleSearch);
+        return () => window.removeEventListener("customerCategorySearch", handleSearch);
+    }, []);
+
 
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
@@ -87,7 +87,7 @@ const CustomerViewCart = () => {
     const searchCart = async (query) => {
         setLoading(true);
         const customer_id = localStorage.getItem("customer_id");
-    
+
         if (!customer_id) {
             displayPopup(
                 <>
@@ -98,27 +98,27 @@ const CustomerViewCart = () => {
             setLoading(false);
             return;
         }
-    
+
         try {
             const response = await fetch("http://127.0.0.1:8000/customer-cart-view-search", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_name: query }),
             });
-    
+
             const data = await response.json();
-    
+
             if (data.status_code === 200) {
                 setCartItems(data.cart_items || []);
                 // setTotalPrice(data.cart_items?.reduce((acc, item) => acc + (item.final_price * item.quantity), 0) || 0);
                 setTotalPrice(
                     data.cart_items?.reduce(
-                      (acc, item) => acc + (item.discount_price * item.quantity), 
-                      0
+                        (acc, item) => acc + (item.discount_price * item.quantity),
+                        0
                     ) || 0
-                  );
-                  
-                  
+                );
+
+
             } else {
                 setError(data.message || "Failed to search cart.");
             }
@@ -128,7 +128,7 @@ const CustomerViewCart = () => {
             setLoading(false);
         }
     };
-    
+
     const handleDeleteCartItem = async (product_id) => {
         const customer_id = localStorage.getItem("customer_id");
         if (!customer_id) {
@@ -433,13 +433,13 @@ const CustomerViewCart = () => {
                                         }`}>{item.availability}</p>
                                     <p className="discounted-price">₹ {item.final_price.toFixed(2)} /-</p>
                                     {item.price_per_item !== item.final_price && (
-                                    <p className="original-price">₹ {item.price_per_item .toFixed(2)} /-<p className="discount-tag">
+                                        <p className="original-price">₹ {item.price_per_item.toFixed(2)} /-<span className="discount-tag">
 
-{item.discount && parseFloat(item.discount) > 0 && `${item.discount} off`}
+                                            {item.discount && parseFloat(item.discount) > 0 && `${item.discount} off`}
 
-</p></p>)}
-{item.gst && parseFloat (item.gst) > 0 &&<p className="gst">GST: {item.gst}</p>}
-                                    
+                                        </span></p>)}
+                                    {item.gst && parseFloat(item.gst) > 0 && <p className="gst">GST: {item.gst}</p>}
+
 
 
 
@@ -499,10 +499,10 @@ const CustomerViewCart = () => {
                     </div>
 
 
-                   
 
-                        {selectedProducts.length > 0 && (
-                             <div className="cart-side-section">
+
+                    {selectedProducts.length > 0 && (
+                        <div className="cart-side-section">
                             <div>
                                 <div className="cart-price-header">Total Payable</div>
                                 <div className="cart-prices">
@@ -526,10 +526,10 @@ const CustomerViewCart = () => {
                                 </div>
 
                             </div>
-                            </div>
-                        )}
-                    </div>
-                
+                        </div>
+                    )}
+                </div>
+
             </div>
         </div>
     );
