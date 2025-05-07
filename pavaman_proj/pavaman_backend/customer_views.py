@@ -3661,6 +3661,7 @@ def customer_get_payment_details_by_order(request):
                 "mobile_number": payment.customer.mobile_no,
                 "payment_mode": payment.payment_mode,
                 "total_quantity":payment.quantity,
+                "price":order.price,
                 "total_amount": payment.total_amount,
                 "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                 "product_order_id":payment.product_order_id,
@@ -5288,6 +5289,8 @@ def view_rating(request):
                     "rating": feedback.rating,
                     "product_id": feedback.product.id,
                     "product_name": feedback.product.product_name,
+                    "order_product_id": feedback.order_product.id,
+                    "order_id": feedback.order_id,
                 })
 
             return JsonResponse({
