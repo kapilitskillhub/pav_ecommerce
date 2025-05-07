@@ -324,16 +324,17 @@
   justify-content: end;
 }
 
-.star {
-  color: #ccc;
-  font-size: 24px;
+/* .star-rating {
+  font-size: 1.2rem;
+  color: #4450A2;
+} */
 
+.filled-star {
+  color: #4450A2;
 }
 
-.star.filled {
-  color: #4450A2;
-  font-size: 24px;
-
+.empty-star {
+  color: #ddd; /* light gray for empty stars */
 }
 
 
