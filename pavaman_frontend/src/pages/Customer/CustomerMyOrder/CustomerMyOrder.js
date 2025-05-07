@@ -297,7 +297,12 @@ const CustomerMyOrders = () => {
                       <div>
                         <p className="product-name">{product.product_name}</p>
                         <p>Order ID: {product.order.product_order_id}</p>
-                        <p>Price: ₹{product.final_price}</p>
+                        <p>Price: ₹{product.final_price}.00 (incl. GST)
+                        <p className="discount-tag">
+                        {product.discount &&  parseFloat (product.discount) > 0 && `${product.discount} off`}
+                        </p></p>
+                        
+
                         {/* <p>{product.shipping_status}</p> */}
                         <p className={product.delivery_status === "Delivered"
                           ? "delivery_status"

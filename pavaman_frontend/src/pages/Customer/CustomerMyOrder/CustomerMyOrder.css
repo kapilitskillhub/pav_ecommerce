@@ -336,7 +336,11 @@
 .empty-star {
   color: #ddd; /* light gray for empty stars */
 }
-
+.customer-discount-section-original-price-myorder{
+  font-size: 14px;
+  color: grey;
+  text-decoration: line-through;
+}
 
 
 /* Responsive design */
