@@ -87,7 +87,17 @@ const CustomerMyOrderDetails = () => {
             <div className="custom-product-info">
               <h5 className="custom-product-title">{selectedProduct.product_name}</h5>
               <p><strong>Quantity:</strong> {selectedProduct.quantity}</p>
-              <p><strong>Price:</strong> ₹{selectedProduct.final_price}</p>
+              <p><strong>Price:</strong> ₹{selectedProduct.final_price}.00 (incl. GST)
+              <p className="discount-tag">
+                        {selectedProduct.discount &&  parseFloat (selectedProduct.discount) > 0 && `${selectedProduct.discount} off`}
+                        </p>
+              </p>
+              {parseFloat(selectedProduct.price) !== parseFloat(selectedProduct.final_price) && (
+                         <p className="customer-discount-section-original-price-myorder">
+                         ₹{selectedProduct.price} (incl. GST)
+                       </p>
+                     )}
+                     {selectedProduct.gst && parseFloat (selectedProduct.gst) > 0 &&<p className="gst">GST: {selectedProduct.gst}</p>}
             </div>
           </div>
 
@@ -117,7 +127,7 @@ const CustomerMyOrderDetails = () => {
             {!orderHasMultipleProducts && (
               <div className="invoice-button-wrapper">
                 <button className="invoice-button" onClick={handleGetInvoice}>
-                  Get Invoice <MdCloudDownload className="invoice-icon" />
+                  Get Invoice<MdCloudDownload className="invoice-icon" />
                 </button>
               </div>
             )}
