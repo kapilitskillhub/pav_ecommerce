@@ -87,17 +87,17 @@ const CustomerMyOrderDetails = () => {
             <div className="custom-product-info">
               <h5 className="custom-product-title">{selectedProduct.product_name}</h5>
               <p className='custom-quantity-title'><strong>Quantity:</strong> {selectedProduct.quantity}</p>
-              <p className='custom-quantity-price'><strong>Price:</strong> ₹{selectedProduct.final_price}.00 (incl. GST)
-              <p className="discount-tag">
+              <p className='custom-quantity-price'><strong>Price:</strong> ₹{selectedProduct.final_price}.00 (incl. GST)</p>
+              <p className="discount-tag-myorder-details">
                         {selectedProduct.discount &&  parseFloat (selectedProduct.discount) > 0 && `${selectedProduct.discount} off`}
                         </p>
-              </p>
+             
               {parseFloat(selectedProduct.price) !== parseFloat(selectedProduct.final_price) && (
                          <p className="customer-discount-section-original-price-myorder-details">
                          ₹{selectedProduct.price} (incl. GST)
                        </p>
                      )}
-                     {selectedProduct.gst && parseFloat (selectedProduct.gst) > 0 &&<p className="gst">GST: {selectedProduct.gst}</p>}
+                     {selectedProduct.gst && parseFloat (selectedProduct.gst) > 0 &&<p className="gst-myorder-details">GST: {selectedProduct.gst}</p>}
             </div>
           </div>
 
@@ -167,17 +167,17 @@ const CustomerMyOrderDetails = () => {
               <div className="custom-product-info">
                 <h5 className="custom-product-title">{product.product_name}</h5>
                 <p><strong>Quantity:</strong> {product.quantity}</p>
-                <p><strong>Price:</strong> ₹{product.final_price}.00 (incl. GST)
-                <span className="discount-tag">
+                <p className='other-product-price'><strong>Price:</strong> ₹{product.final_price}.00 (incl. GST)</p>
+                <span className="discount-tag-myorder-details">
                         {product.discount &&  parseFloat (product.discount) > 0 && `${product.discount} off`}
                         </span>
-                </p>
+                
                 {parseFloat(product.price) !== parseFloat(product.final_price) && (
-                         <p className="customer-discount-section-original-price-myorder-details">
+                         <p className="customer-discount-section-original-price-myorder-details-other">
                          ₹{product.price} (incl. GST)
                        </p>
                      )}
-                     {product.gst && parseFloat (product.gst) > 0 &&<p className="gst">GST: {product.gst}</p>}
+                     {product.gst && parseFloat (product.gst) > 0 &&<p className="gst-myorder-details">GST: {product.gst}</p>}
               </div>
               <div className="custom-arrow-button" onClick={() => handleProductClick(product)}>
                 <FaCircleArrowRight />

@@ -113,7 +113,7 @@ const CustomerViewCart = () => {
                 // setTotalPrice(data.cart_items?.reduce((acc, item) => acc + (item.final_price * item.quantity), 0) || 0);
                 setTotalPrice(
                     data.cart_items?.reduce(
-                        (acc, item) => acc + (item.discount_price * item.quantity),
+                        (acc, item) => acc + (item.final_price * item.quantity),
                         0
                     ) || 0
                 );
@@ -159,7 +159,7 @@ const CustomerViewCart = () => {
                 setCartItems(updatedCart);
 
                 // Recalculate total price from updated cart
-                const newTotal = updatedCart.reduce((sum, item) => sum + item.discount_price * item.quantity, 0);
+                const newTotal = updatedCart.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
                 setTotalPrice(newTotal);
 
                 displayPopup("Product removed from cart!", "success");
@@ -179,7 +179,7 @@ const CustomerViewCart = () => {
     };
 
     const calculateTotalPrice = (items) => {
-        return items.reduce((sum, item) => sum + item.discount_price * item.quantity, 0);
+        return items.reduce((sum, item) => sum + item.final_price  * item.quantity, 0);
     };
 
 
@@ -312,7 +312,7 @@ const CustomerViewCart = () => {
 
     const calculateSelectedTotal = () => {
         const selectedItems = cartItems.filter(item => selectedProducts.includes(item.product_id));
-        return selectedItems.reduce((sum, item) => sum + item.discount_price * item.quantity, 0);
+        return selectedItems.reduce((sum, item) => sum + item.final_price  * item.quantity, 0);
     };
 
     return (
@@ -377,15 +377,18 @@ const CustomerViewCart = () => {
                                             ? "few-left"
                                             : "in-stock"
                                         }`}>{item.availability}</p>
-                                    <p className="discounted-price">₹ {item.final_price.toFixed(2)} /-</p>
+
+                                    <p className="discounted-price">₹ {item.final_price.toFixed(2)} /-(incl. GST)</p>
                                     {item.price_per_item !== item.final_price && (
-                                        <p className="original-price">₹ {item.price_per_item.toFixed(2)} /-<span className="discount-tag">
+                                        <p className="original-price">₹ {item.price_per_item.toFixed(2)} /-(incl. GST)
+                                        
+                                        <div className="discount-tag">
 
                                             {item.discount && parseFloat(item.discount) > 0 && `${item.discount} off`}
 
-                                        </span></p>)}
-                                    {item.gst && parseFloat(item.gst) > 0 && <p className="gst">GST: {item.gst}</p>}
-
+                                        </div></p>)}
+                                    {item.gst && parseFloat(item.gst) > 0 && <p className="gst-view-cart">GST: {item.gst}</p>}
+                                      
 
 
 

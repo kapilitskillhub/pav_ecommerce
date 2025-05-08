@@ -149,7 +149,13 @@
 }
 .customer-discount-section-original-price-myorder-details{
   font-size: 15px;
-  margin-top: -32px;
+  margin-top: -42px;
+  color: rgb(109, 108, 108);
+  text-decoration: line-through;
+}
+.customer-discount-section-original-price-myorder-details-other{
+  font-size: 15px;
+  margin-top: -28px;
   color: rgb(109, 108, 108);
   text-decoration: line-through;
 }
@@ -159,14 +165,28 @@ margin-top: 5px;
 .custom-quantity-price{
   margin-top: -21px;
 }
-.gst{
+.gst-myorder-details{
   color: #4541c1;
-  font-size: 19px;
+  font-size: 12px;
   font-weight: bold;
   padding: 5px 10px;
   /* border-radius: 5px; */
   /* display: inline-block; */
-  margin-top: 2px;
+  margin-top: -15px;
+}
+
+.discount-tag-myorder-details {
+  /* background-color: #ff6666;  */
+  color: #fd933b;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px 10px;
+  /* border-radius: 5px; */
+  display: ruby-text;
+  margin-top: -20px;
+}
+.other-product-price{
+  margin-top: -12px;
 }
 
 /* Responsive Design */

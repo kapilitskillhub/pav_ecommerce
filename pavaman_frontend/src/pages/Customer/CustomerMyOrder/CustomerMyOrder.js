@@ -196,7 +196,7 @@ const CustomerMyOrders = () => {
       </div>
     );
   };
-  
+
 
 
   return (
@@ -298,15 +298,16 @@ const CustomerMyOrders = () => {
                         <p className="product-name">{product.product_name}</p>
                         <p>Order ID: {product.order.product_order_id}</p>
                         <p>Price: ₹{product.final_price}.00 (incl. GST)
-                        <span className="discount-tag">
-                        {product.discount &&  parseFloat (product.discount) > 0 && `${product.discount} off`}
-                        </span></p>
+                          <span className="discount-tag-myorder">
+                            {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
+                          </span></p>
                         {parseFloat(product.price) !== parseFloat(product.final_price) && (
-  <p className="customer-discount-section-original-price-myorder">
-    ₹{product.price} (incl. GST)
-  </p>
-)}
-{product.gst && parseFloat (product.gst) > 0 &&<p className="gst">GST: {product.gst}</p>}
+                          <p className="customer-discount-section-original-price-myorder">
+                            ₹{product.price} (incl. GST)
+                          </p>
+                        )}
+                        {product.gst && parseFloat(product.gst) > 0 && 
+                        <p className="gst-myorder">GST: {product.gst}</p>}
 
 
                         {/* <p>{product.shipping_status}</p> */}
@@ -323,27 +324,22 @@ const CustomerMyOrders = () => {
                         </p>
                         {console.log(product.delivery_status, product.rating)} {/* Log delivery status and rating */}
 
-{product.delivery_status === "Delivered" && product.rating && (
-  <div className="product-rating">
-    {renderStars(product.rating)}
-  </div>
-)}
+                        {product.delivery_status === "Delivered" && product.rating && (
+                          <div className="product-rating">
+                            {renderStars(product.rating)}
+                          </div>
+                        )}
 
-{product.delivery_status === 'Delivered' && !product.rating && (
-  <div className="rate-review-button-container">
-    <button
-      className="rate-review-button"
-      // onClick={() => handleRateReview(product)}
-    >
-      Rate and Review
-    </button>
-  </div>
-)}
-
-
-
-
-
+                        {product.delivery_status === 'Delivered' && !product.rating && (
+                          <div className="rate-review-button-container">
+                            <button
+                              className="rate-review-button"
+                            // onClick={() => handleRateReview(product)}
+                            >
+                              Rate and Review
+                            </button>
+                          </div>
+                        )}
 
                         <div className="toggle-container">
                           <span className="toggle-details" onClick={() => goToOrderDetails(product)}>
