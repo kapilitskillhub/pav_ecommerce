@@ -56,6 +56,7 @@
 }
 .cart-nav-icon{
     font-size: 30px;
+    margin: 7px;
    
 }
 .product-name {
@@ -228,15 +229,27 @@
 .cart-side-section{
     margin: 20px;
 }
-.gst{
+.gst-view-cart{
     color: #4541c1;
-    font-size: 19px;
+    font-size: 12px;
     font-weight: bold;
     padding: 5px 10px;
     /* border-radius: 5px; */
     /* display: inline-block; */
-    margin-top: 2px;
+    margin-top: -23px;
 }
+
+.discount-tag-cart{
+    /* background-color: #ff6666;  */
+    color: #fd933b;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 5px 10px;
+    /* border-radius: 5px; */
+    display: ruby-text;
+    margin-top: -20px;
+  }
+
 @media (max-width: 768px) {
     .cart-page {
         flex-direction: column;

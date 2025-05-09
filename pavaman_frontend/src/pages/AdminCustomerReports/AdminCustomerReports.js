@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminCustomerReports.css';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { FcSalesPerformance } from "react-icons/fc";
 import { PiHandCoinsBold } from "react-icons/pi";
 import { GiCoins } from "react-icons/gi";
 import { BsCoin } from "react-icons/bs";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format, parseISO } from 'date-fns';
 
 const AdminCustomerReports = () => {
   const [adminId, setAdminId] = useState(null);
@@ -22,9 +18,18 @@ const AdminCustomerReports = () => {
   const [orderStatusData, setOrderStatusData] = useState([]);
   const [error, setError] = useState('');
   const [reportYear, setReportYear] = useState(new Date().getFullYear());
-  const maxAmount = Math.max(...Object.values(monthlyRevenue));
-  const currentYear = new Date().getFullYear();
-
+  const [reportFilter, setReportFilter] = useState('yearly'); // 'yearly' | 'monthly' | 'weekly'
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // 1-12
+  const [selectedWeek, setSelectedWeek] = useState(1); // week number
+  const [yearRange, setYearRange] = useState({
+    from: new Date(new Date().getFullYear(), 0),
+    to: new Date(new Date().getFullYear(), 11),
+  });
+  const [monthRange, setMonthRange] = useState({
+    from: new Date(new Date().getFullYear(), 0),
+    to: new Date(new Date().getFullYear(), 11),
+  });
+  const [weekDate, setWeekDate] = useState(new Date());
   const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'];
 
   // Function to format amounts to currency
@@ -43,12 +48,16 @@ const AdminCustomerReports = () => {
     }
 
     setAdminId(storedAdminId);
-
     fetchSalesSummary(storedAdminId);
-    fetchMonthlyRevenue(storedAdminId);
     fetchTopProducts(storedAdminId);
     fetchOrderStatusSummary(storedAdminId);
-  }, [reportYear]); // Dependency array includes reportYear to refetch when it changes
+  }, []);
+
+  useEffect(() => {
+    if (adminId) {
+      fetchMonthlyRevenue(adminId);
+    }
+  }, [adminId, reportYear, reportFilter, selectedMonth, selectedWeek]);
 
   const fetchSalesSummary = async (admin_id) => {
     try {
@@ -67,12 +76,34 @@ const AdminCustomerReports = () => {
 
   const fetchMonthlyRevenue = async (admin_id) => {
     try {
-      const res = await axios.post('http://127.0.0.1:8000/report-monthly-revenue-by-year', {
+      let payload = {
         admin_id,
-        year: reportYear
-      });
+        action: reportFilter === "yearly" ? "year" : reportFilter === "monthly" ? "month" : "week"
+      };
+
+      if (reportFilter === "monthly") {
+        payload.month = selectedMonth;
+        payload.year = reportYear;
+      } else if (reportFilter === "yearly") {
+        payload.year = reportYear;
+        payload.start_date_str = `${reportYear}-01-01`;
+        payload.end_date_str = `${reportYear}-12-31`;
+      } else if (reportFilter === "weekly") {
+        payload.month = selectedMonth;
+        payload.week = selectedWeek;
+        payload.year = reportYear;
+      }
+
+      const res = await axios.post('http://127.0.0.1:8000/report-monthly-revenue-by-year', payload);
+
       if (res.data.status_code === 200) {
-        setMonthlyRevenue(res.data.monthly_revenue);
+        if (reportFilter === 'monthly') {
+          setMonthlyRevenue(res.data.monthly_revenue || {});
+        } else if (reportFilter === 'yearly') {
+          setMonthlyRevenue(res.data.yearly_revenue || {});
+        } else if (reportFilter === 'weekly') {
+          setMonthlyRevenue(res.data.daywise_revenue || {});
+        }
       }
     } catch (err) {
       console.error('Error fetching monthly revenue', err);
@@ -106,15 +137,9 @@ const AdminCustomerReports = () => {
     }
   };
 
-  const handleYearChange = (event) => {
-    setReportYear(event.target.value); // Update the year and fetch data for that year
+  const handleFilterClick = () => {
+    fetchMonthlyRevenue(adminId); // Trigger fetching with the updated filter data
   };
-
-  if (error) {
-    return <div className="dashboard"><h2>{error}</h2></div>;
-  }
-
-  const barHeightScalingFactor = maxAmount ? 300 / maxAmount : 0; // scale the bars relative to the max amount
 
   return (
     <div className="dashboard-reports">
@@ -129,21 +154,113 @@ const AdminCustomerReports = () => {
       <div className="charts-status">
         <div className="chart-box">
           <h3>Yearly Revenue ({reportYear})</h3>
-          <select onChange={handleYearChange} value={reportYear}>
-            {/* {[currentYear, currentYear - 1, currentYear - 2].map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))} */}
-            {[currentYear, currentYear - 1].map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-          <div className="bar-chart">
-            {Object.entries(monthlyRevenue).map(([month, amount]) => (
-              <div key={month} className="bar-wrapper">
-                <div className="bar" data-amount={`₹${amount}`} style={{ '--bar-height': `${amount * barHeightScalingFactor}px` }}></div>
-                <label>{month.slice(0, 3)}</label>
+          <div className="filter-controls">
+            <label>Report Filter:</label>
+            <select value={reportFilter} onChange={(e) => setReportFilter(e.target.value)}>
+              <option value="yearly">Yearly</option>
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+            </select>
+
+            {reportFilter === 'yearly' && (
+              <>
+                <div>
+                  <label >From Year:</label>
+                  <DatePicker
+                    selected={yearRange.from}
+                    onChange={(date) => setYearRange((prev) => ({ ...prev, from: date }))}
+                    showYearPicker
+                    dateFormat="yyyy"
+                  />
+                </div>
+                <div>
+                  <label >To Year:</label>
+                  <DatePicker
+                    selected={yearRange.to}
+                    onChange={(date) => setYearRange((prev) => ({ ...prev, to: date }))}
+                    showYearPicker
+                    dateFormat="yyyy"
+                  />
+                </div>
+              </>
+            )}
+
+            {reportFilter === 'monthly' && (
+              <>
+                <div>
+                  <label >From Month:</label>
+                  <DatePicker
+                    selected={monthRange.from}
+                    onChange={(date) => setMonthRange((prev) => ({ ...prev, from: date }))}
+                    showMonthYearPicker
+                    dateFormat="MM/yyyy"
+                  />
+                </div>
+                <div>
+                  <label >To Month:</label>
+                  <DatePicker
+                    selected={monthRange.to}
+                    onChange={(date) => setMonthRange((prev) => ({ ...prev, to: date }))}
+                    showMonthYearPicker
+                    dateFormat="MM/yyyy"
+                  />
+                </div>
+              </>
+            )}
+
+            {reportFilter === 'weekly' && (
+              <div>
+                <label >Select Week:</label>
+                <DatePicker
+                  selected={weekDate}
+                  onChange={(date) => setWeekDate(date)}
+                  dateFormat="dd/MM/yyyy"
+                />
               </div>
-            ))}
+            )}
+
+            <button className='reprt-revenue-filter' onClick={handleFilterClick}>Filter</button>
+          </div>
+
+          <div className="bar-chart">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={Object.entries(monthlyRevenue).map(([key, value]) => ({ name: key, revenue: value }))}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="name"
+                  tickFormatter={(value) => {
+                    try {
+                      if (reportFilter === 'yearly') {
+                        return value; // e.g., 2021, 2022, 2023
+                      }
+
+                      if (reportFilter === 'monthly') {
+                        return format(new Date(reportYear, parseInt(value) - 1), 'MMM, yy');
+                      }
+
+                      if (reportFilter === 'weekly') {
+                        const match = value.match(/\((\d{2} \w+ \d{4})\)/);
+                        if (match) {
+                          const dateStr = match[1];
+                          const dateParts = dateStr.split(" ");
+                          return `${dateParts[0]} ${dateParts[1]} ${dateParts[2].slice(-2)}`;
+                        }
+                        return value;
+                      }
+                    } catch {
+                      return value;
+                    }
+                  }}
+                  interval={0}
+                  angle={-45}
+                  textAnchor="end"
+                  height={70}
+                />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="revenue" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
@@ -190,4 +307,3 @@ const AdminCustomerReports = () => {
 };
 
 export default AdminCustomerReports;
-

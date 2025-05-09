@@ -368,10 +368,10 @@ const CustomerViewProductDetails = () => {
                                 </span>
                             </p>
                             <p className="customer-sku">SKU: {productDetails.sku_number}</p>
-                            <p className="customer-price">₹ {productDetails.final_price} /- <span>(Incl. GST)</span>
-                            <span className="discount-tag">
+                            <p className="customer-price">₹ {productDetails.final_price} /- <span>(Incl. GST)</span></p>
+                            <span className="discount-tag-product-details">
                                             {productDetails.discount &&  parseFloat (productDetails.discount) > 0 && `${productDetails.discount} off`}
-                                        </span></p>
+                                        </span>
                             
                             {productDetails.price !== productDetails.final_price && (
                             <p className="customer-original-price">₹ {productDetails.price}  /- <span>(Incl. GST)</span></p>

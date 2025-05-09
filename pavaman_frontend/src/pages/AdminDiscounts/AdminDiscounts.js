@@ -116,9 +116,9 @@ const AdminDiscountProducts = () => {
                     </td>
                     <td>{product.product_name}</td>
                     <td>{product.sku_number}</td>
-                    <td>₹ {product.price}.00</td>
-                    <td>{product.discount}%</td>
-                    <td>₹ {product.final_price}.00</td>
+                    <td>₹ {product.price}</td>
+                    <td>{product.discount}</td>
+                    <td>₹ {product.final_price}</td>
                   </tr>
                 ))}
               </tbody>

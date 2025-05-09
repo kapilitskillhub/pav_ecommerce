@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const EditSpecification = () => {
   const navigate = useNavigate();
@@ -13,7 +15,19 @@ const EditSpecification = () => {
     : [];
 
   const [specs, setSpecs] = useState(initialSpecs);
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
 
+  
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
+  
   const handleChange = (index, field, value) => {
     const updatedSpecs = [...specs];
     updatedSpecs[index][field] = value;
@@ -34,19 +48,24 @@ const EditSpecification = () => {
     try {
       const response = await axios.post("http://127.0.0.1:8000/edit-product-specifications", requestData);
       if (response.data.status_code === 200) {
-        alert("Specifications updated successfully!");
-        navigate(-1); // Go back to product details page
+        displayPopup("Specifications updated successfully!","success");
+        setTimeout(() => {
+        navigate(-1);
+      }, 2000); // Go back to product details page
       } else {
-        alert("Failed to update specifications.");
+        displayPopup("Failed to update specifications.","error");
       }
     } catch (error) {
-      alert("Error updating specifications. Please try again.");
+      displayPopup("Error updating specifications. Please try again.","error");
     }
   };
 
   return (
     <div>
       <h2>Edit Specifications</h2>
+      <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       <form onSubmit={handleSubmit}>
         {specs.map((spec, index) => (
           <div key={index}>

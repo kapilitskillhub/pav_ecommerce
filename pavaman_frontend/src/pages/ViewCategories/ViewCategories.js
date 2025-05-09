@@ -4,56 +4,41 @@ import "../ViewCategories/ViewCategories.css";
 import AddIcon from "../../assets/images/addicon.svg";
 import { FaEdit, FaTrash, FaTimes } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
-import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
+import PopupMessage from "../../components/Popup/Popup";
 
 const ViewCategories = ({ categories, setCategories }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState(location.state?.successMessage || "");
-
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [categoryNameToDelete, setCategoryNameToDelete] = useState("");
-  const [showActionSuccessPopup, setShowActionSuccessPopup] = useState(false);
 
-      const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
-      const [showPopup, setShowPopup] = useState(false);
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
 
-      
-    const displayPopup = (text, type = "success") => {
-      setPopupMessage({ text, type });
-      setShowPopup(true);
-
-      setTimeout(() => {
-          setShowPopup(false);
-      }, 10000);
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
   };
-
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
   useEffect(() => {
+    const successMessage = location.state?.successMessage;
     if (successMessage) {
-      setShowActionSuccessPopup(true);
+      displayPopup(successMessage, "success");
+      navigate(location.pathname, { replace: true }); // Clear state after showing message
     }
-  }, [successMessage]);
+  }, [location]);
 
-  useEffect(() => {
-    if (showActionSuccessPopup) {
-      const timer = setTimeout(() => {
-        setShowActionSuccessPopup(false);
-        setSuccessMessage("");
-      }, 3000);
-      
-      return () => clearTimeout(timer); // Cleanup to prevent memory leaks
-    }
-  }, [showActionSuccessPopup]);
-  
   const fetchCategories = async () => {
     setLoading(true);
     setError("");
@@ -75,14 +60,10 @@ const ViewCategories = ({ categories, setCategories }) => {
       if (response.ok) {
         setCategories(data.categories || []);
       } else {
-        // setError(data.error || "Something went wrong.");
         displayPopup(data.error || "Something went wrong.", "error");
-
       }
     } catch (error) {
-      // setError("Failed to fetch categories. Please try again.");
       displayPopup("Failed to fetch categories. Please try again.", "error");
-      
     } finally {
       setLoading(false);
     }
@@ -90,7 +71,6 @@ const ViewCategories = ({ categories, setCategories }) => {
 
   const handleViewSubcategories = (category) => {
     sessionStorage.setItem("categoryData", JSON.stringify(category));
-
     navigate("/view-subcategories", {
       state: { category_id: category.category_id, category_name: category.category_name },
     });
@@ -104,14 +84,12 @@ const ViewCategories = ({ categories, setCategories }) => {
     const adminId = sessionStorage.getItem("admin_id");
 
     if (!adminId) {
-      alert("Admin session expired. Please log in again.");
       displayPopup(
         <>
-            Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+          Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
         </>,
         "error"
-    );
-      // navigate("/admin-login");
+      );
       return;
     }
 
@@ -124,15 +102,19 @@ const ViewCategories = ({ categories, setCategories }) => {
 
       const data = await response.json();
       if (response.ok && data.status_code === 200) {
-        setCategories(categories.filter((category) => category.category_id !== categoryToDelete));
-        setSuccessMessage(`${categoryNameToDelete} deleted successfully!`);
+        displayPopup(` Category deleted successfully!`, "success");
         setShowDeletePopup(false);
-        setShowActionSuccessPopup(true);
-      } else {
-        alert(data.error || "Failed to delete category.");
+
+        // Slight delay before updating categories to ensure popup displays
+        setTimeout(() => {
+          setCategories(categories.filter((category) => category.category_id !== categoryToDelete));
+        }, 100);
+      }
+      else {
+        displayPopup(data.error || "Failed to delete category.", "error");
       }
     } catch (error) {
-      alert("Something went wrong. Please try again.");
+      displayPopup("Something went wrong. Please try again.", "error");
     }
   };
 
@@ -147,7 +129,9 @@ const ViewCategories = ({ categories, setCategories }) => {
         {error && <p className="error-message">{error}</p>}
         {!loading && categories.length === 0 && <p className="no-data">No categories found.</p>}
       </div>
-
+      <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       <div className="category-cards">
         {categories.map((category) => (
           <div key={category.category_id} className="category-card">
@@ -185,16 +169,16 @@ const ViewCategories = ({ categories, setCategories }) => {
 
       {/* Delete Confirmation Popup */}
       {showDeletePopup && (
-        <div className="popup-overlay">
+        <div className="admin-popup-overlay popup-overlay">
           <div className="popup-content">
             <p>
               Are you sure you want to delete <strong>"{categoryNameToDelete}"</strong> category?
             </p>
             <div className="popup-buttons">
-              <button className="popup-confirm" onClick={handleDeleteCategory}>
+              <button className="popup-confirm cart-place-order" onClick={handleDeleteCategory}>
                 Yes, Delete
               </button>
-              <button className="popup-cancel" onClick={() => setShowDeletePopup(false)}>
+              <button className="popup-cancel cart-delete-selected" onClick={() => setShowDeletePopup(false)}>
                 Cancel
               </button>
             </div>
@@ -202,20 +186,8 @@ const ViewCategories = ({ categories, setCategories }) => {
         </div>
       )}
 
-      {/* Success Popup for Add, Edit, Delete */}
-      {showActionSuccessPopup && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <FaTimes className="popup-close-icon" onClick={() => setShowActionSuccessPopup(false)} />
-            <div className="message">
-              <FaCircleCheck className="success-icon" />
-              <p className="success-message-text">
-                <strong>{successMessage}</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Popup Message */}
+
     </div>
   );
 };

@@ -4,32 +4,39 @@ import "./AddCategory.css";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
 import SuccessMessageImage from "../../assets/images/success-message.svg";
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const AddCategory = () => {
-  const [name, setName] = useState(""); 
-  const [image, setImage] = useState(null); 
-  const [imagePreview, setImagePreview] = useState(null); 
-  const [isImageUploaded, setIsImageUploaded] = useState(false); 
-  const [loading, setLoading] = useState(false); 
+  const [name, setName] = useState("");
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isImageUploaded, setIsImageUploaded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
 
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
   // Check session validity when component loads
   useEffect(() => {
     const adminId = sessionStorage.getItem("admin_id");
 
     if (!adminId) {
-      alert("Session expired. Please log in again.");
+      displayPopup("Session expired. Please log in again.", "error");
       sessionStorage.clear();
       navigate("/admin-login");
     }
   }, [navigate]);
 
-  // Success message handler
-  const showSuccessMessage = (message) => {
-    setSuccessMessage(message);
-    setTimeout(() => setSuccessMessage(""), 3000);
-  };
 
   // Handle file selection
   const handleFileChange = (e) => {
@@ -40,7 +47,7 @@ const AddCategory = () => {
     setImagePreview(URL.createObjectURL(file));
     setIsImageUploaded(true);
 
-    e.target.value = ""; 
+    e.target.value = "";
   };
 
   // Handle category submission
@@ -50,17 +57,24 @@ const AddCategory = () => {
     const adminId = sessionStorage.getItem("admin_id");
 
     if (!adminId) {
-      alert("Admin session expired. Please log in again.");
-      navigate("/admin-login");
+      displayPopup(
+        <>
+          Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+        </>,
+        "error"
+      );
       return;
     }
 
     if (!name.trim()) {
-      alert("Please enter the category name.");
+      // alert("Please enter the category name.");
+      displayPopup("Please enter the category name.", "error");
+
       return;
     }
     if (!image) {
-      alert("Please upload an image.");
+      displayPopup("Please upload image.", "error");
+
       return;
     }
 
@@ -81,14 +95,21 @@ const AddCategory = () => {
 
       const data = await response.json();
       if (response.ok) {
-        showSuccessMessage("Category added successfully!");
-        navigate("/view-categories", { state: { successMessage: "Category added successfully!" } });
+        displayPopup("Category added successfully!", "success");
+        setTimeout(() => {
+          navigate("/view-categories", { state: { successMessage: "Category added successfully!" } });
+        }, 2000); // delay so the user sees the popup
+        
       } else {
-        alert(data.error || "Failed to add category.");
+        // alert(data.error || "Failed to add category.");
+        displayPopup(data.error || "Failed to add category.", "error");
+
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Something went wrong. Please try again.");
+      // alert("Something went wrong. Please try again.");
+      displayPopup(error,"Something went wrong. Please try again.", "error");
+
     } finally {
       setLoading(false);
     }
@@ -96,11 +117,14 @@ const AddCategory = () => {
 
   // Handle cancel button
   const handleCancel = () => {
-    navigate("/view-categories"); 
+    navigate("/view-categories");
   };
 
   return (
     <div className="add-card-form-page">
+      <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       <header className="form-header">
         <h1 className="form-title">Category Details</h1>
         {successMessage && (
@@ -122,7 +146,7 @@ const AddCategory = () => {
               className="category-name-input"
               placeholder="Enter the Category Name..."
               value={name}
-              onChange={(e) => setName(e.target.value)} 
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
@@ -133,8 +157,8 @@ const AddCategory = () => {
             <div
               className="upload-box"
               onClick={(e) => {
-                e.stopPropagation(); 
-                document.getElementById("image").click(); 
+                e.stopPropagation();
+                document.getElementById("image").click();
               }}
             >
               {isImageUploaded ? (
@@ -155,8 +179,8 @@ const AddCategory = () => {
                 type="file"
                 id="image"
                 className="upload-input"
-                onChange={handleFileChange} 
-                onClick={(e) => e.stopPropagation()} 
+                onChange={handleFileChange}
+                onClick={(e) => e.stopPropagation()}
               />
             </div>
           </div>

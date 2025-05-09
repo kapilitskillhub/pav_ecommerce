@@ -129,9 +129,9 @@ const AdminAddDiscount = () => {
       setSelectedSubcategories([]);
     }
   };
-  
+
   const isAllSelected = subcategories.length > 0 && selectedSubcategories.length === subcategories.length;
-  
+
 
   return (
     <div className="add-discount-container">
@@ -160,52 +160,52 @@ const AdminAddDiscount = () => {
       {subcategories.length > 0 && (
         <div className="subcategory-table-container">
           <table className="subcategory-table">
-          <thead>
-  <tr>
-    <th className="discount-table-group-label">S.No</th>
-    <th className="discount-table-group-label">Subcategory Name</th>
-    <th className="discount-table-group-label">
-      <input
-        type="checkbox"
-        checked={isAllSelected}
-        onChange={handleSelectAll}
-      /> Select All / Select
-    </th>
-  </tr>
-</thead>
+            <thead>
+              <tr>
+                <th className="discount-table-group-label">S.No</th>
+                <th className="discount-table-group-label">Subcategory Name</th>
+                <th className="discount-table-group-label">
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    onChange={handleSelectAll}
+                  /> Select All / Select
+                </th>
+              </tr>
+            </thead>
 
             <tbody>
-  {subcategories.map((sub, index) => (
-    <tr key={sub.id}>
-      <td>{index + 1}</td>
-      <td>{sub.sub_category_name}</td>
-      <td>
-        <input
-          type="checkbox"
-          checked={selectedSubcategories.includes(String(sub.id))}
-          onChange={() => handleSubcategoryCheckbox(String(sub.id))}
-        />
-      </td>
-    </tr>
-  ))}
-</tbody>
+              {subcategories.map((sub, index) => (
+                <tr key={sub.id}>
+                  <td>{index + 1}</td>
+                  <td>{sub.sub_category_name}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedSubcategories.includes(String(sub.id))}
+                      onChange={() => handleSubcategoryCheckbox(String(sub.id))}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
 
           </table>
         </div>
       )}
 
-{categoryId && selectedSubcategories.length > 0 && (
-  <div className="discount-form-group">
-    <label className="discount-form-group-label">Discount</label>
-    <input
-      type="text"
-      value={discount}
-      onChange={(e) => setDiscount(e.target.value)}
-      placeholder="Enter Discount (example: 10%)"
-      className="discount-form-group-input"
-    />
-  </div>
-)}
+      {categoryId && selectedSubcategories.length > 0 && (
+        <div className="discount-form-group">
+          <label className="discount-form-group-label">Discount</label>
+          <input
+            type="text"
+            value={discount}
+            onChange={(e) => setDiscount(e.target.value)}
+            placeholder="Enter Discount (example: 10%)"
+            className="discount-form-group-input"
+          />
+        </div>
+      )}
 
 
       {error && <p className="error-message">{error}</p>}

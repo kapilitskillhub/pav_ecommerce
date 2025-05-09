@@ -7,8 +7,6 @@ import PopupMessage from "../../../components/Popup/Popup";
 const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = () => { } }) => {
     const [orders, setOrders] = useState(orderSummary?.orders || []);
     const [showPayment, setShowPayment] = useState(false);
-
-
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
 
@@ -18,30 +16,62 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
         setTimeout(() => setShowPopup(false), 10000);
     };
 
-
     useEffect(() => {
         setOrders(orderSummary?.orders || []);
     }, [orderSummary]);
 
-    console.log("OrderSummary.orders:", orderSummary?.orders);
+    const calculateDeliveryCharges = (weightInKg, state) => {
+        // Remove 'kg' from the string and trim any extra spaces before converting to a number
+        const numericWeight = parseFloat(weightInKg.replace('kg', '').trim());
+        
+        // Check if numericWeight is a valid number
+        if (isNaN(numericWeight)) {
+            return 0; // Or handle the invalid weight case as needed
+        }
+    
+        let deliveryCharge = 0;
+    
+        if (numericWeight <= 0.05) {
+            deliveryCharge = 50;
+        } else if (numericWeight >= 1 && numericWeight <= 10) {
+            deliveryCharge = 100;
+        } else if (numericWeight >= 11 && numericWeight <= 20) {
+            deliveryCharge = 200;
+        }
+    
+        if (state === "Telangana" || state === "Hyderabad") {
+            deliveryCharge -= 20;
+        } else {
+            deliveryCharge += 100;
+        }
+    
+        return deliveryCharge;
+    };
+    
+    
 
-    if (!orderSummary || !orderSummary.orders || orderSummary.orders.length === 0) return null;
+    // Move this effect outside of any conditionals
+    useEffect(() => {
+        const updatedOrders = orders.map(order => {
+            const productWeightInKg = order.product_weight_in_kg || 0;
+            const customerState = order.state || "";
+            const deliveryCharge = calculateDeliveryCharges(productWeightInKg, customerState);
+            return { ...order, deliveryCharge };
+        });
+
+        setOrders(updatedOrders);
+    }, [orders]);  // This effect will run whenever orders change
 
     const handleCancelOrder = async () => {
         const customerId = localStorage.getItem("customer_id");
-        console.log("Initial Orders in State:", orders);
 
         const ordersToCancel = orders
-            .filter(order => order?.order_id && order?.product_id) // Ensure values exist
+            .filter(order => order?.order_id && order?.product_id)
             .map(order => ({
                 order_id: order.order_id,
                 product_id: order.product_id
             }));
 
-        console.log("Filtered Orders to Cancel:", ordersToCancel);
-
-
-        console.log("Orders to cancel:", ordersToCancel); // Debugging
         if (!customerId || ordersToCancel.length === 0) {
             displayPopup("Missing order details. Cannot cancel.", "error");
             return;
@@ -55,17 +85,13 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
             });
 
             const data = await response.json();
-            console.log("API Response:", data);
-
             if (response.ok) {
-                const cancelled_orders = data.cancelled_orders || [];  // Ensure it's always an array
+                const cancelled_orders = data.cancelled_orders || [];
                 const failed_orders = data.failed_orders || [];
 
                 if (cancelled_orders.length > 0) {
-                    // displayPopup("Selected orders have been successfully cancelled!", "success");
                     setPopup({ text: "Selected orders have been successfully cancelled!", type: "success" });
 
-                    // Remove only successfully canceled orders
                     setOrders(prevOrders =>
                         prevOrders.filter(order =>
                             !cancelled_orders.some(canceled => canceled.order_id === order.order_id)
@@ -79,15 +105,9 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                         ),
                     }));
                 }
-                window.dispatchEvent(new CustomEvent("cartUpdated", {
-                    detail: { removedProducts: cancelled_orders.map(o => o.product_id) }
-                }));
 
                 if (failed_orders.length > 0) {
-                    displayPopup(
-                        `Some orders could not be cancelled:\n${failed_orders.map(f => f.message).join("\n")}`,
-                        "error"
-                    );
+                    displayPopup(`Some orders could not be cancelled:\n${failed_orders.map(f => f.message).join("\n")}`, "error");
                 }
             } else {
                 displayPopup(data.error || "Failed to cancel orders.", "error");
@@ -97,6 +117,8 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
             displayPopup("An error occurred while cancelling orders.", "error");
         }
     };
+
+    if (!orderSummary || !orderSummary.orders || orderSummary.orders.length === 0) return null;
 
     return (
         <div className="order-summary container">
@@ -112,12 +134,12 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                 {showPayment && orderSummary?.orders?.length > 0 && (
                     <RazorpayPayment orderSummary={orderSummary} />
                 )}
-
             </div>
+
             {/* Display each order */}
             {orders.map((order, index) => (
                 <div key={order.order_id} className="order-item">
-                <div className="order-image">
+                    <div className="order-image">
                         <img
                             src={
                                 order.product_images &&
@@ -137,33 +159,27 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                     </div>
 
                     <div className="order-details">
-
                         <div className="order-product-title"> {order.product_name}</div>
-                        <div className="order-price-section order-discount-price"> ₹ {order.discount_price}</div>
-                        <div className="order-price-section order-original-price"> ₹ {order.product_price}</div>
+                        <div className="order-price-section order-discount-price"> ₹ {order.final_price.toFixed(2)}</div>
+                        {parseFloat(order.final_price).toFixed(2) !== parseFloat(order.product_price).toFixed(2) && (
+                            <div className="order-price-section order-original-price"> ₹ {order.product_price}/-(incl. GST)</div>
+                        )}
                         <div><strong>Quantity:</strong> {order.quantity}</div>
-                        <div><strong>Total Price:</strong> ₹ {order.total_price}</div>
+                        <div><strong>Total Price:</strong> ₹ {(order.quantity * order.final_price).toFixed(2)}</div>
+                        <div><strong>Delivery Charge:</strong> ₹ {order.deliveryCharge}</div>
                     </div>
                 </div>
             ))}
 
-
             <div className="cart-actions">
                 <button className="cart-place-order"
-                    onClick={() => {
-                      
-                        setShowPayment(true);
-                    }}
+                    onClick={() => { setShowPayment(true); }}
                 >
                     Continue to Payment
                 </button>
 
                 <button className="cart-delete-selected" onClick={handleCancelOrder}>Cancel Order</button>
-
-
-
             </div>
-
         </div>
     );
 };
