@@ -4236,30 +4236,6 @@ def generate_invoice_for_customer(request):
 
         invoice_list = []
         for payment in payments:
-            # Generate custom invoice number
-            # today = payment.created_at.date()
-            # date_str = today.strftime("%d%m%Y")  # e.g., 18042025
-            # prefix = "PVM"
-            # base_invoice = f"{prefix}{date_str}"
-
-            # # Fetch latest invoice number with this prefix
-            # latest_invoice = PaymentDetails.objects.filter(
-            #     created_at__date=today
-            # ).exclude(id=payment.id).order_by('-id').first()
-
-            # if latest_invoice and hasattr(latest_invoice, 'custom_invoice_no'):
-            #     last_serial = int(latest_invoice.custom_invoice_no[-4:])
-            # else:
-            #     last_serial = 0
-
-            # new_serial = last_serial + 1
-            # new_invoice_number = f"{base_invoice}{str(new_serial).zfill(4)}"  # 0001 format
-
-            # # Save the new invoice number to the payment (optional)
-            # # payment.custom_invoice_no = new_invoice_number
-            # # payment.save()
-
-      
             order_ids = payment.order_product_ids
             order_products = OrderProducts.objects.filter(id__in=order_ids)
             customer=CustomerRegisterDetails.objects.filter(id=payment.customer_id).first()
@@ -4279,8 +4255,8 @@ def generate_invoice_for_customer(request):
 
                 discount_amount = (price * discount_percent) / 100
                 final_price = price - discount_amount
-                base_price = round(order.final_price / Decimal("1.05"), 2)
-                gst_amount = round(order.final_price - base_price, 2)
+                # base_price = round(order.final_price / Decimal("1.05"), 2)
+                # gst_amount = round(order.final_price - base_price, 2)
 
                 items.append({
                     "product_name": product.product_name,
@@ -4295,9 +4271,9 @@ def generate_invoice_for_customer(request):
                     # "discount":float(0.00),
                     
                     "gross_amount": round(final_price),
-                    "taxable_value": base_price,
-                    "igst": gst_amount,
-                    "total": order.final_price,
+                    
+                    "final_price": order.final_price,
+                    "total_price": round(order.final_price * order.quantity, 2) 
                 })
 
             invoice_list.append({
@@ -4322,7 +4298,7 @@ def generate_invoice_for_customer(request):
                 "items": items,
                 "grand_total": payment.total_amount,
                 "payment_mode": payment.payment_mode,
-                "gst_rate": "5%",
+                
             })
 
         return JsonResponse({

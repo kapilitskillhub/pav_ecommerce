@@ -97,20 +97,20 @@ const generateInvoicePDF = async (customerId, order) => {
             head: [[
                 'Product Title',
                 'Qty',
+                'Price',
+                'Discount%',
                 'Gross Amount',
-                'Discount',
-                'Taxable Value',
-                'IGST',
+                'GST (%)',
                 'Total'
             ]],
             body: invoice.items.map(item => ([
                 item.product_name,
                 item.quantity,
+                item.price,
+                item.discount_percent,
                 item.gross_amount,
-                item.discount,
-                item.taxable_value,
-                item.igst,
-                item.total
+                item.gst,
+                item.total_price
             ])),
             headStyles: {
                 fillColor: [68, 80, 162],
@@ -147,7 +147,7 @@ const generateInvoicePDF = async (customerId, order) => {
 
         doc.setFont('helvetica', 'normal');
         doc.text(`Payment Mode: ${invoice.payment_mode}`, 14, totalY + 7);
-        doc.text(`GST Rate: ${invoice.gst_rate}`, 14, totalY + 14);
+        // doc.text(`GST Rate: ${invoice.gst_rate}`, 14, totalY + 14);
 
         // === Signature ===
         // // === Signature ===

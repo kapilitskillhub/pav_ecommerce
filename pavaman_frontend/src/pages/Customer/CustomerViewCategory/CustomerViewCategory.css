@@ -3,7 +3,6 @@
     font-weight: 400;
     text-align: left;
     color: #384477;
-    text-decoration: underline;
     margin-top: 30px;
 }
 
@@ -41,6 +40,7 @@
     max-width: 170px;
     display: block;
     margin: 16px auto;
+    text-transform: capitalize;
 
 }
 

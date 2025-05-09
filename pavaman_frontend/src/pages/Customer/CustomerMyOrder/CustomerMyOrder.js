@@ -440,9 +440,9 @@ const CustomerMyOrders = () => {
                         <p className="product-name">{product.product_name}</p>
                         <p>Order ID: {product.order.product_order_id}</p>
                         <p>Price: ₹{product.final_price}.00 (incl. GST)
-                        <span className="discount-tag">
-                        {product.discount &&  parseFloat (product.discount) > 0 && `${product.discount} off`}
-                        </span></p>
+                          <span className="discount-tag-myorder">
+                            {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
+                          </span></p>
                         {parseFloat(product.price) !== parseFloat(product.final_price) && (
   <p className="customer-discount-section-original-price-myorder">
     ₹{product.price} (incl. GST)
@@ -466,11 +466,11 @@ const CustomerMyOrders = () => {
                         </p>
                         {console.log(product.delivery_status, product.rating)} {/* Log delivery status and rating */}
 
-                        {product.delivery_status === "Delivered" && product.rating && (
-                          <div className="product-rating">
-                            {renderStars(product.rating)}
-                          </div>
-                        )}
+                                                {product.delivery_status === "Delivered" && product.rating && (
+                                                  <div className="product-rating">
+                                                    {renderStars(product.rating)}
+                                                  </div>
+                                                )}
 
                         {product.delivery_status === 'Delivered' && !product.rating && (
                           <div className="edit-review-button-container rate-review-button-container">
