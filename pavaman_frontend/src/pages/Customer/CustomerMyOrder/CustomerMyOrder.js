@@ -444,12 +444,12 @@ const CustomerMyOrders = () => {
                             {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
                           </span></p>
                         {parseFloat(product.price) !== parseFloat(product.final_price) && (
-                          <p className="customer-discount-section-original-price-myorder">
-                            ₹{product.price} (incl. GST)
-                          </p>
-                        )}
-                        {product.gst && parseFloat(product.gst) > 0 && 
-                        <p className="gst-myorder">GST: {product.gst}</p>}
+  <p className="customer-discount-section-original-price-myorder">
+    ₹{product.price} (incl. GST)
+  </p>
+)}
+{product.gst && parseFloat (product.gst) > 0 &&<p className="gst">GST: {product.gst}</p>}
+
 
 
                         {/* <p>{product.shipping_status}</p> */}
