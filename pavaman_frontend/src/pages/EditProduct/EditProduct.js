@@ -4,6 +4,8 @@ import axios from "axios";
 import "../EditProduct/EditProduct.css";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const EditProduct = () => {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ const EditProduct = () => {
     sku_number: productData.sku_number || "",
     price: productData.price || "",
     quantity: productData.quantity || "",
+    gst: productData.gst || "",
     discount: productData.discount !== undefined ? productData.discount : "",
     description: productData.description || "",
     product_images: productData.product_images || [], 
@@ -24,10 +27,23 @@ const EditProduct = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
+
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
 
   useEffect(() => {
     if (!productData.product_id) {
       setError("Invalid product data. Please go back and try again.");
+      displayPopup("Invalid product data. Please go back and try again.", "error");
+
     }
   }, [productData]);
 
@@ -60,11 +76,15 @@ const EditProduct = () => {
     const adminId = sessionStorage.getItem("admin_id");
 
     if (!adminId) {
-      alert("Session expired. Please log in again.");
-      navigate("/admin-login");
+      displayPopup(
+        <>
+          Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+        </>,
+        "error"
+      );
       return;
     }
-
+   
     const formDataToSend = new FormData();
     formDataToSend.append("admin_id", adminId);
     formDataToSend.append("category_id", category_id);
@@ -88,16 +108,24 @@ const EditProduct = () => {
     try {
       const response = await axios.post("http://127.0.0.1:8000/edit-product", formDataToSend);
       if (response.data.status_code === 200) {
-        // alert("Product updated successfully.");
+        displayPopup("Product  updated successfully!", "success");
+        setTimeout(() => {
+
         navigate("/view-products", {
           state: { category_id, category_name, sub_category_id, sub_category_name, successMessage: "Product updated successfully!" },
         });
+      }, 2000); // delay so the user sees the popup
+
       } else {
         setError(response.data.error || "Failed to update product.");
+        displayPopup(response.data.error || "Failed to update product.", "error");
+
       }
     } catch (err) {
       setError("Error updating product. Please try again.");
       console.error("API Error:", err);
+      displayPopup(error,"Something went wrong. Please try again.", "error");
+
     } finally {
       setLoading(false);
     }
@@ -108,7 +136,9 @@ const EditProduct = () => {
       <h2  className="form-title">Edit Product</h2>
 
       {error && <p className="error-message">{error}</p>}
-
+      <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       <form onSubmit={handleSubmit} className="add-product-form">
         <div>
           <label className="label">Name of the Category</label>
@@ -129,17 +159,21 @@ const EditProduct = () => {
           </div>
           <div>
             <label className="label">Price</label>
-            <input type="number" name="price" value={product.price} onChange={handleChange} required className="input-field" />
+            <input type="text"  name="price" value={product.price} onChange={handleChange} required className="input-field" />
           </div>
         </div>
         <div className="input-row">
           <div>
             <label className="label">Quantity</label>
-            <input type="number" name="quantity" value={product.quantity} onChange={handleChange} required className="input-field" />
+            <input type="text"  name="quantity" value={product.quantity} onChange={handleChange} required className="input-field" />
+          </div>
+          <div>
+            <label className="label">GST</label>
+            <input type="text"  name="discount" value={product.gst} onChange={handleChange} className="input-field" />
           </div>
           <div>
             <label className="label">Discount</label>
-            <input type="number" name="discount" value={product.discount} onChange={handleChange} className="input-field" />
+            <input type="text"  name="discount" value={product.discount} onChange={handleChange} className="input-field" />
           </div>
         </div>
         <div>

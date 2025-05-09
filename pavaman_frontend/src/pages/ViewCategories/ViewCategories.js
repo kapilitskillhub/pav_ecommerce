@@ -102,10 +102,15 @@ const ViewCategories = ({ categories, setCategories }) => {
 
       const data = await response.json();
       if (response.ok && data.status_code === 200) {
-        setCategories(categories.filter((category) => category.category_id !== categoryToDelete));
-        displayPopup(`"${categoryNameToDelete}" deleted successfully!`, "success");
+        displayPopup(` Category deleted successfully!`, "success");
         setShowDeletePopup(false);
-      } else {
+
+        // Slight delay before updating categories to ensure popup displays
+        setTimeout(() => {
+          setCategories(categories.filter((category) => category.category_id !== categoryToDelete));
+        }, 100);
+      }
+      else {
         displayPopup(data.error || "Failed to delete category.", "error");
       }
     } catch (error) {
@@ -124,9 +129,9 @@ const ViewCategories = ({ categories, setCategories }) => {
         {error && <p className="error-message">{error}</p>}
         {!loading && categories.length === 0 && <p className="no-data">No categories found.</p>}
       </div>
-<div className="admin-popup">
-<PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
-</div>
+      <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       <div className="category-cards">
         {categories.map((category) => (
           <div key={category.category_id} className="category-card">
@@ -182,7 +187,7 @@ const ViewCategories = ({ categories, setCategories }) => {
       )}
 
       {/* Popup Message */}
-   
+
     </div>
   );
 };

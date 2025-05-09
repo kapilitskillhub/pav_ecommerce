@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./AddProduct.css";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const AddProduct = () => {
     const navigate = useNavigate();
@@ -22,13 +24,27 @@ const AddProduct = () => {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
 
-    useEffect(() => {
-        const admin_id = sessionStorage.getItem("admin_id");
-        if (!admin_id) {
-            navigate("/admin-login");
-        }
-    }, [navigate]);
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
+
+ useEffect(() => {
+    const adminId = sessionStorage.getItem("admin_id");
+
+    if (!adminId) {
+      displayPopup("Session expired. Please log in again.", "error");
+      sessionStorage.clear();
+      navigate("/admin-login");
+    }
+  }, [navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -64,6 +80,16 @@ const AddProduct = () => {
         setError(null);
         const admin_id = sessionStorage.getItem("admin_id");
 
+    if (!admin_id) {
+      displayPopup(
+        <>
+          Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+        </>,
+        "error"
+      );
+      return;
+    }
+
         const formDataToSend = new FormData();
         formDataToSend.append("admin_id", admin_id);
         Object.keys(formData).forEach((key) => {
@@ -97,9 +123,12 @@ const AddProduct = () => {
                   
             } else {
                 setError(data.error || "Something went wrong");
+                displayPopup(data.error || "Failed to add product.", "error");
             }
         } catch (error) {
             setError("Network error, please try again");
+      displayPopup(error,"Something went wrong. Please try again.", "error");
+
         } finally {
             setLoading(false);
         }
@@ -108,6 +137,9 @@ const AddProduct = () => {
     return (
         <div className="add-product-container">
             <h2 className="form-title">Add Product</h2>
+            <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSubmit} className="add-product-form">
                 <div>
@@ -129,21 +161,21 @@ const AddProduct = () => {
                     </div>
                     <div>
                         <label className="label">Price</label>
-                        <input type="number" name="price" placeholder="Enter price" onChange={handleChange} required className="input-field" />
+                        <input type="text"  name="price" placeholder="Enter price" onChange={handleChange} required className="input-field" />
                     </div>
                 </div>
                 <div className="input-row">
                     <div>
                         <label className="label">Quantity</label>
-                        <input type="number" name="quantity" placeholder="Enter quantity" onChange={handleChange} required className="input-field" />
+                        <input type="text"  name="quantity" placeholder="Enter quantity" onChange={handleChange} required className="input-field" />
                     </div>
                     <div>
                         <label className="label">Discount</label>
-                        <input type="number" name="discount" placeholder="Enter discount" onChange={handleChange} required className="input-field" />
+                        <input type="text"  name="discount" placeholder="Enter discount" onChange={handleChange} required className="input-field" />
                     </div>
                     <div>
                         <label className="label">GST</label>
-                        <input type="number" name="gst" placeholder="Enter GST" onChange={handleChange} required className="input-field" />
+                        <input type="text" name="gst" placeholder="Enter GST" onChange={handleChange} required className="input-field" />
                     </div>
                 </div>
                 <div>
