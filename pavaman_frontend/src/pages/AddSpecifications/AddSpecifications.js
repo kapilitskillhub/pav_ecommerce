@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const AddSpecification = () => {
   const location = useLocation();
@@ -9,6 +11,17 @@ const AddSpecification = () => {
 
   const [numSpecifications, setNumSpecifications] = useState(0);
   const [specifications, setSpecifications] = useState([]);
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
+
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
 
   // Increment counter
   const handleIncrement = () => {
@@ -34,12 +47,14 @@ const AddSpecification = () => {
   // Submit data to API
   const handleSubmitSpecifications = async () => {
     if (numSpecifications === 0) {
-      alert("Please add at least one specification.");
+      displayPopup("Please add at least one specification.", "error");
+
       return;
     }
 
     if (specifications.some((spec) => !spec.name.trim() || !spec.value.trim())) {
-      alert("Please fill in all specifications.");
+      displayPopup("Please fill in all specifications.", "error");
+
       return;
     }
 
@@ -54,20 +69,26 @@ const AddSpecification = () => {
       });
 
       if (response.data.status_code === 200) {
-        alert("Specifications added successfully!");
-        navigate(-1); // Go back
+      displayPopup("Specifications added successfully!", "success");
+      setTimeout(() => {
+        navigate(-1);
+      }, 2000);  
       } else {
-        alert(response.data.error);
+        displayPopup(response.data.error || "Failed to add specifications.", "error");
+
       }
     } catch (error) {
-      alert("Failed to add specifications.");
+      displayPopup("Failed to add specifications.", "error");
+
     }
   };
 
   return (
     <div >
       <h2>Add Specifications</h2>
-
+      <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       {/* Counter Section */}
       <div >
         <button onClick={handleDecrement} disabled={numSpecifications === 0} >

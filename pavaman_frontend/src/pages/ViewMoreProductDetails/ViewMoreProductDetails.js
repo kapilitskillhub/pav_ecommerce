@@ -8,6 +8,8 @@ import { FaAngleRight } from "react-icons/fa";
 import { FaRupeeSign } from "react-icons/fa";
 import {  FaTimes } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+import PopupMessage from "../../components/Popup/Popup";
 
 const ViewProductDetails = () => {
   const [productDetails, setProductDetails] = useState(null);
@@ -27,6 +29,16 @@ const ViewProductDetails = () => {
 
   const [showSpecSuccessPopup, setShowSpecSuccessPopup] = useState(false);
 const [specMessage, setSpecMessage] = useState("");
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
+const displayPopup = (text, type = "success") => {
+  setPopupMessage({ text, type });
+  setShowPopup(true);
+
+  setTimeout(() => {
+    setShowPopup(false);
+  }, 10000);
+};
 
   useEffect(() => {
     if (!admin_id || !category_id || !sub_category_id || !product_id) {
@@ -130,7 +142,7 @@ const [specMessage, setSpecMessage] = useState("");
   // Submit Add Specifications
   const handleSubmitSpecifications = async () => {
     if (specifications.some((spec) => !spec.name.trim() || !spec.value.trim())) {
-      alert("Please fill in all specifications.");
+      displayPopup("Please fill in all specifications.","error");
       return;
     }
 
@@ -145,20 +157,18 @@ const [specMessage, setSpecMessage] = useState("");
       });
 
       if (response.data.status_code === 200) {
-        // alert("Specifications added successfully!");
-        fetchProductDetails();
+        displayPopup("Specification added successfully!", "success");
         setIsAddingSpecifications(false);
-        setSpecMessage("Specification added successfully!");
-        setShowSpecSuccessPopup(true);
-    
         setTimeout(() => {
-          setShowSpecSuccessPopup(false);
-        }, 3000);
-      } else {
-        alert(response.data.error);
+        fetchProductDetails();
+      }, 100);
+
+      }
+       else {
+        displayPopup(response.data.error,"error");
       }
     } catch (error) {
-      alert("Failed to add specifications.");
+      displayPopup("Failed to add specifications.","error");
     }
   };
 
@@ -175,20 +185,15 @@ const [specMessage, setSpecMessage] = useState("");
       });
 
       if (response.data.status_code === 200) {
-        // alert("Specifications updated successfully!");
         fetchProductDetails();
         setIsEditingSpecifications(false);
-        setSpecMessage("Specification updated successfully!");
-        setShowSpecSuccessPopup(true);
-    
-        setTimeout(() => {
-          setShowSpecSuccessPopup(false);
-        }, 3000);
-      } else {
-        alert(response.data.error || "Failed to update specifications.");
+        displayPopup("Specification updated successfully!", "success");
+      }
+       else {
+        displayPopup(response.data.error || "Failed to update specifications.","error");
       }
     } catch (error) {
-      alert("Error updating specifications.");
+      displayPopup("Error updating specifications.","error");
     }
   };
 
@@ -198,7 +203,10 @@ const [specMessage, setSpecMessage] = useState("");
 
       {loading && <p className="loading">Loading product details...</p>}
       {error && <p className="error">{error}</p>}
-
+      <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
+              
       {productDetails?.product_details && (
         <div className="product-details">
           <div className="product-info-top-section">
@@ -280,7 +288,7 @@ const [specMessage, setSpecMessage] = useState("");
 
               {activeTab === "specifications" && (
                 <div className="specification-container">
-                  {!isAddingSpecifications && !isEditingSpecifications ? (
+           {!isAddingSpecifications && !isEditingSpecifications ? (
                     <div>
                       {productDetails.product_details.specifications ? (
                         <table className="specifications-table">
@@ -442,19 +450,7 @@ const [specMessage, setSpecMessage] = useState("");
         </div>
 
       )}
-      {showSpecSuccessPopup && (
-  <div className="popup-overlay">
-    <div className="popup-content">
-      <FaTimes className="popup-close-icon" onClick={() => setShowSpecSuccessPopup(false)} />
-      <div className="message">
-        <FaCircleCheck className="success-icon" />
-        <p className="success-message-text">
-          <strong>{specMessage}</strong>
-        </p>
-      </div>
-    </div>
-  </div>
-)}
+  
 
     </div>
   );

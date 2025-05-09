@@ -5,6 +5,8 @@ import "../AddCategory/AddCategory.css";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
 import SuccessMessageImage from "../../assets/images/success-message.svg";
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const EditCategory = () => {
   const navigate = useNavigate();
@@ -18,19 +20,32 @@ const EditCategory = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
 
+  
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
+  
   useEffect(() => {
     const adminId = sessionStorage.getItem("admin_id");
 
     if (!adminId) {
+      // alert("Session expired. Please log in again.");
+      displayPopup("Session expired. Please log in again.", "error");
+
+      sessionStorage.clear();
       navigate("/admin-login");
     }
   }, [navigate]);
 
-  const showSuccessMessage = (message) => {
-    setSuccessMessage(message);
-    setTimeout(() => setSuccessMessage(""), 3000);
-  };
+
 
   const handleFileChange = (e) => {
     if (e.target.files.length === 0) return;
@@ -48,19 +63,29 @@ const EditCategory = () => {
 
     const adminId = sessionStorage.getItem("admin_id");
 
+  
     if (!adminId) {
-      setError("Admin session expired. Please log in again.");
-      navigate("/admin-login");
+      displayPopup(
+        <>
+          Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+        </>,
+        "error"
+      );
       return;
     }
+   
+
 
     if (!name.trim()) {
       setError("Category name is required.");
+      displayPopup("Category name is required.", "error");
+
       return;
     }
 
     if (!image && !category_image_url) {
       setError("Please upload an image.");
+      alert("Please upload an image.");
       return;
     }
 
@@ -79,15 +104,20 @@ const EditCategory = () => {
 
       const data = await response.json();
       if (response.ok) {
-        showSuccessMessage("Category updated successfully!");
+        displayPopup("Category updated successfully!", "success");
         setTimeout(() => {
           navigate("/view-categories", { state: { successMessage: "Category updated successfully!" } });
-        }, 2000);
+        }, 2000); // delay so the user sees the popup
+        
       } else {
         setError(data.error || "Failed to update category.");
+        displayPopup(data.error || "Failed to update category.", "error");
+
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
+      displayPopup(error,"Something went wrong. Please try again.", "error");
+
     } finally {
       setLoading(false);
     }
@@ -97,15 +127,10 @@ const EditCategory = () => {
     <div className="add-card-form-page">
       <header className="form-header">
         <h1 className="form-title">Edit Category</h1>
-        {/* {successMessage && (
-          <div className="success-message-container">
-            <img src={SuccessMessageImage} alt="Success" className="success-image" />
-            <p className="success-message-text">{successMessage}</p>
-          </div>
-        )}
-        {error && <p className="error-message">{error}</p>} */}
       </header>
-
+      <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       <div className="add-card-form">
         <form onSubmit={handleSubmit}>
           <div className="form-group">

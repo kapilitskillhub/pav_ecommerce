@@ -5,24 +5,34 @@ import "../ViewProducts/ViewProducts.css";
 import AddIcon from "../../assets/images/addicon.svg";
 import { FaEdit, FaTrash, FaRupeeSign, FaTimes } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+import PopupMessage from "../../components/Popup/Popup";
 
 const ViewProducts = ({ products, setProducts }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-
   const { sub_category_id, sub_category_name, category_id, category_name, successMessage } = location.state || {};
   const [message, setMessage] = useState(successMessage || "");
-
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [productNameToDelete, setProductNameToDelete] = useState("");
   const [showActionSuccessPopup, setShowActionSuccessPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
+
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
 
   useEffect(() => {
     const adminId = sessionStorage.getItem("admin_id");
-
 
     if (!category_id || !sub_category_id) {
       setError("Category or Subcategory ID is missing.");
@@ -35,9 +45,11 @@ const ViewProducts = ({ products, setProducts }) => {
 
   useEffect(() => {
     if (successMessage) {
+      displayPopup(successMessage, "success"); // 👈 this is missing
       setShowActionSuccessPopup(true);
     }
   }, [successMessage]);
+  
 
   useEffect(() => {
     if (showActionSuccessPopup) {
@@ -116,12 +128,12 @@ const ViewProducts = ({ products, setProducts }) => {
         setProducts(products.filter((product) => product.product_id !== productToDelete));
         setMessage(`${productNameToDelete} deleted successfully!`);
         setShowDeletePopup(false);
-        setShowActionSuccessPopup(true);
+        displayPopup(`${productNameToDelete} deleted successfully!`, "success");
       } else {
-        alert(response.data.error || "Failed to delete product.");
+        displayPopup(response.data.error || "Failed to delete product.", "error");
       }
     } catch (error) {
-      alert("Error deleting product. Please try again.");
+      displayPopup("Error deleting product. Please try again.", "error");
     }
   };
 
@@ -144,11 +156,15 @@ const ViewProducts = ({ products, setProducts }) => {
       },
     });
   };
-  
+
   return (
     <div>
+
       <div className="category-div">
         <div className="category-heading">Products</div>
+        <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
         {error && <p className="error-message">{error}</p>}
         {!loading && products.length === 0 && <p className="no-data">No products found.</p>}
       </div>
@@ -196,16 +212,16 @@ const ViewProducts = ({ products, setProducts }) => {
 
       {/* Delete Confirmation Popup */}
       {showDeletePopup && (
-        <div className="popup-overlay">
+        <div className="admin-popup-overlay popup-overlay">
           <div className="popup-content">
             <p>
               Are you sure you want to delete <strong>"{productNameToDelete}"</strong> product?
             </p>
             <div className="popup-buttons">
-              <button className="popup-confirm" onClick={handleDeleteProduct}>
+              <button className="popup-confirm cart-place-order" onClick={handleDeleteProduct}>
                 Yes, Delete
               </button>
-              <button className="popup-cancel" onClick={() => setShowDeletePopup(false)}>
+              <button className="popup-cancel cart-delete-selected" onClick={() => setShowDeletePopup(false)}>
                 Cancel
               </button>
             </div>
@@ -213,20 +229,7 @@ const ViewProducts = ({ products, setProducts }) => {
         </div>
       )}
 
-      {/* Success Popup */}
-      {showActionSuccessPopup && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <FaTimes className="popup-close-icon" onClick={() => setShowActionSuccessPopup(false)} />
-            <div className="message">
-              <FaCircleCheck className="success-icon" />
-              <p className="success-message-text">
-                <strong>{message}</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+ 
     </div>
   );
 };

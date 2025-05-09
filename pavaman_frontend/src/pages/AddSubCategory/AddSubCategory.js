@@ -4,6 +4,8 @@ import "../AddCategory/AddCategory.css";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
 import SuccessMessageImage from "../../assets/images/success-message.svg";
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const AddSubCategory = () => {
   const navigate = useNavigate();
@@ -16,22 +18,30 @@ const AddSubCategory = () => {
   const [isImageUploaded, setIsImageUploaded] = useState(false); 
   const [loading, setLoading] = useState(false); 
   const [successMessage, setSuccessMessage] = useState(""); 
+ const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
+
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
 
   // Check session validity
   useEffect(() => {
     const adminId = sessionStorage.getItem("admin_id");
+
     if (!adminId) {
-      alert("Session expired. Please log in again.");
+      // alert("Session expired. Please log in again.");
+      displayPopup("Session expired. Please log in again.", "error");
+
       sessionStorage.clear();
       navigate("/admin-login");
     }
   }, [navigate]);
-
-  // Success message handler
-  const showSuccessMessage = (message) => {
-    setSuccessMessage(message);
-    setTimeout(() => setSuccessMessage(""), 3000);
-  };
 
   // Handle file selection
   const handleFileChange = (e) => {
@@ -50,18 +60,25 @@ const AddSubCategory = () => {
     e.preventDefault();
 
     const adminId = sessionStorage.getItem("admin_id");
+  
     if (!adminId) {
-      alert("Admin session expired. Please log in again.");
-      navigate("/admin-login");
+    displayPopup(
+          <>
+            Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+          </>,
+          "error"
+        );
       return;
     }
 
     if (!subCategoryName.trim()) {
-      alert("Please enter the subcategory name.");
+      displayPopup("Please enter the subcategory name.", "error");
+
       return;
     }
     if (!subCategoryImage) {
-      alert("Please upload an image.");
+      displayPopup("Please upload image.", "error");
+
       return;
     }
 
@@ -69,7 +86,7 @@ const AddSubCategory = () => {
     const formData = new FormData();
     formData.append("admin_id", adminId);
     formData.append("category_id", category_id);
-    formData.append("subcategory_name", subCategoryName);
+    formData.append("sub_category_name", subCategoryName);
     formData.append("sub_category_image", subCategoryImage);
 
     try {
@@ -83,14 +100,18 @@ const AddSubCategory = () => {
 
       const data = await response.json();
       if (response.ok) {
-        showSuccessMessage("Subcategory added successfully!");
+        displayPopup("SubCategory added successfully!", "success");
+        setTimeout(() => {
         navigate("/view-subcategories", { state: { category_id, category_name ,successMessage: "Subcategory updated successfully!" } });
-      } else {
-        alert(data.error || "Failed to add subcategory.");
+      }, 2000); 
+    } else {
+      displayPopup(data.error || "Failed to add subcategory.", "error");
+
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Something went wrong. Please try again.");
+      displayPopup(error,"Something went wrong. Please try again.", "error");
+
     } finally {
       setLoading(false);
     }
@@ -102,8 +123,12 @@ const AddSubCategory = () => {
 
   return (
     <div className="add-card-form-page">
+      
       <header className="form-header">
         <h1 className="form-title">Subcategory Details</h1>
+        <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
         {successMessage && (
           <div className="success-message-container">
             <img src={SuccessMessageImage} alt="Success" className="success-image" />

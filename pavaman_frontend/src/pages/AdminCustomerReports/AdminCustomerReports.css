@@ -295,9 +295,9 @@
   padding: 8px 12px;
   font-size: 14px;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 20px;
   background-color: #f1f5f9;
-  color: #1e293b;
+  color: #4450A2;
   outline: none;
   cursor: pointer;
 }
@@ -410,4 +410,23 @@
 
 .react-datepicker__navigation-icon::before {
   border-color: #1e293b;
+}
+
+
+.recharts-default-tooltip{
+  border-radius: 20px;
+}
+
+.react-datepicker__input-container input{
+    border-radius: 20px !important;
+}
+.reprt-revenue-filter{
+  background: #4450A2;
+  border: none;
+  color: white;
+  border-radius: 20px;
+  padding: 5px;
+  font-size: 16px;
+  font-family: "Inter";
+  width: 100px;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminCustomerReports.css';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer, } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { FcSalesPerformance } from "react-icons/fc";
 import { PiHandCoinsBold } from "react-icons/pi";
 import { GiCoins } from "react-icons/gi";
@@ -9,7 +9,6 @@ import { BsCoin } from "react-icons/bs";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parseISO } from 'date-fns';
-
 
 const AdminCustomerReports = () => {
   const [adminId, setAdminId] = useState(null);
@@ -19,13 +18,19 @@ const AdminCustomerReports = () => {
   const [orderStatusData, setOrderStatusData] = useState([]);
   const [error, setError] = useState('');
   const [reportYear, setReportYear] = useState(new Date().getFullYear());
-  const maxAmount = Math.max(...Object.values(monthlyRevenue));
-  const currentYear = new Date().getFullYear();
-
-  const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'];
   const [reportFilter, setReportFilter] = useState('yearly'); // 'yearly' | 'monthly' | 'weekly'
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // 1-12
   const [selectedWeek, setSelectedWeek] = useState(1); // week number
+  const [yearRange, setYearRange] = useState({
+    from: new Date(new Date().getFullYear(), 0),
+    to: new Date(new Date().getFullYear(), 11),
+  });
+  const [monthRange, setMonthRange] = useState({
+    from: new Date(new Date().getFullYear(), 0),
+    to: new Date(new Date().getFullYear(), 11),
+  });
+  const [weekDate, setWeekDate] = useState(new Date());
+  const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'];
 
   // Function to format amounts to currency
   const formatAmount = (amount) => {
@@ -132,13 +137,9 @@ const AdminCustomerReports = () => {
     }
   };
 
-  const handleYearChange = (event) => {
-    setReportYear(event.target.value); // Update the year and fetch data for that year
+  const handleFilterClick = () => {
+    fetchMonthlyRevenue(adminId); // Trigger fetching with the updated filter data
   };
-
-  if (error) {
-    return <div className="dashboard"><h2>{error}</h2></div>;
-  }
 
   return (
     <div className="dashboard-reports">
@@ -162,50 +163,63 @@ const AdminCustomerReports = () => {
             </select>
 
             {reportFilter === 'yearly' && (
-              <DatePicker
-                selected={new Date(reportYear, 0)}
-                onChange={(date) => setReportYear(date.getFullYear())}
-                showYearPicker
-                dateFormat="yyyy"
-                minDate={new Date(2024, 0)}
-              />
+              <>
+                <div>
+                  <label >From Year:</label>
+                  <DatePicker
+                    selected={yearRange.from}
+                    onChange={(date) => setYearRange((prev) => ({ ...prev, from: date }))}
+                    showYearPicker
+                    dateFormat="yyyy"
+                  />
+                </div>
+                <div>
+                  <label >To Year:</label>
+                  <DatePicker
+                    selected={yearRange.to}
+                    onChange={(date) => setYearRange((prev) => ({ ...prev, to: date }))}
+                    showYearPicker
+                    dateFormat="yyyy"
+                  />
+                </div>
+              </>
             )}
 
             {reportFilter === 'monthly' && (
-              <DatePicker
-                selected={new Date(reportYear, selectedMonth - 1)}
-                onChange={(date) => {
-                  setSelectedMonth(date.getMonth() + 1);
-                  setReportYear(date.getFullYear());
-                }}
-                dateFormat="MM/yyyy"
-                showMonthYearPicker
-                minDate={new Date(2020, 0)}
-              />
+              <>
+                <div>
+                  <label >From Month:</label>
+                  <DatePicker
+                    selected={monthRange.from}
+                    onChange={(date) => setMonthRange((prev) => ({ ...prev, from: date }))}
+                    showMonthYearPicker
+                    dateFormat="MM/yyyy"
+                  />
+                </div>
+                <div>
+                  <label >To Month:</label>
+                  <DatePicker
+                    selected={monthRange.to}
+                    onChange={(date) => setMonthRange((prev) => ({ ...prev, to: date }))}
+                    showMonthYearPicker
+                    dateFormat="MM/yyyy"
+                  />
+                </div>
+              </>
             )}
 
             {reportFilter === 'weekly' && (
-              <>
+              <div>
+                <label >Select Week:</label>
                 <DatePicker
-                  selected={new Date(reportYear, selectedMonth - 1)}
-                  onChange={(date) => {
-                    setSelectedMonth(date.getMonth() + 1);
-                    setReportYear(date.getFullYear());
-                  }}
-                  dateFormat="MM/yyyy"
-                  showMonthYearPicker
-                  minDate={new Date(2024, 0)}
+                  selected={weekDate}
+                  onChange={(date) => setWeekDate(date)}
+                  dateFormat="dd/MM/yyyy"
                 />
-                <input
-                  type="number"
-                  min="1"
-                  max="52"
-                  value={selectedWeek}
-                  onChange={(e) => setSelectedWeek(Number(e.target.value))}
-                  placeholder="Week #"
-                />
-              </>
+              </div>
             )}
+
+            <button className='reprt-revenue-filter' onClick={handleFilterClick}>Filter</button>
           </div>
 
           <div className="bar-chart">
@@ -213,41 +227,37 @@ const AdminCustomerReports = () => {
               <BarChart data={Object.entries(monthlyRevenue).map(([key, value]) => ({ name: key, revenue: value }))}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
-  dataKey="name"
-  tickFormatter={(value) => {
-    try {
-      if (reportFilter === 'yearly') {
-        return value; // e.g., 2021, 2022, 2023
-      }
+                  dataKey="name"
+                  tickFormatter={(value) => {
+                    try {
+                      if (reportFilter === 'yearly') {
+                        return value; // e.g., 2021, 2022, 2023
+                      }
 
-      if (reportFilter === 'monthly') {
-        // Format: Jan, 25
-        return format(new Date(reportYear, parseInt(value) - 1), 'MMM, yy');
-      }
+                      if (reportFilter === 'monthly') {
+                        return format(new Date(reportYear, parseInt(value) - 1), 'MMM, yy');
+                      }
 
-      if (reportFilter === 'weekly') {
-        const match = value.match(/\((\d{2} \w+ \d{4})\)/);
-        if (match) {
-          const dateStr = match[1]; // "02 May 2025"
-          const dateParts = dateStr.split(" "); // [ "02", "May", "2025" ]
-          return `${dateParts[0]} ${dateParts[1]} ${dateParts[2].slice(-2)}`; // "02 May 25"
-        }
-        return value; // fallback
-      }
-    } catch {
-      return value;
-    }
-  }}
-  interval={0}
-  angle={-45}
-  textAnchor="end"
-  height={70}
-/>
-
-
+                      if (reportFilter === 'weekly') {
+                        const match = value.match(/\((\d{2} \w+ \d{4})\)/);
+                        if (match) {
+                          const dateStr = match[1];
+                          const dateParts = dateStr.split(" ");
+                          return `${dateParts[0]} ${dateParts[1]} ${dateParts[2].slice(-2)}`;
+                        }
+                        return value;
+                      }
+                    } catch {
+                      return value;
+                    }
+                  }}
+                  interval={0}
+                  angle={-45}
+                  textAnchor="end"
+                  height={70}
+                />
                 <YAxis />
                 <Tooltip />
-                {/* <Legend /> */}
                 <Bar dataKey="revenue" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>

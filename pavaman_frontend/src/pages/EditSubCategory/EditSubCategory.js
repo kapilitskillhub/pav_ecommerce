@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
 import "../EditSubCategory/EditSubCategory.css";
-
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const EditSubcategory = () => {
   const navigate = useNavigate();
@@ -19,6 +20,17 @@ const EditSubcategory = () => {
   const [subcategoryName, setSubcategoryName] = useState(initialSubcategoryName);
   const [selectedImage, setSelectedImage] = useState(null);
   const [error, setError] = useState("");
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
+
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
 
   const handleFileChange = (e) => {
     setSelectedImage(e.target.files[0]);
@@ -28,10 +40,13 @@ const EditSubcategory = () => {
     e.preventDefault();
     const adminId = sessionStorage.getItem("admin_id");
 
-
     if (!adminId) {
-      setError("Admin session expired. Please log in again.");
-      navigate("/admin-login");
+      displayPopup(
+        <>
+          Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+        </>,
+        "error"
+      );
       return;
     }
 
@@ -53,13 +68,19 @@ const EditSubcategory = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // alert("Subcategory updated successfully!");
+        displayPopup("Category updated successfully!", "success");
+        setTimeout(() => {
         navigate("/view-subcategories", { state: { category_id, category_name,successMessage: "Subcategory updated successfully!"  } });
-      } else {
+      }, 2000);
+    } else {
         setError(data.error || "Failed to update subcategory.");
+        displayPopup(data.error || "Failed to update subcategory.", "error");
+
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
+      displayPopup(error,"Something went wrong. Please try again.", "error");
+
     }
   };
 
@@ -67,7 +88,9 @@ const EditSubcategory = () => {
     <div className="edit-sub-form-page">
       <header className="form-header">
         <h1 className="form-title">Edit SubCategory</h1>
-       
+        <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       </header>
 
       {error && <p className="text-red-500 text-center">{error}</p>}
