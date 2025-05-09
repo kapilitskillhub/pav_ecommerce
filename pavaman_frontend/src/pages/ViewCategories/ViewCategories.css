@@ -1,124 +1,4 @@
-/* .category-heading {
-    color: black;
-    font-size: 24px;
-    font-family: Inter;
-    font-weight: 600;
-    word-wrap: break-word;
-    text-align: left;
-    margin-top: 26px;
-    margin-left: 26px;
-}
-.cards {
-    margin-top: 25px;
-    display: grid;
-    grid-template-columns: repeat(5, 0fr);
-    gap: 30px;
-    margin-left: 25px;
 
-}
-
-.card{
-    background: #D9D9D9 !important;
-    border-radius: 15px !important;
-    border: none !important;
-    width: 296px;
-    height: 328px;
-
-}
-
-.add-card-image{
-    margin: 40% auto;
-}
-
-.card,.add-category-card{
-    width: 20%;
-    border-radius: 12px;
-    background: #D9D9D9;
-    width: 247px;
-    height: 346px;
-}
-
-.card-name{
-    margin-left: 13px;
-    margin-top: 7px;
-    font-size: 18px;
-    line-height: 21.78px;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 400;
-
-}
-
-.card-image{
-    margin: 11px 13px 0 14px;
-    width: 220px;
-    height: 220px;
-    border-radius: 15px;
-}
-
-
-.card-menu{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    margin:  31px 13px 27px 14px;
-}
-
-.card-menu div {
-    display: flex; 
-    align-items: center;
-}
-
-
-.card-menu img {
-    margin-right: 8px; 
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-}
-
-.card-menu-icon-label{
-    font-family: Inter;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-}
-
-.edit-label, .delete-label {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.edit-label{
-    color: #4CAF50 !important;
-}
-
-.delete-label{
-    color: #E63946;
-}
-.product-head-div{
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.add-category-image{
-    margin: 90px auto;
-}
-
-.category-div{
-
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-}
-
-.success-message-text{
-    font-size: 18px;
-    font-weight: 400;
-} */
 
 
 .category-heading {
@@ -340,4 +220,17 @@
     margin: auto;
     font-size: 22px;
     font-weight: 400;
+}
+
+.admin-popup{
+    width: 50%;
+    align-items: center;
+    margin: 1px auto;
+}
+
+.admin-popup-overlay {
+    .popup-content{
+        background: rgb(243, 243, 243);
+    }
+
 }

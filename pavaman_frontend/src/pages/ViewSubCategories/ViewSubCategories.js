@@ -113,7 +113,6 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
 
   const handleViewProducts = (subcategory) => {
     sessionStorage.setItem("subCategoryData", JSON.stringify({
-
       sub_category_id: subcategory.id,
       sub_category_name: subcategory.sub_category_name
     }));
@@ -182,8 +181,9 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
           <img src={AddIcon} alt="Add Subcategory" className="add-category-image" />
         </div>
 
+        {/* Delete Confirmation Popup */}
         {showDeletePopup && (
-          <div className="popup-overlay">
+          <div className="admin-popup-overlay popup-overlay">
             <div className="popup-content">
               <p>
                 Are you sure you want to delete{" "}
@@ -193,13 +193,14 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
                 subcategory?
               </p>
               <div className="popup-buttons">
-                <button className="popup-confirm" onClick={handleDelete}>Yes, Delete</button>
-                <button className="popup-cancel" onClick={() => setShowDeletePopup(false)}>Cancel</button>
+                <button className=" cart-place-order popup-confirm" onClick={handleDelete}>Yes, Delete</button>
+                <button className="cart-delete-selected popup-cancel" onClick={() => setShowDeletePopup(false)}>Cancel</button>
               </div>
             </div>
           </div>
         )}
 
+        {/* Success Action Popup */}
         {showActionSuccessPopup && (
           <div className="popup-overlay">
             <div className="popup-content">
