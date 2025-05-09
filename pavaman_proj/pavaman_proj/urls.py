@@ -139,6 +139,7 @@ urlpatterns = [
     
     path("report-sales-summary",report_sales_summary, name="report_sales_summary"),
     path("report-monthly-revenue-by-year",report_monthly_revenue_by_year, name="report_monthly_revenue_by_year"),
+    
     path("top-five-selling-products",top_five_selling_products, name="top_five_selling_products"),
     path("get-all-category-subcategory",get_all_category_subcategory, name="get_all_category_subcategory"),
     path("not-selling-products",not_selling_products, name="not_selling_products"),

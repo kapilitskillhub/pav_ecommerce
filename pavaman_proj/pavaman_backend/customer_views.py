@@ -23,6 +23,18 @@ from datetime import datetime
 import string
 from django.http import FileResponse, JsonResponse
 from decimal import Decimal
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db import models
+import calendar
+from dateutil.relativedelta import relativedelta
+from django.core.mail import EmailMultiAlternatives
+from email.mime.image import MIMEImage
+import boto3
+from botocore.exceptions import ClientError
+from django.utils.timezone import now
+from collections import Counter
+
 
 def is_valid_password(password):
     if len(password) < 8:
@@ -190,8 +202,7 @@ def verify_email(request, verification_link):
 #         fail_silently=False,
 #     )
 
-from django.core.mail import EmailMultiAlternatives
-from email.mime.image import MIMEImage
+
 
 def send_verification_email(email, first_name, verification_link):
     subject = "[Pavaman] Please Verify Your Email ✨"
@@ -630,9 +641,6 @@ def otp_generate(request):
             return JsonResponse({"error": "Invalid JSON data"}, status=400)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
-
-from django.core.mail import EmailMultiAlternatives
-from email.mime.image import MIMEImage
 
 def send_password_reset_otp_email(customer):
     otp = customer.otp
@@ -3247,78 +3255,6 @@ def customer_search_products(request):
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
-# @csrf_exempt
-# def customer_search_products(request):
-#     if request.method == 'POST':
-#         try:
-#             data = json.loads(request.body)
-#             customer_id = data.get('customer_id')
-#             category_id = data.get('category_id')
-#             sub_category_id = data.get('sub_category_id')
-#             product_name = data.get('product_name', '').strip()  # Optional search term
-
-#             if not category_id:
-#                 return JsonResponse({"error": "Category ID are required.", "status_code": 400}, status=400)
-#             if not sub_category_id:
-#                 return JsonResponse({"error": "Sub Category ID are required.", "status_code": 400}, status=400)
-
-#             if product_name == "":
-#                 return JsonResponse({"error": "Atleast one character is required.", "status_code": 400}, status=400)
-
-#             products = ProductsDetails.objects.filter(
-                
-#                 category_id=category_id,
-#                 sub_category_id=sub_category_id,
-#                 product_status=1
-#             )
-#             if product_name:
-#                 products = products.filter(product_name__icontains=product_name)
-
-
-#             if not products.exists():
-#                 response_data = {"message": "No products details found", "status_code": 200}
-#                 if customer_id:
-#                     response_data["customer_id"] = customer_id  # Include customer_id if available
-#                 return JsonResponse(response_data, status=200)    
-
-#             product_list = []
-#             for product in products:
-#                 product_images = product.product_images
-#                 if isinstance(product_images, list):
-#                     product_image_url = (
-#                         f"/static/images/products/{os.path.basename(product_images[0].replace('\\', '/'))}"
-#                         if product_images else ""
-#                     )
-#                 elif isinstance(product_images, str):
-#                     product_image_url = f"/static/images/products/{os.path.basename(product_images.replace('\\', '/'))}"
-#                 else:
-#                     product_image_url = ""      
-
-#                 product_list.append({
-#                     "product_id": str(product.id),
-#                     "product_name": product.product_name,
-#                     "category_id": str(product.category_id),
-#                     "sub_category_id": str(product.sub_category_id),
-#                     "product_image_url": product_image_url,
-#                 })
-        
-#             response_data = {
-#                 "message": "Products retrieved successfully.",
-#                 "categories": product_list,
-#                 "status_code": 200
-#             }
-
-#             if customer_id:
-#                 response_data["customer_id"] = str(customer_id)
-#             return JsonResponse(response_data, status=200)
-
-#         except json.JSONDecodeError:
-#             return JsonResponse({"error": "Invalid JSON data.", "status_code": 400}, status=400)
-#         except Exception as e:
-#             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
-
-#     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
 #order admin
 @csrf_exempt
 def get_payment_details_by_order(request):
@@ -3580,6 +3516,106 @@ def filter_my_order(request):
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
+# @csrf_exempt
+# def customer_get_payment_details_by_order(request):
+#     if request.method != "POST":
+#         return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+#     try:
+#         data = json.loads(request.body.decode("utf-8"))
+#         customer_id = data.get('customer_id')
+        
+       
+#         if not customer_id:
+#                 return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
+     
+#         # payments = PaymentDetails.objects.filter(customer_id=customer_id)
+#         payments = PaymentDetails.objects.filter(customer_id=customer_id).order_by('-created_at')
+
+#         if not payments.exists():
+#             return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
+
+#         payment_list = []
+#         for payment in payments:
+#             order_ids = payment.order_product_ids  # Assuming this is a list
+            
+#             order_products = OrderProducts.objects.filter(id__in=order_ids)
+            
+#             order_product_list = []
+#             for order in order_products:
+#                 product = ProductsDetails.objects.filter(id=order.product_id).first()
+#                 if product and product.product_images:
+#                      product_image_path = product.product_images[0].replace('\\', '/')
+#                      product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_image_path.lstrip('/')}"
+#                 else:
+#                      product_image_url = ""
+                
+#                 order_product_list.append({
+#                     "order_product_id": order.id,
+#                     "quantity": order.quantity,
+#                     "price": order.price,
+#                     # "discount":product.discount,
+#                     # "final_price": order.final_price,
+#                     "gst": f"{int(product.gst or 0)}%",
+#                     "discount":f"{int(product.discount)}%" if product.discount else "0%",
+#                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
+#                     "order_status": order.order_status,
+#                     "shipping_status":order.shipping_status,
+#                     "delivery_status":order.delivery_status,
+#                     "product_id": order.product_id,
+#                     "product_image": product_image_url,
+#                     "product_name":product.product_name
+#                 })
+          
+#             address_data = []
+#             if payment.customer_address_id:
+#                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
+#                 if address_obj:
+#                     address_data.append({
+                        
+#                         "address_id": address_obj.id,
+#                         "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
+#                         "email": address_obj.email,
+#                         "mobile_number": address_obj.mobile_number,
+#                         "alternate_mobile": address_obj.alternate_mobile,
+#                         "address_type": address_obj.address_type,
+#                         "pincode": address_obj.pincode,
+#                         "street": address_obj.street,
+#                         "landmark": address_obj.landmark,
+#                         "village": address_obj.village,
+#                         "mandal": address_obj.mandal,
+#                         "postoffice": address_obj.postoffice,
+#                         "district": address_obj.district,
+#                         "state": address_obj.state,
+#                         "country": address_obj.country,
+                        
+#                     })
+                    
+#             payment_list.append({
+#                 "razorpay_order_id": payment.razorpay_order_id,
+#                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
+#                 "email": payment.customer.email,
+#                 "mobile_number": payment.customer.mobile_no,
+#                 "payment_mode": payment.payment_mode,
+#                 "total_quantity":payment.quantity,
+#                 "total_amount": payment.total_amount,
+#                 "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+#                 "product_order_id":payment.product_order_id,
+#                 "customer_address": address_data,
+#                 "order_products": order_product_list
+#             })
+#         response_data = {
+#             "message": "Placed Order retrieved successfully.",
+#             "payments": payment_list,
+#             "status_code": 200
+#         }
+
+#         if customer_id:
+#             response_data["customer_id"] = str(customer_id)
+#         return JsonResponse(response_data, status=200)    
+#     except Exception as e:
+#         return JsonResponse({"error": str(e), "status_code": 500}, status=500)    
+
 @csrf_exempt
 def customer_get_payment_details_by_order(request):
     if request.method != "POST":
@@ -3588,54 +3624,63 @@ def customer_get_payment_details_by_order(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
         customer_id = data.get('customer_id')
-       
-        if not customer_id:
-                return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
-     
-        # payments = PaymentDetails.objects.filter(customer_id=customer_id)
-        payments = PaymentDetails.objects.filter(customer_id=customer_id).order_by('-created_at')
+        search_product_name = data.get('search_product_name', '').strip()
 
+        if not customer_id:
+            return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
+       
+        if search_product_name == "":
+            return JsonResponse({"error": "At least one character is required for search.", "status_code": 400}, status=400)
+
+        payments = PaymentDetails.objects.filter(customer_id=customer_id).order_by('-created_at')
         if not payments.exists():
             return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
 
         payment_list = []
+
         for payment in payments:
             order_ids = payment.order_product_ids  # Assuming this is a list
-            
             order_products = OrderProducts.objects.filter(id__in=order_ids)
-            
+
             order_product_list = []
             for order in order_products:
                 product = ProductsDetails.objects.filter(id=order.product_id).first()
-                if product and product.product_images:
-                     product_image_path = product.product_images[0].replace('\\', '/')
-                     product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_image_path.lstrip('/')}"
+                if not product:
+                    continue
+
+                if search_product_name and search_product_name.lower() not in product.product_name.lower():
+                    continue
+
+                if product.product_images:
+                    product_image_path = product.product_images[0].replace('\\', '/')
+                    product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_image_path.lstrip('/')}"
                 else:
-                     product_image_url = ""
-                
+                    product_image_url = ""
+
                 order_product_list.append({
                     "order_product_id": order.id,
                     "quantity": order.quantity,
                     "price": order.price,
-                    # "discount":product.discount,
-                    # "final_price": order.final_price,
                     "gst": f"{int(product.gst or 0)}%",
-                    "discount":f"{int(product.discount)}%" if product.discount else "0%",
+                    "discount": f"{int(product.discount)}%" if product.discount else "0%",
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "order_status": order.order_status,
-                    "shipping_status":order.shipping_status,
-                    "delivery_status":order.delivery_status,
+                    "shipping_status": order.shipping_status,
+                    "delivery_status": order.delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
-                    "product_name":product.product_name
+                    "product_name": product.product_name
                 })
-          
+
+            # Skip this payment if no order products matched the search (when searching)
+            if search_product_name and not order_product_list:
+                continue
+
             address_data = []
             if payment.customer_address_id:
                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
                 if address_obj:
                     address_data.append({
-                        
                         "address_id": address_obj.id,
                         "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
                         "email": address_obj.email,
@@ -3651,23 +3696,25 @@ def customer_get_payment_details_by_order(request):
                         "district": address_obj.district,
                         "state": address_obj.state,
                         "country": address_obj.country,
-                        
                     })
-                    
+
             payment_list.append({
                 "razorpay_order_id": payment.razorpay_order_id,
                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
                 "email": payment.customer.email,
                 "mobile_number": payment.customer.mobile_no,
                 "payment_mode": payment.payment_mode,
-                "total_quantity":payment.quantity,
-                "price":order.price,
+                "total_quantity": payment.quantity,
                 "total_amount": payment.total_amount,
                 "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "product_order_id":payment.product_order_id,
+                "product_order_id": payment.product_order_id,
                 "customer_address": address_data,
                 "order_products": order_product_list
             })
+
+        if not payment_list:
+            return JsonResponse({"message": "No matching order products found.", "status_code": 404}, status=404)
+
         response_data = {
             "message": "Placed Order retrieved successfully.",
             "payments": payment_list,
@@ -3676,13 +3723,13 @@ def customer_get_payment_details_by_order(request):
 
         if customer_id:
             response_data["customer_id"] = str(customer_id)
-        return JsonResponse(response_data, status=200)    
+
+        return JsonResponse(response_data, status=200)
+
     except Exception as e:
-        return JsonResponse({"error": str(e), "status_code": 500}, status=500)    
+        return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
 
-import boto3
-from botocore.exceptions import ClientError
 def download_material_file(request, product_id):
     try:
         # Fetch product from the database
@@ -3801,10 +3848,6 @@ def edit_customer_profile(request):
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
-from django.utils.timezone import now
-from django.db.models import Sum
-
-
 @csrf_exempt
 def report_sales_summary(request):
     if request.method != "POST":
@@ -3918,21 +3961,19 @@ def report_sales_summary(request):
 #     except Exception as e:
 #         return JsonResponse({"error": str(e), "status_code": 500})
 
-from django.db import models
-import calendar
-import json
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 @csrf_exempt
 def report_monthly_revenue_by_year(request):
+    print(">>> report_monthly_revenue_by_year view called")
     if request.method != "POST":
         return JsonResponse({"error": "Only POST method allowed", "status_code": 405}, status=405)
 
     try:
         data = json.loads(request.body.decode("utf-8"))
         admin_id = data.get('admin_id')
-        action = data.get('action')  # "month" or "year"
+        action = data.get('action')
+
+        print(">>> Received data:", data)
 
         if not admin_id:
             return JsonResponse({"error": "admin_id is required", "status_code": 400}, status=400)
@@ -3940,44 +3981,21 @@ def report_monthly_revenue_by_year(request):
         if action == "month":
             return _report_monthly(data, admin_id)
         elif action == "year":
-            return _report_yearly(admin_id)
+            return _report_yearly(data,admin_id)
         elif action == "week":
             return _report_weekly(data, admin_id)
         else:
-            return JsonResponse({"error": "Invalid action. Use 'month' or 'year'.", "status_code": 400}, status=400)
+            return JsonResponse({"error": "Invalid action. Use 'month', 'year' or 'week'.", "status_code": 400}, status=400)
 
     except Exception as e:
+        print(">>> Exception occurred:", str(e))
         return JsonResponse({"error": str(e), "status_code": 500})
 
-def _report_yearly(admin_id):
-    current_year = datetime.now().year
-    yearly_revenue = {}
-    start_year = current_year - 11  # 12 years total
-
-    for year in range(start_year, current_year + 1):
-        start_date = datetime(year, 1, 1)
-        end_date = datetime(year, 12, 31)
-        total = PaymentDetails.objects.filter(
-            admin_id=admin_id,
-            created_at__date__gte=start_date.date(),
-            created_at__date__lte=end_date.date()
-        ).aggregate(total_amount=models.Sum('total_amount'))['total_amount'] or 0
-        yearly_revenue[str(year)] = float(total)
-
-    dummy_y_axis = [i * 500000 for i in range(1, 11)]  # ₹5L, ₹10L, ..., ₹50L
-
-    return JsonResponse({
-        "report_type": "yearly",
-        "year_range": [start_year, current_year],
-        "yearly_revenue": yearly_revenue,
-        "admin_id": admin_id,
-        "dummy_y_axis": dummy_y_axis,
-        "status_code": 200
-    })
 
 def _report_monthly(data, admin_id):
     start_date_str = data.get('start_date_str')
     end_date_str = data.get('end_date_str')
+    print(">>> Monthly Report Start:", start_date_str, "End:", end_date_str)
 
     if not start_date_str or not end_date_str:
         current_year = datetime.now().year
@@ -3993,9 +4011,14 @@ def _report_monthly(data, admin_id):
     if end_date < start_date:
         return JsonResponse({"error": "End date must be after start date", "status_code": 400}, status=400)
 
-    if start_date.year != end_date.year:
-        if start_date.month < end_date.month:
-            return JsonResponse({"error": "Please choose a date range within the same year", "status_code": 400}, status=400)
+    diff = relativedelta(end_date, start_date)
+    print(">>> Date difference:", diff)
+    if diff.years > 1 or (diff.years == 1 and (diff.months > 0)):
+        return JsonResponse({"error": "Date range cannot exceed 1 year", "status_code": 400}, status=400)
+
+
+    # if diff.years > 1 or (diff.years == 1 and (diff.months > 0 or diff.days > 0)):
+    #     return JsonResponse({"error": "Date range cannot exceed 1 year", "status_code": 400}, status=400)
 
     monthly_revenue = {}
     current = start_date
@@ -4009,6 +4032,8 @@ def _report_monthly(data, admin_id):
         created_at__date__gte=start_date.date(),
         created_at__date__lte=end_date.date()
     )
+
+    print(f">>> Found {payments.count()} payments")
 
     for payment in payments:
         key = f"{calendar.month_abbr[payment.created_at.month]} {payment.created_at.year}"
@@ -4027,12 +4052,53 @@ def _report_monthly(data, admin_id):
         "status_code": 200
     })
 
-def _report_weekly(data, admin_id):
-# def _report_daywise_by_week(data, admin_id):
+def _report_yearly(data, admin_id):
     start_date_str = data.get('start_date_str')
     end_date_str = data.get('end_date_str')
 
-    # Default to last 7 days (today inclusive)
+    if not start_date_str or not end_date_str:
+        current_year = datetime.now().year
+        start_date_str = str(current_year - 11) + "-01-01"
+        end_date_str = str(current_year) + "-12-31"
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+    except ValueError:
+        return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD.", "status_code": 400}, status=400)
+
+    if (end_date.year - start_date.year) > 12:
+        return JsonResponse({"error": "Date range cannot exceed 12 years", "status_code": 400}, status=400)
+
+    yearly_revenue = {}
+    start_year = start_date.year
+    end_year = end_date.year
+
+    for year in range(start_year, end_year + 1):
+        start_date_of_year = datetime(year, 1, 1)
+        end_date_of_year = datetime(year, 12, 31)
+        total = PaymentDetails.objects.filter(
+            admin_id=admin_id,
+            created_at__date__gte=start_date_of_year.date(),
+            created_at__date__lte=end_date_of_year.date()
+        ).aggregate(total_amount=models.Sum('total_amount'))['total_amount'] or 0
+        yearly_revenue[str(year)] = float(total)
+
+    dummy_y_axis = [i * 500000 for i in range(1, 11)]
+
+    return JsonResponse({
+        "report_type": "yearly",
+        "year_range": [start_year, end_year],
+        "yearly_revenue": yearly_revenue,
+        "admin_id": admin_id,
+        "dummy_y_axis": dummy_y_axis,
+        "status_code": 200
+    })
+
+def _report_weekly(data, admin_id):
+    start_date_str = data.get('start_date_str')
+    end_date_str = data.get('end_date_str')
+
     if not start_date_str or not end_date_str:
         end_date = datetime.now().date()
         start_date = end_date - relativedelta(days=6)
@@ -4043,35 +4109,31 @@ def _report_weekly(data, admin_id):
         except ValueError:
             return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD.", "status_code": 400}, status=400)
 
-    # Validate 7-day range max
     delta_days = (end_date - start_date).days
     if delta_days < 0:
         return JsonResponse({"error": "End date must be after start date", "status_code": 400}, status=400)
     if delta_days > 6:
         return JsonResponse({"error": "Only 7-day range allowed", "status_code": 400}, status=400)
 
-    # Initialize dictionary with day name + date
     daywise_revenue = {}
     for i in range(delta_days + 1):
         date = start_date + relativedelta(days=i)
-        label = f"{date.strftime('%A')} ({date.strftime('%d %b %Y')})"  # Example: "Wednesday (30 Apr 2025)"
+        label = f"{date.strftime('%A')} ({date.strftime('%d %b %Y')})"
         daywise_revenue[label] = 0
 
-    # Get all relevant payments
     payments = PaymentDetails.objects.filter(
         admin_id=admin_id,
         created_at__date__gte=start_date,
         created_at__date__lte=end_date
     )
 
-    # Accumulate revenue per day
     for payment in payments:
         pay_date = payment.created_at.date()
         label = f"{pay_date.strftime('%A')} ({pay_date.strftime('%d %b %Y')})"
         if label in daywise_revenue:
             daywise_revenue[label] += float(payment.total_amount)
 
-    dummy_y_axis = [i * 10000 for i in range(1, 11)]  # ₹10K to ₹100K
+    dummy_y_axis = [i * 10000 for i in range(1, 11)]
 
     return JsonResponse({
         "report_type": "daywise_week",
@@ -4082,8 +4144,6 @@ def _report_weekly(data, admin_id):
         "dummy_y_axis": dummy_y_axis,
         "status_code": 200
     })
-
-from collections import Counter
 
 @csrf_exempt
 def top_five_selling_products(request):
@@ -4912,250 +4972,113 @@ def submit_feedback_rating(request):
         }, status=405)
 
 
-# @csrf_exempt
-# def submit_feedback_rating(request):
-#     if request.method == "POST":
-#         try:
-#             data = json.loads(request.body.decode("utf-8"))
+@csrf_exempt
+def submit_feedback_rating(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
 
-#             customer_id = data.get('customer_id')
-#             product_id = data.get('product_id')
-#             product_order_id = data.get('product_order_id')
-#             rating = data.get('rating')  # Optional
-#             feedback = data.get('feedback', "")  # Optional
+            customer_id = data.get('customer_id')
+            product_id = data.get('product_id')
+            product_order_id = data.get('product_order_id')
+            rating = data.get('rating')  # Optional
+            feedback = data.get('feedback', "")  # Optional
 
-#             # Validate required fields
-#             if not all([customer_id, product_id, product_order_id]):
-#                 return JsonResponse({
-#                     "error": "customer_id, product_id, and product_order_id are required.",
-#                     "status_code": 400
-#                 }, status=400)
+            # Validate required fields
+            if not all([customer_id, product_id, product_order_id]):
+                return JsonResponse({
+                    "error": "customer_id, product_id, and product_order_id are required.",
+                    "status_code": 400
+                }, status=400)
 
-#             # Fetch related objects
-#             try:
-#                 customer = CustomerRegisterDetails.objects.get(id=customer_id)
-#                 product = ProductsDetails.objects.get(id=product_id)
-#                 admin = product.admin  # Assuming ProductsDetails has 'admin' FK
+            # Fetch related objects
+            try:
+                customer = CustomerRegisterDetails.objects.get(id=customer_id)
+                product = ProductsDetails.objects.get(id=product_id)
+                admin = product.admin  # Assuming ProductsDetails has 'admin' FK
 
-#                 # Get payment using product_order_id
-#                 payment = PaymentDetails.objects.filter(
-#                     customer=customer, product_order_id=product_order_id
-#                 ).first()
-#                 if not payment:
-#                     return JsonResponse({
-#                         "error": "Payment not found for given product_order_id.",
-#                         "status_code": 404
-#                     }, status=404)
+                # Get payment using product_order_id
+                payment = PaymentDetails.objects.filter(
+                    customer=customer, product_order_id=product_order_id
+                ).first()
+                if not payment:
+                    return JsonResponse({
+                        "error": "Payment not found for given product_order_id.",
+                        "status_code": 404
+                    }, status=404)
 
-#                 # Find matching order_product ID from payment.order_product_ids list
-#                 order_product = OrderProducts.objects.filter(
-#                     id__in=payment.order_product_ids,
-#                     product=product,
-#                     customer=customer
-#                 ).first()
-#                 if not order_product:
-#                     return JsonResponse({
-#                         "error": "Matching order product not found.",
-#                         "status_code": 404
-#                     }, status=404)
+                # Find matching order_product ID from payment.order_product_ids list
+                order_product = OrderProducts.objects.filter(
+                    id__in=payment.order_product_ids,
+                    product=product,
+                    customer=customer
+                ).first()
+                if not order_product:
+                    return JsonResponse({
+                        "error": "Matching order product not found.",
+                        "status_code": 404
+                    }, status=404)
 
-#             except Exception as e:
-#                 return JsonResponse({
-#                     "error": f"Related object fetch error: {str(e)}",
-#                     "status_code": 404
-#                 }, status=404)
+            except Exception as e:
+                return JsonResponse({
+                    "error": f"Related object fetch error: {str(e)}",
+                    "status_code": 404
+                }, status=404)
 
-#             # Check if feedback already exists
-#             existing_feedback = FeedbackRating.objects.filter(
-#                 customer=customer, product=product, order_product=order_product
-#             ).first()
-#             if existing_feedback:
-#                 return JsonResponse({
-#                     "error": "Feedback already submitted for this product and order.",
-#                     "status_code": 400
-#                 }, status=400)
-#             current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
-#             # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+            # Check if feedback already exists
+            existing_feedback = FeedbackRating.objects.filter(
+                customer=customer, product=product, order_product=order_product
+            ).first()
+            if existing_feedback:
+                return JsonResponse({
+                    "error": "Feedback already submitted for this product and order.",
+                    "status_code": 400
+                }, status=400)
+            current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
-#             # Create feedback
-#             FeedbackRating.objects.create(
-#                 admin=admin,
-#                 customer=customer,
-#                 payment=payment,
-#                 order_product=order_product,
-#                 order_id=product_order_id,
-#                 product=product,
-#                 category=product.category.category_name if product.category else "",
-#                 sub_category=product.sub_category.sub_category_name if product.sub_category else "",
-#                 rating=rating if rating else None,
-#                 feedback=feedback,
-#                 created_at=current_time
-#             )
-#             # current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
-#             # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-
-
-#             return JsonResponse({
-#                 "message": "Feedback submitted successfully.",
-#                 "status_code": 201,
-#                 "customer_id":customer_id,
-#                 "submitted_at": current_time
-#             }, status=201)
-
-#         except json.JSONDecodeError:
-#             return JsonResponse({
-#                 "error": "Invalid JSON format.",
-#                 "status_code": 400
-#             }, status=400)
-
-#         except Exception as e:
-#             return JsonResponse({
-#                 "error": f"Server error: {str(e)}",
-#                 "status_code": 500
-#             }, status=500)
-
-#     else:
-#         return JsonResponse({
-#             "error": "Invalid HTTP method. Only POST allowed.",
-#             "status_code": 405
-#         }, status=405)
-
-# @csrf_exempt
-# def filter_my_order(request):
-#     if request.method != "POST":
-#         return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-#     try:
-#         data = json.loads(request.body.decode("utf-8"))
-#         customer_id = data.get('customer_id')
-#         order_status_filter = data.get('delivery_status')
-#         order_time_filter = data.get('order_time')
-
-#         if not customer_id:
-#             return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
-
-#         # Filter by customer_id
-#         payments = PaymentDetails.objects.filter(customer_id=customer_id)
-
-#         # Dynamic year filters (keep last 4 years + older)
-#         available_years = payments.dates('created_at', 'year', order='DESC')
-#         year_options = ["Last 30 days"] + [dt.year for dt in available_years if dt.year >= datetime.now().year - 3] + ["Older"]
+            # Create feedback
+            FeedbackRating.objects.create(
+                admin=admin,
+                customer=customer,
+                payment=payment,
+                order_product=order_product,
+                order_id=product_order_id,
+                product=product,
+                category=product.category.category_name if product.category else "",
+                sub_category=product.sub_category.sub_category_name if product.sub_category else "",
+                rating=rating if rating else None,
+                feedback=feedback,
+                created_at=current_time
+            )
+            # current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
+            # formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
-#         # Dynamic time filtering
-#         now = datetime.now()
-#         if order_time_filter:
-#             if order_time_filter == "Last 30 days":
-#                 payments = payments.filter(created_at__gte=now - timedelta(days=30))
-#             elif order_time_filter == "Older":
-#                 payments = payments.filter(created_at__lt=datetime(now.year - 3, 1, 1))
-#             elif order_time_filter.isdigit():
-#                 payments = payments.filter(created_at__year=int(order_time_filter))
+            return JsonResponse({
+                "message": "Feedback submitted successfully.",
+                "status_code": 201,
+                "customer_id":customer_id,
+                "submitted_at": current_time
+            }, status=201)
 
-#         payments = payments.order_by('-created_at')
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "error": "Invalid JSON format.",
+                "status_code": 400
+            }, status=400)
 
-#         if not payments.exists():
-#             return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
+        except Exception as e:
+            return JsonResponse({
+                "error": f"Server error: {str(e)}",
+                "status_code": 500
+            }, status=500)
 
-#         payment_list = []
-#         total_matched_order_products = 0
-
-#         for payment in payments:
-#             order_ids = payment.order_product_ids
-#             order_products = OrderProducts.objects.filter(id__in=order_ids)
-
-#             # Apply order status filter if provided
-#             if order_status_filter:
-#                 order_products = order_products.filter(delivery_status=order_status_filter)
-
-#             order_product_list = []
-#             for order in order_products:
-#                 product = ProductsDetails.objects.filter(id=order.product_id).first()
-#                 product_image = product.product_images[0] if product and product.product_images else ""
-
-#                 order_product_list.append({
-#                     "order_product_id": order.id,
-#                     "quantity": order.quantity,
-#                     "price": order.price,
-#                     "gst": f"{int(product.gst or 0)}%",
-#                     "discount": f"{int(product.discount)}%" if product.discount else "0%",
-#                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
-#                     "order_status": order.order_status,
-#                     # "shipping_status":order.shipping_status,
-#                     "delivery_status":order.delivery_status,
-#                     "product_id": order.product_id,
-#                     "product_image": product_image,
-#                     "product_name": product.product_name
-#                 })
-
-#             # # Skip payment if no products matched the order status filter
-#             # if order_status_filter and not order_product_list:
-#             #     continue
-#             if order_product_list:
-#                 total_matched_order_products += len(order_product_list)
-#             else:
-#                 if order_status_filter:
-#                     continue  # Skip payments where no product matches the delivery status
-
-
-#             address_data = []
-#             if payment.customer_address_id:
-#                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
-#                 if address_obj:
-#                     address_data.append({
-#                         "address_id": address_obj.id,
-#                         "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
-#                         "email": address_obj.email,
-#                         "mobile_number": address_obj.mobile_number,
-#                         "alternate_mobile": address_obj.alternate_mobile,
-#                         "address_type": address_obj.address_type,
-#                         "pincode": address_obj.pincode,
-#                         "street": address_obj.street,
-#                         "landmark": address_obj.landmark,
-#                         "village": address_obj.village,
-#                         "mandal": address_obj.mandal,
-#                         "postoffice": address_obj.postoffice,
-#                         "district": address_obj.district,
-#                         "state": address_obj.state,
-#                         "country": address_obj.country,
-#                     })
-
-#             payment_list.append({
-#                 # "razorpay_order_id": payment.razorpay_order_id,
-#                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
-#                 "email": payment.customer.email,
-#                 "mobile_number": payment.customer.mobile_no,
-#                 "payment_mode": payment.payment_mode,
-#                 "total_quantity": payment.quantity,
-#                 "total_amount": payment.total_amount,
-#                 "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-#                 "time_filters": year_options,
-#                 "product_order_id": payment.product_order_id,
-#                 "customer_address": address_data,
-#                 "order_products": order_product_list
-#             })
-
-#         if order_status_filter and total_matched_order_products == 0:
-#             return JsonResponse({
-#                 "error": "No products found for the selected delivery status.",
-#                 "status_code": 404,
-#                 "time_filters": year_options
-#             }, status=404)
-#         if not payment_list:
-#             return JsonResponse({"error": "No order details match filters.", "status_code": 404}, status=404)
-
-#         return JsonResponse({
-#             "message": "Filtered Orders Retrieved Successfully.",
-#             "payments": payment_list,
-#             "status_code": 200,
-#             "customer_id": str(customer_id)
-#         }, status=200)
-
-#     except Exception as e:
-#         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-
-
+    else:
+        return JsonResponse({
+            "error": "Invalid HTTP method. Only POST allowed.",
+            "status_code": 405
+        }, status=405)
 
 @csrf_exempt
 def edit_feedback_rating(request):
@@ -5289,8 +5212,6 @@ def view_rating(request):
                     "rating": feedback.rating,
                     "product_id": feedback.product.id,
                     "product_name": feedback.product.product_name,
-                    "order_product_id": feedback.order_product.id,
-                    "order_id": feedback.order_id,
                 })
 
             return JsonResponse({

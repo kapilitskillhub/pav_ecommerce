@@ -1233,8 +1233,6 @@ def edit_product_specifications(request):
             sub_category_id = data.get('sub_category_id')
             product_id = data.get('product_id')
             new_specifications = data.get('specifications', [])
-
-
             if not all([admin_id, category_id, sub_category_id, product_id]):
                 return JsonResponse({"error": "Missing required fields.", "status_code": 400}, status=400)
 
