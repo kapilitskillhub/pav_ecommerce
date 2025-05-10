@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import "./AdminRatings.css";
+import axios from 'axios';
+import PopupMessage from "../../components/Popup/Popup";
 
 const AdminRatings = () => {
   const [feedbackList, setFeedbackList] = useState([]);
@@ -11,7 +13,17 @@ const AdminRatings = () => {
   const itemsPerPage = 10;
 
   const adminId = sessionStorage.getItem("admin_id");
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
 
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
   useEffect(() => {
     const fetchFeedback = async () => {
       setLoading(true);
@@ -34,9 +46,13 @@ const AdminRatings = () => {
           setTotalPages(Math.ceil(data.feedback.length / itemsPerPage));
         } else {
           setError(data.error || 'An error occurred');
+      displayPopup(data.error || 'An error occurred', "error");
+
         }
       } catch (err) {
         setError('Server error: ' + err.message);
+      displayPopup('Server error: ' + err.message, "error");
+
       } finally {
         setLoading(false);
       }
@@ -57,12 +73,39 @@ const AdminRatings = () => {
     setCurrentPage(pageNumber);
   };
 
+const downloadExcel = async () => {
+  try {
+    const response = await axios.post(
+      'http://127.0.0.1:8000/download-feedback-excel', // ✅ Correct new endpoint
+      { admin_id: adminId },
+      { responseType: 'blob' }
+    );
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'feedback_report.xlsx'); // ✅ New filename
+    document.body.appendChild(link);
+    link.click();
+    link.remove(); // Clean up after click
+  } catch (error) {
+          displayPopup('Failed to download Excel.', "error");
+
+  }
+};
+
+
   return (
     <div className="report-wrapper">
-      <h2 className="report-title">Feedback Reports</h2>
+      <div className="discount-header">
+        <h3 className="report-title heading-admin">Feedback Reports</h3>
+        <button className='cart-place-order' onClick={downloadExcel}>Download Excel</button>
+      </div>
+           <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       {loading && <p className="loading-text">Loading feedback...</p>}
       {error && <p className="error-text">{error}</p>}
-
       {!loading && !error && (
         <>
           <div className="report-table-container">
@@ -93,7 +136,7 @@ const AdminRatings = () => {
                     <td className="order-table-data">{item.customer_name}</td>
                     <td className="order-table-data text-style">{item.customer_email}</td>
 
-                   
+
                   </tr>
                 ))}
               </tbody>

@@ -179,36 +179,36 @@ const CustomerViewCart = () => {
     };
 
     const calculateTotalPrice = (items) => {
-        return items.reduce((sum, item) => sum + item.final_price  * item.quantity, 0);
+        return items.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
     };
     const calculateTotalDiscount = () => {
         return cartItems.reduce((acc, item) => acc + (item.discounted_amount || 0) * item.quantity, 0)
-        .toFixed(2);
+            .toFixed(2);
     };
-      
+
     const calculateSelectedDiscount = () => {
         return cartItems
-          .filter(item => selectedProducts.includes(item.product_id))
-          .reduce((acc, item) => acc + (item.discounted_amount || 0) * item.quantity, 0)
-          .toFixed(2);
-      };
-      const calculateTotalGST = () => {
+            .filter(item => selectedProducts.includes(item.product_id))
+            .reduce((acc, item) => acc + (item.discounted_amount || 0) * item.quantity, 0)
+            .toFixed(2);
+    };
+    const calculateTotalGST = () => {
         return cartItems
-          .reduce((acc, item) => {
-            const gstPercent = parseFloat(item.gst) || 0;
-            return acc + item.final_price * item.quantity * (gstPercent / 100);
-          }, 0)
-          .toFixed(2);
-      };
-      const calculateSelectedGST = () => {
+            .reduce((acc, item) => {
+                const gstPercent = parseFloat(item.gst) || 0;
+                return acc + item.final_price * item.quantity * (gstPercent / 100);
+            }, 0)
+            .toFixed(2);
+    };
+    const calculateSelectedGST = () => {
         return cartItems
-          .filter(item => selectedProducts.includes(item.product_id))
-          .reduce((acc, item) => {
-            const gstPercent = parseFloat(item.gst) || 0;
-            return acc + item.final_price * item.quantity * (gstPercent / 100);
-          }, 0)
-          .toFixed(2);
-      };
+            .filter(item => selectedProducts.includes(item.product_id))
+            .reduce((acc, item) => {
+                const gstPercent = parseFloat(item.gst) || 0;
+                return acc + item.final_price * item.quantity * (gstPercent / 100);
+            }, 0)
+            .toFixed(2);
+    };
 
     const handleDeleteSelectedItems = async () => {
         const customer_id = localStorage.getItem("customer_id");
@@ -339,7 +339,7 @@ const CustomerViewCart = () => {
 
     const calculateSelectedTotal = () => {
         const selectedItems = cartItems.filter(item => selectedProducts.includes(item.product_id));
-        return selectedItems.reduce((sum, item) => sum + item.final_price  * item.quantity, 0);
+        return selectedItems.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
     };
 
     return (
@@ -378,9 +378,8 @@ const CustomerViewCart = () => {
                                     />
 
                                     <img
-                                        src={item.image && item.image !== "null" && item.image !== "" ? item.image : defaultImage}
+                                        src={item.image}
                                         alt={item.product_name}
-                                        onError={(e) => (e.target.src = defaultImage)}
                                         className="cart-image"
                                     />
 
@@ -408,14 +407,14 @@ const CustomerViewCart = () => {
                                     <p className="discounted-price">₹ {item.final_price.toFixed(2)} /-(incl. GST)</p>
                                     {item.price_per_item !== item.final_price && (
                                         <p className="original-price">₹ {item.price_per_item.toFixed(2)} /-(incl. GST)
-                                        
-                                        <span className="discount-tag">
 
-                                            {item.discount && parseFloat(item.discount) > 0 && `${item.discount} off`}
+                                            <span className="discount-tag">
 
-                                        </span></p>)}
+                                                {item.discount && parseFloat(item.discount) > 0 && `${item.discount} off`}
+
+                                            </span></p>)}
                                     {item.gst && parseFloat(item.gst) > 0 && <p className="gst-view-cart">GST: {item.gst}</p>}
-                                      
+
 
 
 
@@ -423,11 +422,7 @@ const CustomerViewCart = () => {
                                 <div>
 
                                     <p className="subtotal"><b>Subtotal: ₹ </b>{(item.final_price * item.quantity).toFixed(2)} /-</p>
-                                    {/* {!selectedProducts.includes(item.product_id) && (
-                                        <button className="product-place-order" onClick={() => handlePlaceOrderProduct(item.product_id)}>
-                                            Place Order
-                                        </button>
-                                    )} */}
+
 
                                 </div>
 
@@ -465,14 +460,7 @@ const CustomerViewCart = () => {
                                     <div className="cart-price-label">Gst Amount</div>
                                     <div className="cart-price-value">₹{calculateTotalGST()} /-</div>
                                 </div>
-                                {/* <div className="cart-price cart-pfee">
-                                    <div className="cart-price-label">Platfrom Fee</div>
-                                    <div className="cart-price-value">₹ 0.0 /-</div>
-                                </div>
-                                <div className="cart-price cart-dfee">
-                                    <div className="cart-price-label">Delivery fee</div>
-                                    <div className="cart-price-value">₹ 0.0 /-</div>
-                                </div> */}
+
                                 <div className="cart-price cart-total">
                                     <div className="cart-price-label">Total Price</div>
                                     <div className="cart-price-value"> ₹ {total_price.toFixed(2)} /-</div>
@@ -496,23 +484,15 @@ const CustomerViewCart = () => {
                                         <div className="cart-price-value"><b>₹ {calculateSelectedTotal().toFixed(2)} /-</b></div>
                                     </div>
                                     <div className="cart-price cart-disfee">
-                                    <div className="cart-price-label"><b>Discount Amount({selectedProducts.length} items)</b></div>
-                                    <div className="cart-price-value">₹{calculateSelectedDiscount()} /-</div>
-                                </div>
-
-                                <div className="cart-price cart-disfee">
-                                    <div className="cart-price-label">Gst Amount</div>
-                                    <div className="cart-price-value">₹{calculateSelectedGST()} /-</div>
-                                </div>
-
-                                    {/* <div className="cart-price cart-pfee">
-                                        <div className="cart-price-label">Platfrom Fee</div>
-                                        <div className="cart-price-value">₹ 0.0 /-</div>
+                                        <div className="cart-price-label"><b>Discount Amount({selectedProducts.length} items)</b></div>
+                                        <div className="cart-price-value">₹{calculateSelectedDiscount()} /-</div>
                                     </div>
-                                    <div className="cart-price cart-dfee">
-                                        <div className="cart-price-label">Delivery fee</div>
-                                        <div className="cart-price-value">₹ 0.0 /-</div>
-                                    </div> */}
+
+                                    <div className="cart-price cart-disfee">
+                                        <div className="cart-price-label">Gst Amount</div>
+                                        <div className="cart-price-value">₹{calculateSelectedGST()} /-</div>
+                                    </div>
+
                                     <div className="cart-price cart-total">
                                         <div className="cart-price-label">Total Price</div>
                                         <div className="cart-price-value">₹ {calculateSelectedTotal().toFixed(2)} /-</div>

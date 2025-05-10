@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../CustomerViewCategory/CustomerViewCategory.css";
 import "../CustomerViewSubCategory/CustomerViewSubCategory.css";
-
 import defaultImage from "../../../assets/images/default.png"
 import ViewDiscountedProducts from "../CustomerDiscountProducts/CustomerDiscountProducts";
 import { Range } from 'react-range';
@@ -105,7 +104,6 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
             });
 
             const data = await response.json();
-            console.log("📬 Subcategory API response:", data);
 
             if (data.status_code === 200 && data.categories) {
                 setCategories(data.categories); // ✅ correct key
@@ -190,60 +188,60 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                 {/* Sidebar Filter */}
                 <div className="sidebar-filter">
                     <div className="sidebar-filter-heading">Filter by Price</div>
-<div>
+                    <div>
 
-                    <div className="slider-btn">
-                        <Range
-                            className="price-slider-range"
-                            values={values}
-                            step={100}
-                            min={minPrice}
-                            max={maxPrice}
-                            onChange={(newValues) => setValues(newValues)}
-                            renderTrack={({ props, children }) => (
-                                <div
-                                    {...props}
-                                    style={{
-                                        ...props.style,
-                                        width: '100%',
-                                        background: 'white',
-                                        borderRadius: '4px',
-                                        margin: '20px 0',
-                                        border: '0.5px solid grey',
-                                    }}
-                                >
-                                    {children}
-                                </div>
-                            )}
-                            renderThumb={({ props }) => (
-                                <div
-                                    {...props}
-                                    style={{
-                                        ...props.style,
-                                        height: '15px',
-                                        width: '15px',
-                                        backgroundColor: '#4450A2',
-                                        borderRadius: '50%',
-                                    }}
-                                />
-                            )}
-                        />
+                        <div className="slider-btn">
+                            <Range
+                                className="price-slider-range"
+                                values={values}
+                                step={100}
+                                min={minPrice}
+                                max={maxPrice}
+                                onChange={(newValues) => setValues(newValues)}
+                                renderTrack={({ props, children }) => (
+                                    <div
+                                        {...props}
+                                        style={{
+                                            ...props.style,
+                                            width: '100%',
+                                            background: 'white',
+                                            borderRadius: '4px',
+                                            margin: '20px 0',
+                                            border: '0.5px solid grey',
+                                        }}
+                                    >
+                                        {children}
+                                    </div>
+                                )}
+                                renderThumb={({ props }) => (
+                                    <div
+                                        {...props}
+                                        style={{
+                                            ...props.style,
+                                            height: '15px',
+                                            width: '15px',
+                                            backgroundColor: '#4450A2',
+                                            borderRadius: '50%',
+                                        }}
+                                    />
+                                )}
+                            />
 
+                        </div>
+                        <div className="slider-price-btn">
+
+                            <div className="sidebar-filter-values">
+
+                                <label className="price-range-label">
+
+                                    <div> ₹{values[0]} - ₹{values[1]}</div>
+                                </label>
+                            </div>
+                            <button className="filter-button" onClick={handleFilterProducts}>
+                                Filter
+                            </button>
+                        </div>
                     </div>
-                    <div className="slider-price-btn">
-
-                    <div className="sidebar-filter-values">
-
-                        <label className="price-range-label">
-
-                            <div> ₹{values[0]} - ₹{values[1]}</div>
-                        </label>
-                    </div>
-                    <button className="filter-button" onClick={handleFilterProducts}>
-                        Filter
-                    </button>
-                    </div>
-</div>
                 </div>
 
                 {/* Main Content */}
@@ -258,7 +256,7 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                                         src={subcategory.sub_category_image_url}
                                         alt={subcategory.sub_category_name}
                                         className="customer-product-image"
-                                        // onError={(e) => e.target.src = defaultImage}
+                                    // onError={(e) => e.target.src = defaultImage}
                                     />
                                     <div className="customer-product-name">{subcategory.sub_category_name}</div>
                                 </div>

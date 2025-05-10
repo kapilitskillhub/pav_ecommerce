@@ -20,48 +20,9 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
         setOrders(orderSummary?.orders || []);
     }, [orderSummary]);
 
-    const calculateDeliveryCharges = (weightInKg, state) => {
-        // Remove 'kg' from the string and trim any extra spaces before converting to a number
-        const numericWeight = parseFloat(weightInKg.replace('kg', '').trim());
-        
-        // Check if numericWeight is a valid number
-        if (isNaN(numericWeight)) {
-            return 0; // Or handle the invalid weight case as needed
-        }
-    
-        let deliveryCharge = 0;
-    
-        if (numericWeight <= 0.05) {
-            deliveryCharge = 50;
-        } else if (numericWeight >= 1 && numericWeight <= 10) {
-            deliveryCharge = 100;
-        } else if (numericWeight >= 11 && numericWeight <= 20) {
-            deliveryCharge = 200;
-        }
-    
-        if (state === "Telangana" || state === "Hyderabad") {
-            deliveryCharge -= 20;
-        } else {
-            deliveryCharge += 100;
-        }
-    
-        return deliveryCharge;
-    };
+ 
     
     
-
-    // Move this effect outside of any conditionals
-    useEffect(() => {
-        const updatedOrders = orders.map(order => {
-            const productWeightInKg = order.product_weight_in_kg || 0;
-            const customerState = order.state || "";
-            const deliveryCharge = calculateDeliveryCharges(productWeightInKg, customerState);
-            return { ...order, deliveryCharge };
-        });
-
-        setOrders(updatedOrders);
-    }, [orders]);  // This effect will run whenever orders change
-
     const handleCancelOrder = async () => {
         const customerId = localStorage.getItem("customer_id");
 
@@ -142,12 +103,7 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                     <div className="order-image">
                         <img
                             src={
-                                order.product_images &&
-                                order.product_images !== "null" &&
-                                order.product_images !== null &&
-                                order.product_images !== ""
-                                    ? order.product_image
-                                    : defaultImage
+                                order.product_images
                             }
                             alt="Product"
                             width="100"
@@ -166,7 +122,7 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                         )}
                         <div><strong>Quantity:</strong> {order.quantity}</div>
                         <div><strong>Total Price:</strong> ₹ {(order.quantity * order.final_price).toFixed(2)}</div>
-                        <div><strong>Delivery Charge:</strong> ₹ {order.deliveryCharge}</div>
+                        {/* <div><strong>Delivery Charge:</strong> ₹ {order.deliveryCharge}</div> */}
                     </div>
                 </div>
             ))}
