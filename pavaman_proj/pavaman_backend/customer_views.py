@@ -3624,22 +3624,23 @@ def customer_get_payment_details_by_order(request):
     try:
         data = json.loads(request.body.decode("utf-8"))
         customer_id = data.get('customer_id')
+        action = data.get('action', '').lower().strip()
         search_product_name = data.get('search_product_name', '').strip()
 
         if not customer_id:
             return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
-       
-        if search_product_name == "":
-            return JsonResponse({"error": "At least one character is required for search.", "status_code": 400}, status=400)
+        if action not in ['view', 'search']:
+            return JsonResponse({"error": "Invalid action. Use 'view' or 'search'.", "status_code": 400}, status=400)
+        if action == 'search' and not search_product_name:
+            return JsonResponse({"error": "Atleast one character is required for search action.", "status_code": 400}, status=400)
 
         payments = PaymentDetails.objects.filter(customer_id=customer_id).order_by('-created_at')
         if not payments.exists():
             return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
 
         payment_list = []
-
         for payment in payments:
-            order_ids = payment.order_product_ids  # Assuming this is a list
+            order_ids = payment.order_product_ids
             order_products = OrderProducts.objects.filter(id__in=order_ids)
 
             order_product_list = []
@@ -3648,14 +3649,10 @@ def customer_get_payment_details_by_order(request):
                 if not product:
                     continue
 
-                if search_product_name and search_product_name.lower() not in product.product_name.lower():
+                if action == 'search' and search_product_name.lower() not in product.product_name.lower():
                     continue
 
-                if product.product_images:
-                    product_image_path = product.product_images[0].replace('\\', '/')
-                    product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_image_path.lstrip('/')}"
-                else:
-                    product_image_url = ""
+                product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product.product_images[0].replace('\\', '/')}" if product.product_images else ""
 
                 order_product_list.append({
                     "order_product_id": order.id,
@@ -3672,30 +3669,29 @@ def customer_get_payment_details_by_order(request):
                     "product_name": product.product_name
                 })
 
-            # Skip this payment if no order products matched the search (when searching)
-            if search_product_name and not order_product_list:
+            if action == 'search' and not order_product_list:
                 continue
 
             address_data = []
             if payment.customer_address_id:
-                address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
-                if address_obj:
+                address = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
+                if address:
                     address_data.append({
-                        "address_id": address_obj.id,
-                        "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
-                        "email": address_obj.email,
-                        "mobile_number": address_obj.mobile_number,
-                        "alternate_mobile": address_obj.alternate_mobile,
-                        "address_type": address_obj.address_type,
-                        "pincode": address_obj.pincode,
-                        "street": address_obj.street,
-                        "landmark": address_obj.landmark,
-                        "village": address_obj.village,
-                        "mandal": address_obj.mandal,
-                        "postoffice": address_obj.postoffice,
-                        "district": address_obj.district,
-                        "state": address_obj.state,
-                        "country": address_obj.country,
+                        "address_id": address.id,
+                        "customer_name": f"{address.first_name} {address.last_name}",
+                        "email": address.email,
+                        "mobile_number": address.mobile_number,
+                        "alternate_mobile": address.alternate_mobile,
+                        "address_type": address.address_type,
+                        "pincode": address.pincode,
+                        "street": address.street,
+                        "landmark": address.landmark,
+                        "village": address.village,
+                        "mandal": address.mandal,
+                        "postoffice": address.postoffice,
+                        "district": address.district,
+                        "state": address.state,
+                        "country": address.country,
                     })
 
             payment_list.append({
@@ -3713,18 +3709,13 @@ def customer_get_payment_details_by_order(request):
             })
 
         if not payment_list:
-            return JsonResponse({"message": "No matching order products found.", "status_code": 404}, status=404)
+            return JsonResponse({"message": "No matching order details found.", "status_code": 404}, status=404)
 
-        response_data = {
-            "message": "Placed Order retrieved successfully.",
+        return JsonResponse({
+            "message": "Orders retrieved successfully." if action == 'view' else "Search results retrieved successfully.",
             "payments": payment_list,
             "status_code": 200
-        }
-
-        if customer_id:
-            response_data["customer_id"] = str(customer_id)
-
-        return JsonResponse(response_data, status=200)
+        })
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
@@ -5213,3 +5204,153 @@ def view_rating(request):
             "error": "Invalid HTTP method. Only POST allowed.",
             "status_code": 405
         }, status=405)
+
+# import math
+
+# @csrf_exempt
+# def multiple_order_summary(request):
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body.decode('utf-8'))
+#             order_ids = data.get('order_ids')
+#             product_ids = data.get('product_ids')
+#             customer_id = data.get('customer_id')
+#             address_id = data.get('address_id')
+
+#             if not all([order_ids, product_ids, customer_id, address_id]):
+#                 return JsonResponse({"error": "order_ids, product_ids, customer_id, and address_id are required.", "status_code": 400}, status=400)
+
+#             if len(order_ids) != len(product_ids):
+#                 return JsonResponse({"error": "Mismatch between orders and products count.", "status_code": 400}, status=400)
+
+#             try:
+#                 customer = CustomerRegisterDetails.objects.get(id=customer_id)
+#                 address = CustomerAddress.objects.get(id=address_id, customer_id=customer_id)
+
+#                 CustomerAddress.objects.filter(customer_id=customer_id).update(select_address=False)
+#                 address.select_address = True
+#                 address.save()
+
+#             except CustomerRegisterDetails.DoesNotExist:
+#                 return JsonResponse({"error": "Customer not found.", "status_code": 404}, status=404)
+#             except CustomerAddress.DoesNotExist:
+#                 return JsonResponse({"error": "Address not found.", "status_code": 404}, status=404)
+
+#             def parse_weight(spec_str):
+#                 try:
+#                     # Convert string-like dict to real JSON
+#                     spec_dict = json.loads(spec_str.replace('""', '"').replace("'", '"'))
+#                     weight_str = spec_dict.get('weight', '').lower()
+#                     match = re.match(r"([\d.]+)\s*(gm|g|gram|kg|kilogram)", weight_str)
+#                     if match:
+#                         value = float(match.group(1))
+#                         unit = match.group(2)
+#                         if unit in ['gm', 'g', 'gram']:
+#                             return 'gram', value
+#                         elif unit in ['kg', 'kilogram']:
+#                             return 'kg', value
+#                 except Exception:
+#                     pass
+#                 return None, 0
+
+#             order_list = []
+#             total_delivery_charge = 0
+
+#             for order_id, product_id in zip(order_ids, product_ids):
+#                 try:
+#                     order = OrderProducts.objects.get(id=order_id, product_id=product_id, customer_id=customer_id)
+#                     product = ProductsDetails.objects.get(id=product_id)
+
+#                     price = float(product.price)
+#                     discount = float(product.discount or 0)
+#                     discounted_amount = (price * discount) / 100
+#                     final_price = price - discounted_amount
+#                     image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
+#                     image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
+#                     # weight = parse_weight(product.specifications)
+#                     # quantity = order.quantity
+
+#                     # Weight parsing and delivery charge logic
+#                     unit, value = parse_weight(product.specifications)
+#                     kg_value = 0
+#                     if unit == 'gram':
+#                         kg_value = value / 1000
+#                     elif unit == 'kg':
+#                         kg_value = value
+#                     else:
+#                         kg_value = 0   
+                            
+#                     quantity = order.quantity
+#                     total_weight = kg_value * quantity
+
+#                     if total_weight < 1:
+#                         base_delivery_charge = 50
+#                     else:
+#                          base_delivery_charge = (math.ceil(total_weight / 10)) * 100
+                        
+
+#                     # Add state-based charge
+#                     normalized_state = address.state.lower().strip()
+#                     if normalized_state in ['andhra pradesh', 'telangana', 'hyderabad']:
+#                         state_charge = 20
+                    
+#                     else:
+#                         state_charge = 100
+
+#                     delivery_charge = base_delivery_charge + state_charge
+#                     total_delivery_charge += delivery_charge
+
+#                     order_list.append({
+#                         "order_id": order.id,
+#                         "order_name": f"Order {order.id}",
+#                         "customer_name": f"{address.first_name} {address.last_name}",
+#                         "customer_email": address.email,
+#                         "customer_mobile": address.mobile_number,
+#                         "alternate_customer_mobile": address.mobile_number,
+#                         "product_name": product.product_name,
+#                         "product_id": product_id,
+#                         "product_price": order.price,
+#                         "quantity": order.quantity,
+#                         "discount": f"{int(discount)}%" if discount else "0%",
+#                         "gst": f"{int(product.gst or 0)}%",
+#                         "final_price": round(final_price, 2),
+#                         "total_price": order.final_price,
+#                         "delivery_charges": delivery_charge,
+#                         "order_status": order.order_status,
+#                         "order_date": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+#                         "product_images": image_url,
+#                     })
+
+#                 except OrderProducts.DoesNotExist:
+#                     product_name = ProductsDetails.objects.filter(id=product_id).values_list('product_name', flat=True).first() or f"Product {product_id}"
+#                     return JsonResponse({"error": f"Order {order_id} with product '{product_name}' not found.", "status_code": 404}, status=404)
+#                 except ProductsDetails.DoesNotExist:
+#                     return JsonResponse({"error": f"Product with ID {product_id} not found.", "status_code": 404}, status=404)
+
+#             shipping_address = {
+#                 "address_id": address.id,
+#                 "customer_name": f"{address.first_name} {address.last_name}",
+#                 "select_address": address.select_address,
+#                 "address_type": address.address_type,
+#                 "street": address.street,
+#                 "landmark": address.landmark,
+#                 "village": address.village,
+#                 "mandal": address.mandal,
+#                 "postoffice": address.postoffice,
+#                 "district": address.district,
+#                 "state": address.state,
+#                 "pincode": address.pincode
+#             }
+
+#             return JsonResponse({
+#                 "message": "Multiple order summaries fetched successfully!",
+#                 "orders": order_list,
+#                 "shipping_address": shipping_address,
+#                 "total_delivery_charge": total_delivery_charge,
+#                 "status_code": 200
+#             }, status=200)
+
+#         except Exception as e:
+#             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
+
+#     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)

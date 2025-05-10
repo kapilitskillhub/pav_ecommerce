@@ -22,15 +22,11 @@ from pavaman_backend.views import (add_admin,admin_login,admin_logout,
     add_product,add_product_specifications,edit_product_specifications,view_products,
     view_product_details,edit_product,delete_product,retrieve_feedback,
     search_categories,search_subcategories,search_products,discount_products,download_discount_products_excel,
-    apply_discount_by_subcategory_only,order_or_delivery_status,admin_verify_otp,report_inventory_summary,top_buyers_report,customer_growth_by_state,monthly_product_orders
+    apply_discount_by_subcategory_only,order_or_delivery_status,admin_verify_otp,
+    report_inventory_summary,top_buyers_report,customer_growth_by_state,
+    monthly_product_orders,download_feedback_excel
     )
 
-    #admin_logout,
-    #add_category,view_categories,#edit_category,delete_category,
-    # add_subcategory,view_subcategories,edit_subcategory,delete_subcategory,
-    # add_product,view_products,view_product_details,add_product_specifications,edit_product,edit_product_specifications,delete_product
-
-#    )
 from pavaman_backend.customer_views import (customer_register,customer_login,view_categories_and_discounted_products,
     view_sub_categories_and_discounted_products,view_products_by_category_and_subcategory,
     view_products_details,add_product_to_cart,view_product_cart,delete_product_cart,delete_selected_products_cart,add_customer_address,
@@ -161,7 +157,7 @@ urlpatterns = [
     path('top-buyers-report',top_buyers_report,name= 'top_buyers_report'),
     path('customer-growth-by-state',customer_growth_by_state,name= 'customer_growth_by_state'),
     path('monthly-product-orders',monthly_product_orders,name= 'monthly_product_orders'),
-
+    path('download-feedback-excel',download_feedback_excel,name= 'download_feedback_excel'),
 
 
 
