@@ -32,8 +32,8 @@ const CustomerHeader = (onSearch) => {
   const [searchInput, setSearchInput] = useState("");
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search...");
   // const [hovered, setHovered] = useState(false);
-    const [customer, setCustomer] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [customer, setCustomer] = useState(null);
+  const [loading, setLoading] = useState(true);
   const customerId = localStorage.getItem("customer_id");
 
   const isValidCustomerId = !(
@@ -52,7 +52,7 @@ const CustomerHeader = (onSearch) => {
       setSearchPlaceholder("Search for Products...");
     } else if (location.pathname.includes("/filtered-products")) {
       setSearchPlaceholder("Search for Products...");
-    }else if( location.pathname.includes("/view-cart-products")){
+    } else if (location.pathname.includes("/view-cart-products")) {
       setSearchPlaceholder("Search Cart Products ...");
     } else if (location.pathname.includes("/")) {
       setSearchPlaceholder("Search for Categories...");
@@ -191,33 +191,33 @@ const CustomerHeader = (onSearch) => {
   const isUserLoggedIn = false;
 
   useEffect(() => {
-        fetchCustomerProfile();
-    }, [customerId]);
+    fetchCustomerProfile();
+  }, [customerId]);
 
   const fetchCustomerProfile = async () => {
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/get-customer-profile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ customer_id: customerId }),
-        });
+      const response = await fetch("http://127.0.0.1:8000/get-customer-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id: customerId }),
+      });
 
-        const data = await response.json();
-        if (response.ok) {
-            setCustomer(data.profile);
-        } else {
-            setError(data.error || "Failed to fetch customer profile");
-            displayPopup(data.error || "Failed to fetch customer profile", "error");
-        }
+      const data = await response.json();
+      if (response.ok) {
+        setCustomer(data.profile);
+      } else {
+        setError(data.error || "Failed to fetch customer profile");
+        displayPopup(data.error || "Failed to fetch customer profile", "error");
+      }
     } catch (error) {
-        const message = "Fetch error: " + error.message;
-        setError(message);
-        displayPopup(message, "error");
+      const message = "Fetch error: " + error.message;
+      setError(message);
+      displayPopup(message, "error");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   return (
     <>
@@ -377,7 +377,7 @@ const CustomerHeader = (onSearch) => {
           location.pathname.includes("/categories/view-sub-categories") ||
           location.pathname.includes("/categories/") ||
           location.pathname.includes("/filtered-products") ||
-          location.pathname.includes("/view-cart-products")||
+          location.pathname.includes("/view-cart-products") ||
           location.pathname === "/"
         ) && (
             <div className="customer-search-bar">
@@ -442,15 +442,15 @@ const CustomerHeader = (onSearch) => {
                     </>
                   ) : (
                     <>
-<li>
-  <div className="customer-info">
-    <span className="customer-name">Hello {customer.first_name}</span>
-    {/* <span className="customer-email">{customer.email}</span>
-    <span className="customer-email"> {customer.mobile_no}</span> */}
+                      <li>
+                        <div className="customer-info">
+                          {customer && (
+                            <span className="customer-name">Hello {customer.first_name}</span>
+                          )}
+                        </div>
+                      </li>
 
-  </div>
-</li>
-                     
+
 
                       <li onClick={() => navigate("/profile")}><FaUser /> My Profile</li>
                       <li onClick={() => navigate("/my-orders")}><FaClipboardList /> My Orders</li>
@@ -491,7 +491,7 @@ const CustomerHeader = (onSearch) => {
             </div>
           )}
         </div> */}
-          </div>
+        </div>
       </header>
       <div className="mobile-header-section">
 

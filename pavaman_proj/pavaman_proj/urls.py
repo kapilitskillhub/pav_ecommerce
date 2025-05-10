@@ -79,6 +79,7 @@ urlpatterns = [
     path('search-subcategories',search_subcategories,name='search_subcategories'),
     path('search-products',search_products,name='search_products'),
     path('retrieve-feedback',retrieve_feedback,name= 'retrieve_feedback'),
+    path('download-feedback-excel',download_feedback_excel,name= 'download_feedback_excel'),
 
   
     path('customer-register', customer_register, name='customer_register'), 
@@ -158,6 +159,8 @@ urlpatterns = [
     path('customer-growth-by-state',customer_growth_by_state,name= 'customer_growth_by_state'),
     path('monthly-product-orders',monthly_product_orders,name= 'monthly_product_orders'),
     path('download-feedback-excel',download_feedback_excel,name= 'download_feedback_excel'),
+
+
 
 
 

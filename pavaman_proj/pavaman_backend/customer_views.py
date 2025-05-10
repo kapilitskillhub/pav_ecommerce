@@ -3151,7 +3151,7 @@ def customer_search_subcategories(request):
     {
         "sub_category_id": str(subcategory.id),
         "sub_category_name": subcategory.sub_category_name,
-        "sub_category_image": f"{settings.AWS_S3_BUCKET_URL}/{subcategory.sub_category_image.replace('\\', '/')}" if subcategory.sub_category_image else "",
+        "sub_category_image_url": f"{settings.AWS_S3_BUCKET_URL}/{subcategory.sub_category_image.replace('\\', '/')}" if subcategory.sub_category_image else "",
         "category_id": str(subcategory.category_id)
     }
     for subcategory in subcategories
@@ -3516,106 +3516,6 @@ def filter_my_order(request):
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
-# @csrf_exempt
-# def customer_get_payment_details_by_order(request):
-#     if request.method != "POST":
-#         return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-#     try:
-#         data = json.loads(request.body.decode("utf-8"))
-#         customer_id = data.get('customer_id')
-        
-       
-#         if not customer_id:
-#                 return JsonResponse({"error": "customer_id is required.", "status_code": 400}, status=400)
-     
-#         # payments = PaymentDetails.objects.filter(customer_id=customer_id)
-#         payments = PaymentDetails.objects.filter(customer_id=customer_id).order_by('-created_at')
-
-#         if not payments.exists():
-#             return JsonResponse({"error": "No order details found.", "status_code": 404}, status=404)
-
-#         payment_list = []
-#         for payment in payments:
-#             order_ids = payment.order_product_ids  # Assuming this is a list
-            
-#             order_products = OrderProducts.objects.filter(id__in=order_ids)
-            
-#             order_product_list = []
-#             for order in order_products:
-#                 product = ProductsDetails.objects.filter(id=order.product_id).first()
-#                 if product and product.product_images:
-#                      product_image_path = product.product_images[0].replace('\\', '/')
-#                      product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_image_path.lstrip('/')}"
-#                 else:
-#                      product_image_url = ""
-                
-#                 order_product_list.append({
-#                     "order_product_id": order.id,
-#                     "quantity": order.quantity,
-#                     "price": order.price,
-#                     # "discount":product.discount,
-#                     # "final_price": order.final_price,
-#                     "gst": f"{int(product.gst or 0)}%",
-#                     "discount":f"{int(product.discount)}%" if product.discount else "0%",
-#                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
-#                     "order_status": order.order_status,
-#                     "shipping_status":order.shipping_status,
-#                     "delivery_status":order.delivery_status,
-#                     "product_id": order.product_id,
-#                     "product_image": product_image_url,
-#                     "product_name":product.product_name
-#                 })
-          
-#             address_data = []
-#             if payment.customer_address_id:
-#                 address_obj = CustomerAddress.objects.filter(id=payment.customer_address_id).first()
-#                 if address_obj:
-#                     address_data.append({
-                        
-#                         "address_id": address_obj.id,
-#                         "customer_name": f"{address_obj.first_name} {address_obj.last_name}",
-#                         "email": address_obj.email,
-#                         "mobile_number": address_obj.mobile_number,
-#                         "alternate_mobile": address_obj.alternate_mobile,
-#                         "address_type": address_obj.address_type,
-#                         "pincode": address_obj.pincode,
-#                         "street": address_obj.street,
-#                         "landmark": address_obj.landmark,
-#                         "village": address_obj.village,
-#                         "mandal": address_obj.mandal,
-#                         "postoffice": address_obj.postoffice,
-#                         "district": address_obj.district,
-#                         "state": address_obj.state,
-#                         "country": address_obj.country,
-                        
-#                     })
-                    
-#             payment_list.append({
-#                 "razorpay_order_id": payment.razorpay_order_id,
-#                 "customer_name": f"{payment.customer.first_name} {payment.customer.last_name}",
-#                 "email": payment.customer.email,
-#                 "mobile_number": payment.customer.mobile_no,
-#                 "payment_mode": payment.payment_mode,
-#                 "total_quantity":payment.quantity,
-#                 "total_amount": payment.total_amount,
-#                 "payment_date": payment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-#                 "product_order_id":payment.product_order_id,
-#                 "customer_address": address_data,
-#                 "order_products": order_product_list
-#             })
-#         response_data = {
-#             "message": "Placed Order retrieved successfully.",
-#             "payments": payment_list,
-#             "status_code": 200
-#         }
-
-#         if customer_id:
-#             response_data["customer_id"] = str(customer_id)
-#         return JsonResponse(response_data, status=200)    
-#     except Exception as e:
-#         return JsonResponse({"error": str(e), "status_code": 500}, status=500)    
-
 @csrf_exempt
 def customer_get_payment_details_by_order(request):
     if request.method != "POST":
@@ -3719,7 +3619,6 @@ def customer_get_payment_details_by_order(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
 
 def download_material_file(request, product_id):
     try:
@@ -4785,7 +4684,7 @@ def filter_and_sort_products(request):
                     "availability": product.availability,
                     "quantity": product.quantity,
                     "description": product.description,
-                    "product_images": product_images_url,
+                    "product_image_url": product_images_url,
                     "material_file": product.material_file,
                     "number_of_specifications": product.number_of_specifications,
                     "specifications": product.specifications,
@@ -5179,6 +5078,8 @@ def view_rating(request):
                     "rating": feedback.rating,
                     "product_id": feedback.product.id,
                     "product_name": feedback.product.product_name,
+                    "order_product_id": feedback.order_product.id,
+                    "order_id": feedback.order_id,
                 })
 
             return JsonResponse({

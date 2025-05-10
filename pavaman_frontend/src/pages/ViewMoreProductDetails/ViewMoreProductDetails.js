@@ -258,7 +258,7 @@ const displayPopup = (text, type = "success") => {
 
                 <p className="view-product-name">{productDetails.product_details.product_name || "N/A"}</p>
                 <p className="view-product-price"> <FaRupeeSign /> {productDetails.product_details.price || "N/A"}/- (include GST)</p>
-                <p className="view-product-discount"> <strong> Discount:</strong> {productDetails.product_details.discount || "N/A"}/-</p>
+                <p className="view-product-discount"> <strong> Discount:</strong> {productDetails.product_details.discount || "N/A"}</p>
 
                 <p className="view-product-availablity" style={{
                   color: getAvailabilityColor(productDetails.product_details.availability),

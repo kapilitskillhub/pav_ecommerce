@@ -74,7 +74,9 @@ const RazorpayPayment = ({ orderSummary }) => {
                     const verifyData = await verifyResponse.json();
                     if (verifyResponse.ok) {
                         displayPopup("Payment Successful!", "success");
+                         setTimeout(() => {
                         navigate("/my-orders");
+                         }, 3000);
                     } else {
                         displayPopup("Payment Failed: " + verifyData.error,"error");
                     }

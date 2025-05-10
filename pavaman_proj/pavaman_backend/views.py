@@ -1958,7 +1958,7 @@ def search_products(request):
                     "product_name": product.product_name,
                     "category_id": str(product.category_id),
                     "sub_category_id": str(product.sub_category_id),
-                    "product_image_url": product_image_url,
+                    "product_images": product_image_url,
                 })
 
             return JsonResponse(

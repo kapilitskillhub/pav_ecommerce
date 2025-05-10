@@ -40,6 +40,13 @@ const CustomerMyOrders = () => {
     }, 10000);
   };
 
+  useEffect(() => {
+  if (searchTerm.trim() === "") {
+    fetchOrders();
+  }
+}, [searchTerm]);
+
+
   const fetchOrders = async () => {
     if (!customerId) return;
 
@@ -48,7 +55,10 @@ const CustomerMyOrders = () => {
       const response = await fetch('http://127.0.0.1:8000/customer-my-order', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer_id: customerId }),
+        body: JSON.stringify({
+          customer_id: customerId,
+          action: "view"
+        }),
       });
       const data = await response.json();
 
@@ -78,7 +88,7 @@ const CustomerMyOrders = () => {
             };
           });
         }
-        
+
         // Merge ratings into products
         const productsWithRatings = flatProducts.map(product => {
           const ratingInfo = ratingsMap[product.order_product_id] || {};
@@ -88,7 +98,7 @@ const CustomerMyOrders = () => {
             feedback: ratingInfo.feedback || "",
           };
         });
-        
+
         // Bring selected product to the top
         const sortedProducts = productsWithRatings.sort((a, b) => {
           return a.order_product_id === selected_product_id ? -1 : b.order_product_id === selected_product_id ? 1 : 0;
@@ -135,22 +145,22 @@ const CustomerMyOrders = () => {
       customer_id: customerId,
       order_time: orderTime || null,
     };
-  
+
     if (status === "Delivered") {
       requestBody.delivery_status = "Delivered";
-    } else if (status === "Shipped") {
+    } else if (status === "On the way") {
       requestBody.shipping_status = "Shipped";
     }
-  
+
     try {
       const response = await fetch("http://127.0.0.1:8000/filter-my-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         const flatProducts = [];
         data.payments.forEach(order => {
@@ -158,14 +168,14 @@ const CustomerMyOrders = () => {
             flatProducts.push({ ...product, order });
           });
         });
-  
+
         // Fetch ratings
         const ratingResponse = await fetch('http://127.0.0.1:8000/view-rating', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ customer_id: customerId }),
         });
-  
+
         const ratingData = await ratingResponse.json();
         const ratingsMap = {};
         if (ratingResponse.ok) {
@@ -176,7 +186,7 @@ const CustomerMyOrders = () => {
             };
           });
         }
-  
+
         // Merge ratings into products
         const productsWithRatings = flatProducts.map(product => {
           const ratingInfo = ratingsMap[product.order_product_id] || {};
@@ -186,7 +196,7 @@ const CustomerMyOrders = () => {
             feedback: ratingInfo.feedback || "",
           };
         });
-  
+
         setProducts(productsWithRatings);
       } else if (response.status === 404) {
         setProducts([]);
@@ -198,7 +208,7 @@ const CustomerMyOrders = () => {
       displayPopup("Something went wrong while filtering orders.", "error");
     }
   };
-  
+
 
 
   const handleStatusFilter = (status) => {
@@ -258,7 +268,7 @@ const CustomerMyOrders = () => {
 
       if (response.ok) {
         // alert("Thank you! Your review has been submitted.");
-      displayPopup("Thank you! Your review has been submitted.", "success");
+        displayPopup("Thank you! Your review has been submitted.", "success");
 
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
@@ -277,7 +287,7 @@ const CustomerMyOrders = () => {
         setFeedback("");
         // Optionally refresh product list
       } else {
-      displayPopup(result.error || "Failed to submit review.", "error");
+        displayPopup(result.error || "Failed to submit review.", "error");
 
         // alert(result.error || "Failed to submit review.");
       }
@@ -341,6 +351,68 @@ const CustomerMyOrders = () => {
     }
   };
 
+  
+  const searchOrdersByProduct = async (term) => {
+  try {
+    const response = await fetch('http://127.0.0.1:8000/customer-my-order', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_id: customerId,
+        action: "search",
+        search_product_name: term.trim(),
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      const flatProducts = [];
+      data.payments.forEach(order => {
+        order.order_products.forEach(product => {
+          flatProducts.push({ ...product, order });
+        });
+      });
+
+      // Fetch ratings
+      const ratingResponse = await fetch('http://127.0.0.1:8000/view-rating', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id: customerId }),
+      });
+
+      const ratingData = await ratingResponse.json();
+
+      const ratingsMap = {};
+      if (ratingResponse.ok) {
+        ratingData.ratings.forEach(rating => {
+          ratingsMap[rating.order_product_id] = {
+            rating: rating.rating,
+            feedback: rating.feedback || "",
+          };
+        });
+      }
+
+      const productsWithRatings = flatProducts.map(product => {
+        const ratingInfo = ratingsMap[product.order_product_id] || {};
+        return {
+          ...product,
+          rating: ratingInfo.rating || null,
+          feedback: ratingInfo.feedback || "",
+        };
+      });
+
+      setProducts(productsWithRatings);
+    } else {
+      setProducts([]);
+      setError(data.error || "No results found.");
+    }
+  } catch (error) {
+    setError("Search fetch error: " + error.message);
+  }
+};
+
+
   return (
     <div className="my-orders-wrapper container">
       <div className="breadcrumb-order">
@@ -363,7 +435,7 @@ const CustomerMyOrders = () => {
           <div className="filter-section">
             <div className='filter-header'>ORDER STATUS</div>
             {/* {["On the way", "Delivered", "Cancelled", "Returned"].map(status => ( */}
-            {["Shipped", "Delivered"].map(status => (
+            {["On the way", "Delivered"].map(status => (
 
               <label key={status}>
                 <input
@@ -410,7 +482,14 @@ const CustomerMyOrders = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className="search-btn" disabled>Search</button>
+     <button 
+  className="search-btn" 
+  onClick={() => searchOrdersByProduct(searchTerm)}
+  disabled={!searchTerm.trim()}
+>
+  Search
+</button>
+
           </div>
 
 
@@ -444,11 +523,11 @@ const CustomerMyOrders = () => {
                             {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
                           </span></p>
                         {parseFloat(product.price) !== parseFloat(product.final_price) && (
-  <p className="customer-discount-section-original-price-myorder">
-    ₹{product.price} (incl. GST)
-  </p>
-)}
-{product.gst && parseFloat (product.gst) > 0 &&<p className="gst">GST: {product.gst}</p>}
+                          <p className="customer-discount-section-original-price-myorder">
+                            ₹{product.price} (incl. GST)
+                          </p>
+                        )}
+                        {product.gst && parseFloat(product.gst) > 0 && <p className="gst">GST: {product.gst}</p>}
 
 
 
@@ -466,11 +545,11 @@ const CustomerMyOrders = () => {
                         </p>
                         {console.log(product.delivery_status, product.rating)} {/* Log delivery status and rating */}
 
-                                                {product.delivery_status === "Delivered" && product.rating && (
-                                                  <div className="product-rating">
-                                                    {renderStars(product.rating)}
-                                                  </div>
-                                                )}
+                        {product.delivery_status === "Delivered" && product.rating && (
+                          <div className="product-rating">
+                            {renderStars(product.rating)}
+                          </div>
+                        )}
 
                         {product.delivery_status === 'Delivered' && !product.rating && (
                           <div className="edit-review-button-container rate-review-button-container">
@@ -564,7 +643,7 @@ const CustomerMyOrders = () => {
                               rows={3}
                               className='text-area-rating'
                             />
-                            <div   className='rating-buttons'>
+                            <div className='rating-buttons'>
                               <button
                                 className="submit-edit-review-button cart-place-order"
                                 onClick={() => handleEditReview(product)}
