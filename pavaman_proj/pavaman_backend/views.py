@@ -1958,7 +1958,7 @@ def search_products(request):
                     "product_name": product.product_name,
                     "category_id": str(product.category_id),
                     "sub_category_id": str(product.sub_category_id),
-                    "product_image_url": product_image_url,
+                    "product_images": product_image_url,
                 })
 
             return JsonResponse(
@@ -2884,3 +2884,73 @@ def monthly_product_orders(request):
             "status_code": 405,
             "message": "Method Not Allowed. Use POST."
         }, status=405)
+
+import io
+@csrf_exempt
+def download_feedback_excel(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            admin_id = data.get("admin_id")
+
+            if not admin_id:
+                return JsonResponse({"error": "admin_id is required", "status_code": 400}, status=400)
+
+            feedbacks = FeedbackRating.objects.filter(admin_id=admin_id).order_by("created_at")
+            if not feedbacks.exists():
+                return JsonResponse({"error": "No feedback found for this admin", "status_code": 404}, status=404)
+
+          
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Feedback Report"
+
+            # Define header
+            headers = [
+                "Customer Name", "Customer Email", "Product Name", 
+                "Product ID", "Rating", "Feedback", "Order ID", 
+                "Created At", "Product Image URL"
+            ]
+            ws.append(headers)
+
+            for feedback in feedbacks:
+                try:
+                    customer = CustomerRegisterDetails.objects.get(id=feedback.customer_id)
+                    product = ProductsDetails.objects.get(id=feedback.product_id)
+
+                    image_url = None
+                    if product.product_images and isinstance(product.product_images, list):
+                        first_image = product.product_images[0]
+                        if first_image:
+                            image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{first_image}"
+
+                    ws.append([
+                        f"{customer.first_name} {customer.last_name}",
+                        customer.email,
+                        product.product_name,
+                        product.id,
+                        feedback.rating,
+                        feedback.feedback,
+                        feedback.order_id,
+                        feedback.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                        image_url or "",
+                    ])
+                except (CustomerRegisterDetails.DoesNotExist, ProductsDetails.DoesNotExist):
+                    continue
+
+            
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=feedback_report.xlsx'
+            buffer = io.BytesIO()
+            wb.save(buffer)
+            buffer.seek(0)
+            response.write(buffer.read())
+            return response
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format", "status_code": 400}, status=400)
+
+        except Exception as e:
+            return JsonResponse({"error": f"Server error: {str(e)}", "status_code": 500}, status=500)
+
+    return JsonResponse({"error": "Invalid HTTP method. Only POST allowed.", "status_code": 405}, status=405)

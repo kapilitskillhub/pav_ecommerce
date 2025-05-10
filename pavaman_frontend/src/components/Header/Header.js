@@ -48,76 +48,84 @@ const Header = ({ setIsAuthenticated, setCategories, setSubcategories, setProduc
 
 
     const [searchTriggered, setSearchTriggered] = useState(false);
+const handleSearch = async (event) => {
+    event.preventDefault();
+    setErrorMessage("");
 
-    const handleSearch = async (event) => {
-        event.preventDefault();
-        setErrorMessage("");
-    
-        if (!searchQuery.trim()) {
-            return;
-        }
-    
-        let apiUrl = "";
-        let requestBody = {};
-    
+    if (!searchQuery.trim()) {
+        return;
+    }
+
+    let apiUrl = "";
+    let requestBody = {};
+
+    if (location.pathname.includes("/view-categories")) {
+        apiUrl = "http://127.0.0.1:8000/search-categories";
+        requestBody = {
+            admin_id: sessionStorage.getItem("admin_id"),
+            category_name: searchQuery,
+        };
+    } else if (location.pathname.includes("/view-subcategories")) {
+        apiUrl = "http://127.0.0.1:8000/search-subcategories";
+        const categoryData = JSON.parse(sessionStorage.getItem("categoryData") || "{}");
+        requestBody = {
+            admin_id: sessionStorage.getItem("admin_id"),
+            category_id: categoryData.category_id,
+            sub_category_name: searchQuery,
+        };
+    } else if (location.pathname.includes("/view-products")) {
+        apiUrl = "http://127.0.0.1:8000/search-products";
+        const categoryData = JSON.parse(sessionStorage.getItem("categoryData") || "{}");
+        const subCategoryData = JSON.parse(sessionStorage.getItem("subCategoryData") || "{}");
+        requestBody = {
+            admin_id: sessionStorage.getItem("admin_id"),
+            category_id: categoryData.category_id,
+            sub_category_id: subCategoryData.sub_category_id,
+            product_name: searchQuery,
+        };
+    }
+
+    try {
+        const response = await axios.post(apiUrl, requestBody, { withCredentials: true });
+
         if (location.pathname.includes("/view-categories")) {
-            apiUrl = "http://127.0.0.1:8000/search-categories";
-            requestBody = {
-                admin_id: sessionStorage.getItem("admin_id"),
-                category_name: searchQuery,
-            };
+            setCategories(response.data.categories || []);
         } else if (location.pathname.includes("/view-subcategories")) {
-            apiUrl = "http://127.0.0.1:8000/search-subcategories";
-            const categoryData = JSON.parse(sessionStorage.getItem("categoryData") || "{}");
-            requestBody = {
-                admin_id: sessionStorage.getItem("admin_id"),
-                category_id: categoryData.category_id,
-                sub_category_name: searchQuery,
-            };
+            const updatedSubcategories = (response.data.subcategories || []).map((item) => ({
+                ...item,
+                sub_category_image: item.sub_category_image_url,
+            }));
+            setSubcategories(updatedSubcategories);
         } else if (location.pathname.includes("/view-products")) {
-            apiUrl = "http://127.0.0.1:8000/search-products";
-            const categoryData = JSON.parse(sessionStorage.getItem("categoryData") || "{}");
-            const subCategoryData = JSON.parse(sessionStorage.getItem("subCategoryData") || "{}");
-            requestBody = {
-                admin_id: sessionStorage.getItem("admin_id"),
-                category_id: categoryData.category_id,
-                sub_category_id: subCategoryData.sub_category_id,
-                product_name: searchQuery,
-            };
+            const updatedProducts = (response.data.products || []).map((item) => ({
+                ...item,
+                product_images: item.product_images,
+            }));
+            setProducts(updatedProducts);
         }
-    
-        try {
-            const response = await axios.post(apiUrl, requestBody, { withCredentials: true });
-            
-            if (location.pathname.includes("/view-categories")) {
-                setCategories(response.data.categories || []);
-            } else if (location.pathname.includes("/view-subcategories")) {
-                setSubcategories(response.data.subcategories || []);
-            } else if (location.pathname.includes("/view-products")) {
-                setProducts(response.data.products || []);
-            }
-    
-            setSearchTriggered(true); // Show Refresh button once search is successful
-        } catch (error) {
-            console.error("Search Error:", error);
-            setErrorMessage("Something went wrong. Please try again.");
-        }
-    };
-    
-    const handleRefresh = () => {
-        setSearchQuery("");  // Clear search input
-        setErrorMessage(""); // Clear any error message
-        setSearchTriggered(false); // Show Search button again
-    
-        if (location.pathname.includes("/view-categories")) {
-            fetchCategories();
-        } else if (location.pathname.includes("/view-subcategories")) {
-            fetchSubcategories();
-        } else if (location.pathname.includes("/view-products")) {
-            fetchProducts();
-        }
-    };
-    
+
+        setSearchTriggered(true); // Show Refresh button
+    } catch (error) {
+        console.error("Search Error:", error);
+        setErrorMessage("Something went wrong. Please try again.");
+    }
+};
+
+const handleRefresh = () => {
+    setSearchQuery("");      // Clear search input
+    setErrorMessage("");     // Clear any error message
+    setSearchTriggered(false); // Show Search button again
+
+    if (location.pathname.includes("/view-categories")) {
+        fetchCategories();
+    } else if (location.pathname.includes("/view-subcategories")) {
+        fetchSubcategories();
+    } else if (location.pathname.includes("/view-products")) {
+        fetchProducts();
+    }
+};
+
+
 
     const fetchCategories = async () => {
         setErrorMessage("");
@@ -165,37 +173,37 @@ const Header = ({ setIsAuthenticated, setCategories, setSubcategories, setProduc
 
                 <div className="search-container">
                     {(location.pathname.includes("/view-categories") ||
-                      location.pathname.includes("/view-subcategories") ||
-                      location.pathname.includes("/view-products")) && (
-                        <form className="search-bar" onSubmit={handleSearch}>
-                        <input
-                            type="text"
-                            className="search-input"
-                            placeholder={
-                                location.pathname.includes("/view-categories")
-                                    ? "Search for Category..."
-                                    : location.pathname.includes("/view-subcategories")
-                                    ? "Search for Subcategory..."
-                                    : "Search for Product..."
-                            }
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    
-                        {searchTriggered ? (
-                            // Show Refresh button once search results are displayed
-                            <RiRefreshLine className="refresh-button" onClick={handleRefresh} />
-                        ) : (
-                            // Show Search button initially
-                            <button type="submit" className="search-button">
-                                <img src={SearchIcon} alt="Search" className="search-icon" />
-                            </button>
+                        location.pathname.includes("/view-subcategories") ||
+                        location.pathname.includes("/view-products")) && (
+                            <form className="search-bar" onSubmit={handleSearch}>
+                                <input
+                                    type="text"
+                                    className="search-input"
+                                    placeholder={
+                                        location.pathname.includes("/view-categories")
+                                            ? "Search for Category..."
+                                            : location.pathname.includes("/view-subcategories")
+                                                ? "Search for Subcategory..."
+                                                : "Search for Product..."
+                                    }
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+
+                                {searchTriggered ? (
+                                    // Show Refresh button once search results are displayed
+                                    <RiRefreshLine className="refresh-button" onClick={handleRefresh} />
+                                ) : (
+                                    // Show Search button initially
+                                    <button type="submit" className="search-button">
+                                        <img src={SearchIcon} alt="Search" className="search-icon" />
+                                    </button>
+                                )}
+                            </form>
+
                         )}
-                    </form>
-                    
-                    )}
                 </div>
-                 <div className="profile-container" ref={dropdownRef}>
+                <div className="profile-container" ref={dropdownRef}>
                     <IoPerson className="profile-icon" onClick={toggleDropdown} />
 
                     {showDropdown && (
@@ -207,7 +215,7 @@ const Header = ({ setIsAuthenticated, setCategories, setSubcategories, setProduc
                         </div>
                     )}
                 </div>
-              
+
             </div>
 
             {errorMessage && <p className="error-message">{errorMessage}</p>}

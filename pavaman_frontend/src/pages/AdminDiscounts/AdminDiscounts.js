@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminDiscounts.css';
 import { useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import PopupMessage from "../../components/Popup/Popup";
 
 const AdminDiscountProducts = () => {
   const navigate = useNavigate();
@@ -14,7 +16,17 @@ const AdminDiscountProducts = () => {
   const itemsPerPage = 10;
 
   const adminId = sessionStorage.getItem("admin_id");
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
 
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
   useEffect(() => {
     fetchDiscountProducts();
   }, []);
@@ -32,6 +44,8 @@ const AdminDiscountProducts = () => {
       }
     } catch (err) {
       setError('Failed to fetch products.');
+      displayPopup('Failed to fetch products.', "error");
+
     } finally {
       setLoading(false);
     }
@@ -52,7 +66,8 @@ const AdminDiscountProducts = () => {
       document.body.appendChild(link);
       link.click();
     } catch (error) {
-      alert('Failed to download Excel.');
+      displayPopup('Failed to download Excel.', "error");
+
     }
   };
 
@@ -73,17 +88,17 @@ const AdminDiscountProducts = () => {
   return (
     <div className="recent-orders">
       <div className="discount-header">
-  <h3>Discounted Products</h3>
-  <div className="discount-buttons">
-  <button onClick={addDiscount}>Add Discount</button>
+        <h3>Discounted Products</h3>
+        <div className="discount-buttons">
+          <button onClick={addDiscount}>Add Discount</button>
 
-    <button onClick={downloadExcel}>Download Excel</button>
-    {/* <input type="file" accept=".xlsx" onChange={handleFileChange} />
-    <button onClick={uploadExcel}>Upload Discount Excel</button> */}
-  </div>
-</div>
+          <button onClick={downloadExcel}>Download Excel</button>
+        </div>
+      </div>
 
-
+     <div className="admin-popup">
+        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+      </div>
       {error && <p className="error-message">{error}</p>}
       {loading ? (
         <p className="loading-text">Fetching products, please wait...</p>

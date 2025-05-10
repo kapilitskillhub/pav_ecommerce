@@ -43,7 +43,7 @@ const PaidOrderDetails = () => {
               delivered: product.delivery_status?.toLowerCase().trim() === "delivered"
             };
           });
-          
+
           setProductStatuses(statuses);
         }
       } catch (error) {
@@ -54,12 +54,12 @@ const PaidOrderDetails = () => {
     fetchOrderDetails();
   }, [orderId]);
 
-  
+
   const updateProductStatus = async (productId, statusType) => {
     const admin_id = sessionStorage.getItem("admin_id");
     const customer_id = order.customer_id;
     const product_order_id = order.product_order_id;
-  
+
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/order-or-delivery-status",
@@ -72,7 +72,7 @@ const PaidOrderDetails = () => {
         },
         { withCredentials: true }
       );
-  
+
       if (response.data.status_code === 200) {
         setProductStatuses((prevStatuses) => ({
           ...prevStatuses,
@@ -90,12 +90,12 @@ const PaidOrderDetails = () => {
       displayPopup("An error occurred while updating status.", "error");
     }
   };
-  
+
   const updateAllStatus = async (statusType) => {
     const admin_id = sessionStorage.getItem("admin_id") || 1;
     const customer_id = order.customer_id;
     const product_order_id = order.product_order_id;
-  
+
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/order-or-delivery-status",
@@ -107,16 +107,16 @@ const PaidOrderDetails = () => {
         },
         { withCredentials: true }
       );
-  
+
       if (response.data.status_code === 200) {
         const updatedIds = response.data.updated_orders || [];
-  
+
         const updatedStatuses = { ...productStatuses };
         updatedIds.forEach((id) => {
           if (!updatedStatuses[id]) updatedStatuses[id] = {};
           updatedStatuses[id][statusType === "shipped" ? "shipped" : "delivered"] = true;
         });
-  
+
         setProductStatuses(updatedStatuses);
         displayPopup(`All products marked as ${statusType === "shipped" ? "Shipped" : "Delivered"}.`);
       } else {
@@ -127,7 +127,7 @@ const PaidOrderDetails = () => {
       displayPopup("An error occurred while updating all statuses.", "error");
     }
   };
-  
+
 
   const allshipped = Object.values(productStatuses).every(s => s.shipped);
   const allDelivered = Object.values(productStatuses).every(s => s.delivered);
@@ -201,7 +201,7 @@ const PaidOrderDetails = () => {
                   <td>
                     {item.product_image ? (
                       <img
-                        src={`http://127.0.0.1:8000/${item.product_image}`}
+                        src={item.product_image}
                         alt={item.product_name}
                         height="50"
                       />
@@ -214,30 +214,30 @@ const PaidOrderDetails = () => {
                   <td>{item.quantity}</td>
                   <td>₹{item.final_price * item.quantity}</td>
                   <td>{productStatuses[item.id]?.shipped ? "Shipped" : "Pending"}</td>
-<td>{productStatuses[item.id]?.delivered ? "Delivered" : "Pending"}</td>
+                  <td>{productStatuses[item.id]?.delivered ? "Delivered" : "Pending"}</td>
 
-                 <td>
-  <input
-    type="checkbox"
-    checked={productStatuses[item.id]?.shipped || false}
-    onChange={() => updateProductStatus(item.id, "shipped")}
-    disabled={
-      productStatuses[item.id]?.shipped || 
-      productStatuses[item.id]?.delivered
-    }
-  />
-</td>
-<td>
-  <input
-    type="checkbox"
-    checked={productStatuses[item.id]?.delivered || false}
-    onChange={() => updateProductStatus(item.id, "delivered")}
-    disabled={
-      productStatuses[item.id]?.delivered || 
-      !productStatuses[item.id]?.shipped
-    }
-  />
-</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={productStatuses[item.id]?.shipped || false}
+                      onChange={() => updateProductStatus(item.id, "shipped")}
+                      disabled={
+                        productStatuses[item.id]?.shipped ||
+                        productStatuses[item.id]?.delivered
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={productStatuses[item.id]?.delivered || false}
+                      onChange={() => updateProductStatus(item.id, "delivered")}
+                      disabled={
+                        productStatuses[item.id]?.delivered ||
+                        !productStatuses[item.id]?.shipped
+                      }
+                    />
+                  </td>
 
 
 
@@ -249,24 +249,24 @@ const PaidOrderDetails = () => {
                 <td colSpan="9"></td>
                 <td>
                   <label>
-                  <input
-  type="checkbox"
-  checked={allshipped}
-  onChange={() => updateAllStatus("shipped")}
-  disabled={allshipped || allDelivered}
-/>
+                    <input
+                      type="checkbox"
+                      checked={allshipped}
+                      onChange={() => updateAllStatus("shipped")}
+                      disabled={allshipped || allDelivered}
+                    />
 
                     Select All
                   </label>
                 </td>
                 <td>
                   <label>
-                  <input
-  type="checkbox"
-  checked={allDelivered}
-  onChange={() => updateAllStatus("delivered")}
-  disabled={allDelivered}
-/>
+                    <input
+                      type="checkbox"
+                      checked={allDelivered}
+                      onChange={() => updateAllStatus("delivered")}
+                      disabled={allDelivered}
+                    />
 
                     Select All
                   </label>

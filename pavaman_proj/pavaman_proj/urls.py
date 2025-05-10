@@ -22,7 +22,8 @@ from pavaman_backend.views import (add_admin,admin_login,admin_logout,
     add_product,add_product_specifications,edit_product_specifications,view_products,
     view_product_details,edit_product,delete_product,retrieve_feedback,
     search_categories,search_subcategories,search_products,discount_products,download_discount_products_excel,
-    apply_discount_by_subcategory_only,order_or_delivery_status,admin_verify_otp,report_inventory_summary,top_buyers_report,customer_growth_by_state,monthly_product_orders
+    apply_discount_by_subcategory_only,order_or_delivery_status,admin_verify_otp,report_inventory_summary,top_buyers_report,customer_growth_by_state,monthly_product_orders,
+    download_feedback_excel
     )
 
     #admin_logout,
@@ -83,6 +84,7 @@ urlpatterns = [
     path('search-subcategories',search_subcategories,name='search_subcategories'),
     path('search-products',search_products,name='search_products'),
     path('retrieve-feedback',retrieve_feedback,name= 'retrieve_feedback'),
+    path('download-feedback-excel',download_feedback_excel,name= 'download_feedback_excel'),
 
   
     path('customer-register', customer_register, name='customer_register'), 
@@ -161,6 +163,8 @@ urlpatterns = [
     path('top-buyers-report',top_buyers_report,name= 'top_buyers_report'),
     path('customer-growth-by-state',customer_growth_by_state,name= 'customer_growth_by_state'),
     path('monthly-product-orders',monthly_product_orders,name= 'monthly_product_orders'),
+
+
 
 
 

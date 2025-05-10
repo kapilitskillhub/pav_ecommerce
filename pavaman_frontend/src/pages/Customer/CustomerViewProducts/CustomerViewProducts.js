@@ -37,10 +37,6 @@ const CustomerViewProducts = () => {
         }, 10000);
     };
 
-    // useEffect(() => {
-    //     fetchProducts();
-    // }, [sortOrder]); // Refetch products when sorting order changes
-
     useEffect(() => {
         fetchFilteredAndSortedProducts();
     }, [sortOrder]);
@@ -259,7 +255,6 @@ const CustomerViewProducts = () => {
     };
 
 
-
     return (
         <div className="customer-dashboard container">
             < CarouselLanding />
@@ -385,38 +380,33 @@ const CustomerViewProducts = () => {
                                         className="customer-product-card"
                                         onClick={() => handleViewProductDetails(product)}
                                     >
+                                        <div>{console.log(product.product_image_url)}</div>
                                         <img
-                                            src={product.product_image_url}
+                                            src={
+                                                product.product_images ||
+                                                (Array.isArray(product.product_image_url)
+                                                    ? product.product_image_url[0]
+                                                    : product.product_image_url)
+                                            }
+
                                             alt={product.product_name}
                                             className="customer-product-image"
                                         // onError={(e) => (e.target.src = defaultImage)}
                                         />
-                                        {/* <img
-  src={
-    product.product_image_url
-      ? product.product_image_url
-      : product.product_images?.[0] ?? '/default-placeholder.png'
-  }
-  alt={product.product_name}
-  onError={(e) => {
-    e.target.src = '/default-placeholder.png';
-  }}
-/> */}
-
                                         <div className="customer-product-name">{product.product_name}</div>
                                         <div className="customer-discount-section-price">₹{product.final_price}.00 (incl. GST)</div>
                                         <div>
-                                        {product.price !== product.final_price && (
-                                        
-                                            <div className="customer-discount-section-original-price">
-                                                ₹{product.price}.00 (incl. GST)
+                                            {product.price !== product.final_price && (
+
+                                                <div className="customer-discount-section-original-price">
+                                                    ₹{product.price}.00 (incl. GST)
                                                 </div>
-                                        )}
+                                            )}
                                             <div className="discount-tag">
 
-                                            {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
+                                                {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
 
-                                        </div>
+                                            </div>
                                             <div className="add-cart-section">
                                                 <span
                                                     className={`availability ${product.availability === "Out of Stock"

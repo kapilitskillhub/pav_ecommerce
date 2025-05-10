@@ -8,7 +8,9 @@ import { GiCoins } from "react-icons/gi";
 import { BsCoin } from "react-icons/bs";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, startOfWeek as startOfWeekFunc, endOfWeek as endOfWeekFunc } from 'date-fns';
+import PopupMessage from "../../components/Popup/Popup";
+import { Link } from "react-router-dom";
 
 const AdminCustomerReports = () => {
   const [adminId, setAdminId] = useState(null);
@@ -40,10 +42,27 @@ const AdminCustomerReports = () => {
     }).format(amount);
   };
 
+  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+  const [showPopup, setShowPopup] = useState(false);
+
+  const displayPopup = (text, type = "success") => {
+    setPopupMessage({ text, type });
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 10000);
+  };
+
   useEffect(() => {
     const storedAdminId = sessionStorage.getItem('admin_id');
     if (!storedAdminId) {
-      setError('Admin session expired. Please log in again.');
+      displayPopup(
+        <>
+          Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+        </>,
+        "error"
+      );
       return;
     }
 
@@ -76,22 +95,22 @@ const AdminCustomerReports = () => {
 
   const fetchMonthlyRevenue = async (admin_id) => {
     try {
-      let payload = {
+      const payload = {
         admin_id,
-        action: reportFilter === "yearly" ? "year" : reportFilter === "monthly" ? "month" : "week"
+        action: reportFilter === "yearly" ? "year" : reportFilter === "monthly" ? "month" : "week",
       };
 
-      if (reportFilter === "monthly") {
-        payload.month = selectedMonth;
-        payload.year = reportYear;
-      } else if (reportFilter === "yearly") {
-        payload.year = reportYear;
-        payload.start_date_str = `${reportYear}-01-01`;
-        payload.end_date_str = `${reportYear}-12-31`;
+      if (reportFilter === "yearly") {
+        payload.start_date_str = format(yearRange.from, 'yyyy-MM-dd');
+        payload.end_date_str = format(yearRange.to, 'yyyy-MM-dd');
+      } else if (reportFilter === "monthly") {
+        payload.start_date_str = format(monthRange.from, 'yyyy-MM-dd');
+        payload.end_date_str = format(monthRange.to, 'yyyy-MM-dd');
       } else if (reportFilter === "weekly") {
-        payload.month = selectedMonth;
-        payload.week = selectedWeek;
-        payload.year = reportYear;
+        const startOfWeek = startOfWeekFunc(weekDate, { weekStartsOn: 1 }); // Monday as start of the week
+        const endOfWeek = endOfWeekFunc(weekDate, { weekStartsOn: 1 });
+        payload.start_date_str = format(startOfWeek, 'yyyy-MM-dd');
+        payload.end_date_str = format(endOfWeek, 'yyyy-MM-dd');
       }
 
       const res = await axios.post('http://127.0.0.1:8000/report-monthly-revenue-by-year', payload);
@@ -104,11 +123,20 @@ const AdminCustomerReports = () => {
         } else if (reportFilter === 'weekly') {
           setMonthlyRevenue(res.data.daywise_revenue || {});
         }
+      } else if (res.data.status_code === 400) {
+        displayPopup(res.data.error || "Something went wrong. Please try again.", "error");
       }
     } catch (err) {
       console.error('Error fetching monthly revenue', err);
+      displayPopup(
+        err?.response?.data?.error || "Something went wrong. Please try again.",
+        "error"
+      );
     }
+
+
   };
+
 
   const fetchTopProducts = async (admin_id) => {
     try {
@@ -118,6 +146,8 @@ const AdminCustomerReports = () => {
       }
     } catch (err) {
       console.error('Error fetching top products', err);
+      displayPopup(error, "Error fetching top products.", "error");
+
     }
   };
 
@@ -152,8 +182,12 @@ const AdminCustomerReports = () => {
       </div>
 
       <div className="charts-status">
+
         <div className="chart-box">
           <h3>Yearly Revenue ({reportYear})</h3>
+          <div className="admin-popup">
+            <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+          </div>
           <div className="filter-controls">
             <label>Report Filter:</label>
             <select value={reportFilter} onChange={(e) => setReportFilter(e.target.value)}>
