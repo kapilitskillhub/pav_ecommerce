@@ -1,9 +1,11 @@
 import React from 'react';
 import "../CustomerFooter/CustomerFooter.css";
 import logo from '../../../assets/images/logo.png';
+import { useNavigate } from 'react-router-dom';
  // replace with your logo path
 
 const PavamanFooter = () => {
+  const navigate = useNavigate();
   return (
     <footer className="pav-footer">
       <div className="footer-top">
@@ -16,28 +18,31 @@ const PavamanFooter = () => {
 
         <div className="footer-links">
           <div className="footer-column">
-            <h4>Information</h4>
-            <ul>
-              <li><a href="#">Track Your Order</a></li>
-              <li><a href="#">Videos</a></li>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Careers</a></li>
-            </ul>
+            <h4>Address</h4>
+           <p>
+            Kapil Kavuri Hub, 2nd Floor ,
+           </p>
+           <p>
+            Financial District, Nanakramguda,
+           </p>
+           <p>Hyderabad,Telangana,</p>
+           <p>
+            INDIA – 500 032
+           </p>
           </div>
           <div className="footer-column">
             <h4>My Account</h4>
-            <ul>
-              <li><a href="#">Cart</a></li>
-              <li><a href="#">Checkout</a></li>
-              <li><a href="#">My Account</a></li>
-              <li><a href="#">Payment Options</a></li>
-            </ul>
+             <ul  className='my-account-contact'>
+  <li><span onClick={() => navigate('/view-cart-products')}>Cart</span></li>
+  <li><span onClick={() => navigate('/my-orders')}>Checkout</span></li>
+  <li><span onClick={() => navigate('/profile')}>My Account</span></li>
+</ul>
           </div>
           <div className="footer-column">
             <h4>Services</h4>
-            <ul>
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Contact Us</a></li>
+            <ul className='service-options'>
+              {/* <li><a href="#">About Us</a></li> */}
+              <li><span onClick={() => navigate('/contact')}>Contact Us</span></li>
               <li><a href="#">Pavaman B2B</a></li>
             </ul>
           </div>
