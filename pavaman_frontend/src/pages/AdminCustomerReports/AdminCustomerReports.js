@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import './AdminCustomerReports.css';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { FcSalesPerformance } from "react-icons/fc";
@@ -17,8 +18,10 @@ const AdminCustomerReports = () => {
   const [summary, setSummary] = useState({ today: 0, month: 0, total: 0 });
   const [monthlyRevenue, setMonthlyRevenue] = useState({});
   const [topProducts, setTopProducts] = useState([]);
+  const [bottmProducts, setBottomProducts] = useState([]);
   const [orderStatusData, setOrderStatusData] = useState([]);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
   const [reportYear, setReportYear] = useState(new Date().getFullYear());
   const [reportFilter, setReportFilter] = useState('yearly'); // 'yearly' | 'monthly' | 'weekly'
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // 1-12
@@ -69,6 +72,7 @@ const AdminCustomerReports = () => {
     setAdminId(storedAdminId);
     fetchSalesSummary(storedAdminId);
     fetchTopProducts(storedAdminId);
+    fetchBottomProducts(storedAdminId);
     fetchOrderStatusSummary(storedAdminId);
   }, []);
 
@@ -148,6 +152,20 @@ const AdminCustomerReports = () => {
       console.error('Error fetching top products', err);
       displayPopup(error, "Error fetching top products.", "error");
 
+    }
+  };
+
+
+  const fetchBottomProducts = async (admin_id) => {
+    try {
+      const res = await axios.post('http://127.0.0.1:8000/not-selling-products', { admin_id });
+      if (res.data.status_code === 200) {
+        setBottomProducts(res.data.not_selling_products.slice(0, 5));
+      }
+
+
+    } catch (err) {
+      console.error('Error fetching bottom products', err);
     }
   };
 
@@ -324,16 +342,44 @@ const AdminCustomerReports = () => {
       <div className="product-boxes">
         <div className="top-products">
           <h3>Top 5 Products</h3>
-          <ul>
-            {topProducts.map(p => (
-              <li key={p.product_id}>{p.product_name}  {p.total_sold}</li>
-            ))}
-          </ul>
+          <table className='dashboard-table'>
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      {(topProducts || []).map(p => (
+        <tr key={p.product_id}>
+          <td>{p.product_name}</td>
+          <td>{p.total_sold}</td>
+        </tr>
+      ))}
+      
+    </tbody>
+  </table>
         </div>
 
         <div className="bottom-products">
           <h3>Bottom 5 Products</h3>
-          <p>Coming soon...</p>
+          <table className='dashboard-table'>
+    <thead>
+      <tr>
+        <th>Product Name</th>
+      </tr>
+    </thead>
+    <tbody>
+            {(bottmProducts || []).map(p => (
+              <tr key={p.id}>
+                <td >{p.product_name}</td>
+                </tr>
+            ))}
+            <button className="view-more-button" onClick={() => navigate("/bottom-products")}>
+                                View More...
+                        </button>
+          </tbody>
+          </table>
         </div>
       </div>
     </div>
