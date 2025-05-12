@@ -1004,8 +1004,8 @@ def add_product(request):
             sku_number = data.get('sku_number')
             price = data.get('price')
             quantity = data.get('quantity')
-            discount = data.get('discount', 0.0)
-            gst = data.get('gst', '0.0')
+            discount = data.get('discount')
+            gst = data.get('gst')
             description = data.get('description')
             admin_id = data.get('admin_id')
             category_id = data.get('category_id')
@@ -1017,7 +1017,7 @@ def add_product(request):
             try:
                 price = float(price)
                 quantity = int(quantity)
-                discount = float(discount)
+                discount = int(discount)
                 gst = float(gst)
 
                 if discount > price:
@@ -1488,7 +1488,7 @@ def edit_product(request):
             try:
                 price = float(price)
                 quantity = int(quantity)
-                discount = float(discount)
+                discount = int(discount)
             except ValueError:
                 return JsonResponse({"error": "Invalid format for price, quantity, or discount.", "status_code": 400}, status=400)
 
@@ -2023,8 +2023,9 @@ def discount_products(request):
                 gst = float(product.gst or 0)
 
                 
-                discounted_price = round(price - discount, 2)
-                final_price = round((discount / price) * 100, 2) if price > 0 else 0
+                # discounted_price = round(price - discount, 2)
+                
+                final_price = price - (price * discount / 100)
                 # gst_amount = round((discounted_price * gst) / 100, 2)
                 # final_price = round(discounted_price + gst_amount, 2)
 
@@ -2035,9 +2036,9 @@ def discount_products(request):
                     "sku_number": product.sku_number,
                     "price": round(price, 2),
                     "gst": f"{round(gst, 2)}%",
-                    "discount_amount": round(discounted_price, 2),
-                    "discount": f"{round(discount, 2)}%",
-                    "final_price":round(final_price, 2),
+                    "final_price": round(final_price, 2),
+                    "discount": f"{round(discount)}%",
+                    # "final_price":round(final_price, 2),
                     "quantity": product.quantity,
                     "material_file": material_file_url,
                     "description": product.description,
@@ -2449,7 +2450,7 @@ import pytz
 def retrieve_feedback(request):
     if request.method == "POST":
         try:
-           
+        
             data = json.loads(request.body.decode("utf-8"))
 
             admin_id = data.get('admin_id')

@@ -24,6 +24,7 @@ import CustomerMyOrder from "../Customer/CustomerMyOrder/CustomerMyOrder";
 import CustomerMyOrderDetails from "../Customer/CustomerMyOrderDetails/CustomerMyOrderDetails";
 import AllCategories from "../Customer/CustomerAllCategories/AllCategories";
 import AllProducts from "../Customer/CustomerAllCategories/Products";
+import Contact from "../Customer/Contact/Contact";
 
 const CLIENT_ID = "698181623361-025dk4qeov6gk2er133mlcrnjka59fq6.apps.googleusercontent.com";
 
@@ -57,6 +58,7 @@ const CustomerRoutes = () => {
           <Route path="/my-orders-details" element={<CustomerMyOrderDetails />} />
           <Route path="/all-categories" element={<AllCategories />} />
           <Route path="/all-products" element={<AllProducts/>} />
+          <Route path="/contact" element={<Contact/>} />
          
         </Route>
       </Routes>

@@ -131,9 +131,9 @@ const AdminDiscountProducts = () => {
                     </td>
                     <td>{product.product_name}</td>
                     <td>{product.sku_number}</td>
-                    <td>₹ {product.price}</td>
+                    <td>₹ {product.price.toFixed(2)}</td>
                     <td>{product.discount}</td>
-                    <td>₹ {product.final_price}</td>
+                    <td>₹ {product.final_price.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

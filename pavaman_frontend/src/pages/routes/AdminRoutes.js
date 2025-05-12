@@ -21,6 +21,8 @@ import AdminAddDiscount from "../AdminDiscounts/AdminAddDiscounts";
 import AdminRatings from "../AdminRatings/AdminRatings";
 import TopBuyersPage from "../Dashboard/TopBuyers";
 import LowStockProductsPage from "../Dashboard/LowStockProductsPage";
+import BottomProductsPage from '../AdminCustomerReports/BottomProducts';
+
 
 const AdminRoutes = ({ categories, setCategories, subcategories, setSubcategories, products, setProducts }) => {
   return (
@@ -48,6 +50,8 @@ const AdminRoutes = ({ categories, setCategories, subcategories, setSubcategorie
       <Route path="/ratings" element={<AdminRatings />}/>
       <Route path="/top-buyers" element={<TopBuyersPage />} />
       <Route path="/low-stock-products" element={<LowStockProductsPage />} />
+      <Route path="/bottom-products" element={<BottomProductsPage />} />
+
     </Routes>
   );
 };
