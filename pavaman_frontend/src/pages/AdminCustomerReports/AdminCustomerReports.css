@@ -230,13 +230,13 @@
   padding-bottom: 5px;
 }
 
-.top-products ul {
+.top-products ul,.bottom-products ul {
   list-style-type: none;
   padding-left: 0;
   margin: 0;
 }
 
-.top-products li {
+.top-products li,.bottom-products li {
   display: flex;
   justify-content: space-between;
   padding: 10px 12px;
@@ -250,6 +250,9 @@
 }
 
 .top-products li:hover {
+  background-color: #e2e8f0;
+}
+.bottom-products li:hover {
   background-color: #e2e8f0;
 }
 

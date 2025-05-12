@@ -222,7 +222,7 @@ const displayPopup = (text, type = "success") => {
 
                   {productDetails.product_details.product_images?.length > 0 ? (
                     <img
-                      src={`http://127.0.0.1:8000/${productDetails.product_details.product_images[mainImageIndex]}`}
+                      src={productDetails.product_details.product_images[mainImageIndex]}
                       alt="Main Product"
                       className="main-product-img"
                     />
@@ -242,7 +242,7 @@ const displayPopup = (text, type = "success") => {
                   {productDetails.product_details.product_images?.map((img, index) => (
                     <img
                       key={index}
-                      src={`http://127.0.0.1:8000/${img}`}
+                      src={img}
                       alt={`Product ${index + 1}`}
                       className={`thumbnail-img ${mainImageIndex === index ? "active-thumbnail" : ""}`}
                       onClick={() => setMainImageIndex(index)}
