@@ -20,9 +20,6 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
         setOrders(orderSummary?.orders || []);
     }, [orderSummary]);
 
- 
-    
-    
     const handleCancelOrder = async () => {
         const customerId = localStorage.getItem("customer_id");
 
