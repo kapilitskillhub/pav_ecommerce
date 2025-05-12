@@ -435,7 +435,7 @@ const displayPopup = (text, type = "success") => {
                   {productDetails.product_details.material_file ? (
                     <button className="button-material">
 
-                      <a href={`http://127.0.0.1:8000/${productDetails.product_details.material_file}`} target="_blank" rel="noopener noreferrer">
+                      <a href={productDetails.product_details.material_file} target="_blank" rel="noopener noreferrer">
                         View Material
                       </a>
                     </button>
