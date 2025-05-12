@@ -645,7 +645,7 @@ def otp_generate(request):
 def send_password_reset_otp_email(customer):
     otp = customer.otp
     email = customer.email
-    first_name = customer.first_name
+    first_name = customer.first_name or 'Customer'
     reset_token = customer.reset_link
 
      # Construct S3 image URL
@@ -2146,7 +2146,6 @@ def multiple_order_summary(request):
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
 
-
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 @csrf_exempt
@@ -2485,26 +2484,23 @@ def razorpay_callback(request):
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
-
 def send_html_order_confirmation(to_email, customer_name, product_list, total_amount, order_id, transaction_id):
     subject = "🧾 Order Confirmation - Payment Successful"
 
+    logo_url = f"{settings.AWS_S3_BUCKET_URL}/static/images/aviation-logo.png"
+
     product_html = ""
     for product in product_list:
-        # delivery_date = product.get('delivery_date', 'Soon')  # Default to 'Soon' if not provided
-        product_images = product.get('product_images', [])
-        image_url = ""
-
-        if product_images:
-            image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_images[0]}"  # Get the first image URL if available
-
-
+        image_path = product.get('image_url', '')
+        if not image_path.startswith('http'):
+            image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}"
+        else:
+            image_url = image_path
 
         product_html += f"""
         <tr>
             <td style="padding: 10px;">
                 <img src="{image_url}" width="80" height="80" style="border-radius: 5px;" />
-
             </td>
             <td style="padding: 10px;">
                 <strong>{product['name']}</strong><br>
@@ -2516,8 +2512,12 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
 
     html_content = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
-        <h2 style="color: #2E7D32;">Payment Successful!</h2>
-        <p>Hi {customer_name},</p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color: #2E7D32; margin: 0;">Payment Successful!</h2>
+            <img src="{logo_url}" alt="Pavaman Logo" style="max-height: 50px; text-align="start" />
+        </div>
+        
+        <p style="margin-top: 20px;">Hi {customer_name},</p>
         <p>Thank you for your order. Your payment was successful.</p>
 
         <p><strong>Order ID:</strong> {order_id}<br>
@@ -2542,14 +2542,12 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email]
         )
-        email.content_subtype = "html"  # Send as HTML
+        email.content_subtype = "html"
         email.send(fail_silently=False)
         return True
     except Exception as e:
         print(f"[Email Error] {e}")
         return False
-
-
 @csrf_exempt
 def cancel_order(request):
     if request.method == 'POST':
@@ -4493,9 +4491,6 @@ def edit_profile_mobile_otp_handler(request):
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
 
-
-
-
 @csrf_exempt
 def edit_profile_email_otp_handler(request):
     if request.method == "POST":
@@ -4520,9 +4515,10 @@ def edit_profile_email_otp_handler(request):
                 customer.otp_send_type = 'email'
                 customer.save(update_fields=["otp", "otp_send_type"])
 
-                subject = "Verify Your Email"
-                message = f"Your OTP for verifying your current email is: {otp}"
-                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [customer.email])
+                # subject = "Verify Your Email"
+                # message = f"Your OTP for verifying your current email is: {otp}"
+                # send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [customer.email])
+                send_email_verification_otp_email(customer)
 
                 return JsonResponse({
                     "message": "OTP sent to previous email address.",
@@ -4557,9 +4553,10 @@ def edit_profile_email_otp_handler(request):
                 customer.otp_send_type = 'email'
                 customer.save(update_fields=["otp", "email", "otp_send_type"])
 
-                subject = "Verify Your New Email"
-                message = f"Your OTP for verifying your new email address is: {otp}"
-                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_email])
+                # subject = "Verify Your New Email"
+                # message = f"Your OTP for verifying your new email address is: {otp}"
+                # send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_email])
+                send_email_verification_otp_email(customer)
 
                 return JsonResponse({
                     "message": "OTP sent to new email address.",
@@ -4594,6 +4591,64 @@ def edit_profile_email_otp_handler(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
+
+def send_email_verification_otp_email(customer):
+    otp = customer.otp
+    email = customer.email
+    first_name = customer.first_name or "Customer"
+
+    # Construct logo URL
+    logo_url = f"{settings.AWS_S3_BUCKET_URL}/static/images/aviation-logo.png"
+
+    subject = "[Pavaman] OTP to Verify Your Email 🔐"
+    text_content = f"Hello {first_name},\n\nYour OTP for verifying your current email is: {otp}"
+
+    html_content = f"""
+    <html>
+    <head>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+            @media only screen and (max-width: 600px) {{
+                .container {{
+                    width: 90% !important;
+                    padding: 20px !important;
+                }}
+                .logo {{
+                    max-width: 180px !important;
+                    height: auto !important;
+                }}
+                .otp {{
+                    font-size: 24px !important;
+                    padding: 10px 20px !important;
+                }}
+            }}
+        </style>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f5f5f5;">
+        <div class="container" style="margin: 40px auto; background-color: #ffffff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 40px 30px; text-align: center; max-width: 480px;">
+            <img src="{logo_url}" alt="Pavaman Logo" class="logo" style="max-width: 280px; height: auto; margin-bottom: 20px;" />
+            <h2 style="margin-top: 0; color: #222;">Verify Your Email</h2>
+            <p style="color: #555; margin-bottom: 30px;">
+                Hello <strong>{first_name}</strong>,<br>
+                Use this OTP to reset your Pavaman account email.
+            </p>
+            <p class="otp" style="font-size: 28px; font-weight: bold; color: #4450A2; background: #f2f2f2; display: inline-block; padding: 12px 24px; border-radius: 10px; letter-spacing: 4px;">
+                {otp}
+            </p>
+            <p style="color: #888; font-size: 14px; margin-top: 20px;">
+                If you didn't request a email reset, please ignore this email.<br/>
+                You're receiving this because you have an account on Pavaman.
+            </p>
+        </div>
+    </body>
+    </html>
+    """
+
+    email_message = EmailMultiAlternatives(
+        subject, text_content, settings.DEFAULT_FROM_EMAIL, [email]
+    )
+    email_message.attach_alternative(html_content, "text/html")
+    email_message.send()
 
 
 @csrf_exempt
