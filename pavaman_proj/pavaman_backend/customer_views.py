@@ -2899,6 +2899,7 @@ def filter_product_price(request):
                 products_query = products_query.filter(price__lte=max_price)
            
             products_list = []
+            
             for product in products_query:
                 price = float(product.price)
                 discount = float(product.discount or 0)
@@ -2931,8 +2932,8 @@ def filter_product_price(request):
 
             # Get min and max price for the given subcategory (based on the filtered products)
             price_range = products_query.aggregate(
-                min_price=Min("price"),
-                max_price=Max("price")
+                min_price=Min("final_price"),
+                max_price=Max("final_price")
             )
             if price_range["min_price"] == price_range["max_price"]:
                 price_range["min_price"] = 0

@@ -59,6 +59,7 @@ const CustomerRoutes = () => {
           <Route path="/all-categories" element={<AllCategories />} />
           <Route path="/all-products" element={<AllProducts/>} />
           <Route path="/contact" element={<Contact/>} />
+          
          
         </Route>
       </Routes>

@@ -157,7 +157,7 @@ const downloadExcel = async () => {
               <button
                 key={page}
                 onClick={() => paginate(page)}
-                className={`pagination-button ${page === currentPage ? 'active-page' : ''}`}
+               className={`pagination-button ${page === currentPage ? 'active-page' : ''}`}
               >
                 {page}
               </button>
