@@ -439,103 +439,74 @@ const CustomerViewCart = () => {
                         ))}
                         {selectedProducts.length > 0 && (
                             <div className="cart-actions">
-                                <button className="cart-delete-selected" onClick={handleDeleteSelectedItems} >
+                                <button className="cart-delete-selected" onClick={handleDeleteSelectedItems}>
                                     Remove From Cart
                                 </button>
-                                <button className="cart-place-order" onClick={handlePlaceOrder} >
+                                <button className="cart-place-order" onClick={handlePlaceOrder}>
                                     Place Order
                                 </button>
                             </div>
                         )}
                     </div>
-
-
                 )}
+
                 <div className="cart-price-section">
 
-                    <div className=" cart-side-section">
-                        <div>
-                            <div className="cart-price-header">Price details</div>
-                            <div className="cart-prices">
-                                <div className="cart-price">
-                                    <div className="cart-price-label">Price({cartItems.length} items)</div>
-                                    <div className="cart-price-value">₹ {calculatePrice(cartItems).toFixed(2)} /-</div>
-                                </div>
-                                <div className="cart-price cart-disfee">
-                                    <div className="cart-price-label">Gst Amount</div>
-                                    <div className="cart-price-value">+   ₹{calculateTotalGST()} /-</div>
-                                </div>
-                                <div className="cart-price cart-disfee">
-                                    <div className="cart-price-label">Discount Amount</div>
-                                    <div className="cart-price-value">-     ₹{calculateTotalDiscount()} /-</div>
-                                </div>
-                                {/* <div className="cart-price cart-disfee">
-                                    <div className="cart-price-label">Gst Amount</div>
-                                    <div className="cart-price-value">+₹{calculateTotalGST()} /-</div>
-                                </div> */}
-                                {/* <div className="cart-price cart-pfee">
-                                    <div className="cart-price-label">Platfrom Fee</div>
-                                    <div className="cart-price-value">₹ 0.0 /-</div>
-                                </div>
-                                <div className="cart-price cart-dfee">
-                                    <div className="cart-price-label">Delivery fee</div>
-                                    <div className="cart-price-value">₹ 0.0 /-</div>
-                                </div> */}
-                                <div className="cart-price cart-total">
-                                    <div className="cart-price-label">Total Price</div>
-                                    <div className="cart-price-value"> ₹ {total_price.toFixed(2)} /-</div>
-
+                    {/* ✅ Price Details Section - Show only if no product is selected */}
+                    {selectedProducts.length === 0 && (
+                        <div className="cart-side-section">
+                            <div>
+                                <div className="cart-price-header">Price details</div>
+                                <div className="cart-prices">
+                                    <div className="cart-price">
+                                        <div className="cart-price-label">Price ({cartItems.length} items)</div>
+                                        <div className="cart-price-value">₹ {calculatePrice(cartItems).toFixed(2)} /-</div>
+                                    </div>
+                                    <div className="cart-price cart-disfee">
+                                        <div className="cart-price-label">Gst Amount</div>
+                                        <div className="cart-price-value">+ ₹{calculateTotalGST()} /-</div>
+                                    </div>
+                                    <div className="cart-price cart-disfee">
+                                        <div className="cart-price-label">Discount Amount</div>
+                                        <div className="cart-price-value">- ₹{calculateTotalDiscount()} /-</div>
+                                    </div>
+                                    <div className="cart-price cart-total">
+                                        <div className="cart-price-label">Total Price</div>
+                                        <div className="cart-price-value">₹ {total_price.toFixed(2)} /-</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
-
-
-
+                    {/* ✅ Total Payable Section - Show only if one or more products are selected */}
                     {selectedProducts.length > 0 && (
                         <div className="cart-side-section">
                             <div>
                                 <div className="cart-price-header">Total Payable</div>
                                 <div className="cart-prices">
-
                                     <div className="cart-price cart-payable">
-                                        <div className="cart-price-label"><b>Price({selectedProducts.length} items)</b></div>
+                                        <div className="cart-price-label"><b>Price ({selectedProducts.length} items)</b></div>
                                         <div className="cart-price-value"><b>₹ {calculateSelectedPrice().toFixed(2)} /-</b></div>
                                     </div>
                                     <div className="cart-price cart-disfee">
-                                    <div className="cart-price-label">Gst Amount</div>
-                                    <div className="cart-price-value">+  ₹{calculateSelectedGST()} /-</div>
-                                </div>
-
-                                    <div className="cart-price cart-disfee">
-                                    <div className="cart-price-label"><b>Discount Amount</b></div>
-                                    <div className="cart-price-value">-  ₹{calculateSelectedDiscount()} /-</div>
-                                </div>
-
-                            
-
-                                     {/* <div className="cart-price cart-pfee">
-                                        <div className="cart-price-label">Platfrom Fee</div>
-                                        <div className="cart-price-value">₹ 0.0 /-</div>
-                                    </div>
-
-                                    <div className="cart-price cart-disfee">
                                         <div className="cart-price-label">Gst Amount</div>
-                                        <div className="cart-price-value">₹{calculateSelectedGST()} /-</div>
-                                    </div> */}
-
+                                        <div className="cart-price-value">+ ₹{calculateSelectedGST()} /-</div>
+                                    </div>
+                                    <div className="cart-price cart-disfee">
+                                        <div className="cart-price-label"><b>Discount Amount</b></div>
+                                        <div className="cart-price-value">- ₹{calculateSelectedDiscount()} /-</div>
+                                    </div>
                                     <div className="cart-price cart-total">
                                         <div className="cart-price-label">Total Price</div>
                                         <div className="cart-price-value">₹ {calculateSelectedTotal().toFixed(2)} /-</div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     )}
-                </div>
 
+                </div>
             </div>
         </div>
     );

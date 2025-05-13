@@ -2049,6 +2049,8 @@ def order_multiple_products(request):
             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
+
+import math
 @csrf_exempt
 def multiple_order_summary(request):
     if request.method == 'POST':
@@ -3442,7 +3444,8 @@ def get_payment_details_by_order(request):
                     "product_image": product_image_url,
                     "product_name":product.product_name,
                     "shipping_status":order.shipping_status,
-                    "delivery_status":order.delivery_status
+                    "delivery_status":order.delivery_status,
+                    
                     
                 })
             # customer_data=[]
@@ -3591,7 +3594,8 @@ def filter_my_order(request):
                     "delivery_charge": order.delivery_charge,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
-                    "product_name": product.product_name
+                    "product_name": product.product_name,
+                    "delivery_charge":order.delivery_charge
                 })
 
             if order_product_list:
@@ -3708,7 +3712,8 @@ def customer_get_payment_details_by_order(request):
                     "delivery_charge": order.delivery_charge,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
-                    "product_name": product.product_name
+                    "product_name": product.product_name,
+                    "delivery_charge":order.delivery_charge
                 })
 
             if action == 'search' and not order_product_list:
@@ -4505,8 +4510,6 @@ def customer_cart_view_search(request):
                     product_image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{product_image_path}"
 
  
-
-
                 cart_list.append({
                     "cart_id": item.id,
                     "product_id": product.id,

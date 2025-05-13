@@ -650,27 +650,3 @@
   font-size: 11px;
   text-align: left;
 }
-
-
-/* @media (max-width: 325px) {
-    .mobile-user-dropdown {
-        position: absolute;
-        top: 30px;
-        right: 0;
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-        width: 136px;
-        left: -95px;
-    }
-    .mobile-user-dropdown ul li {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 16px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-} */

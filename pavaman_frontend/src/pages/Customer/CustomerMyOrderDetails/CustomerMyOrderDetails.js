@@ -126,18 +126,29 @@ const CustomerMyOrderDetails = () => {
             
             </p> */}
             <p><strong>Price:</strong> ₹{selectedProduct.price} x {selectedProduct.quantity} item(s) = ₹{(selectedProduct.price * selectedProduct.quantity).toFixed(2)}</p>
+
+            {selectedProduct.gst && parseFloat(selectedProduct.gst) > 0 && (
+  <p><strong>GST:</strong>    +    ₹{(
+    (parseFloat(selectedProduct.price) * parseFloat(selectedProduct.gst) / 100) * selectedProduct.quantity
+  ).toFixed(2)} ({selectedProduct.gst})</p>
+)}
+
             {selectedProduct.discount && parseFloat(selectedProduct.discount) > 0 && (
   <p>
-    <strong>Discount:</strong> {selectedProduct.discount} = ₹{(
+
+    <strong>Discount:</strong> {selectedProduct.discount} = -   ₹{(
       (parseFloat(selectedProduct.price) * parseFloat(selectedProduct.discount) / 100) *
       selectedProduct.quantity
     ).toFixed(2)}
   </p>
 )}
-  <p><strong>Discounted Price:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity).toFixed(2)}</p>
+
+ <p><strong>Delivery Fee:</strong>    +    ₹{selectedProduct.delivery_charge}</p>
+  <p><strong>Price:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity + selectedProduct.delivery_charge).toFixed(2)}</p>
+  
 
 {/* <p><strong>Platform Fee:</strong> ₹0.00</p>
-<p><strong>Delivery Fee:</strong> ₹0.00</p> */}
+<p><strong>Delivery Fee:</strong> ₹0.00</p> 
 <p><strong>Total Amount:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity).toFixed(2)}</p>
 
 
@@ -199,7 +210,20 @@ const CustomerMyOrderDetails = () => {
       order.order_products.reduce((acc, prod) => acc + (parseFloat(prod.price) * prod.quantity), 0).toFixed(2)
     }</p>
 
-    <p><strong>Total Discount:</strong> ₹{
+
+<p><strong>Total GST:</strong>     +  ₹{
+  order.order_products.reduce((acc, prod) => {
+    const gstAmount = prod.gst
+      ? (parseFloat(prod.price) * parseFloat(prod.gst) / 100) * prod.quantity
+      : 0;
+    return acc + gstAmount;
+  }, 0).toFixed(2)
+}</p>
+
+
+
+
+    <p><strong>Total Discount:</strong>     -    ₹{
       order.order_products.reduce((acc, prod) => {
         const discountAmount = prod.discount
           ? (parseFloat(prod.price) * parseFloat(prod.discount) / 100) * prod.quantity
@@ -212,11 +236,20 @@ const CustomerMyOrderDetails = () => {
       order.order_products.reduce((acc, prod) => acc + (parseFloat(prod.final_price) * prod.quantity), 0).toFixed(2)
     }</p>
 
-    <p><strong>Platform Fee:</strong> ₹0.00</p>
-    <p><strong>Delivery Fee:</strong> ₹0.00</p>
+    
+
+    <p><strong>Delivery Fee:</strong>   +   ₹{
+  order.order_products.reduce((acc, prod) => {
+    const deliveryFee = prod.delivery_charge ? parseFloat(prod.delivery_charge) : 0;
+    return acc + deliveryFee;
+  }, 0).toFixed(2)
+}</p>
+
+<p><strong>Platform Fee:</strong> ₹0.00</p>
+
 
     <p><strong>Total Amount:</strong> ₹{
-      order.order_products.reduce((acc, prod) => acc + (parseFloat(prod.final_price) * prod.quantity), 0).toFixed(2)
+      order.order_products.reduce((acc, prod) => acc + (parseFloat(prod.final_price) * prod.quantity + prod.delivery_charge), 0).toFixed(2)
     }</p>
           <p><strong>Payment Date:</strong> {order.payment_date}</p>
           <div className="invoice-button-wrapper">

@@ -45,18 +45,7 @@ const PavamanFooter = () => {
               <li><span onClick={() => navigate('/contact')}>Contact Us</span></li>
               <li><a href="#">Pavaman B2B</a></li>
             </ul>
-          </div>
-          <div className="footer-column">
-            <h4>Policies</h4>
-            <ul>
-              <li><a href="#">Investor Relations</a></li>
-              <li><a href="#">CSR</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Shipping & Refund</a></li>
-              <li><a href="#">E-Waste Collection</a></li>
-            </ul>
-          </div>
+          </div>            
         </div>
       </div>
 

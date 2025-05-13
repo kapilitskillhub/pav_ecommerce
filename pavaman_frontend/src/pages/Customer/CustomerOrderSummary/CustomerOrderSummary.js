@@ -119,10 +119,24 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                         )}
                         <div><strong>Quantity:</strong> {order.quantity}</div>
                         <div><strong>Total Price:</strong> ₹ {(order.quantity * order.final_price).toFixed(2)}</div>
-                        {/* <div><strong>Delivery Charge:</strong> ₹ {order.deliveryCharge}</div> */}
+                       
                     </div>
                 </div>
             ))}
+
+        {orders.length > 0 && (() => {
+            const totalDeliveryCharge = orders.reduce((sum, order) => sum + (parseFloat(order.delivery_charges) || 0), 0);
+
+            const grandTotal = orders.reduce((sum, order) => sum + (order.quantity * order.final_price), 0) + totalDeliveryCharge;
+return (
+    <div className="order-total-summary">
+                <p><strong>Platform Fee:</strong> ₹0.00</p>
+                 <div><strong>Total Delivery Charges:</strong> ₹ {totalDeliveryCharge.toFixed(2)}</div>
+        <div><strong>Grand Total:</strong> ₹ {grandTotal.toFixed(2)}</div>
+           </div>
+    );
+})()}
+
 
             <div className="cart-actions">
                 <button className="cart-place-order"

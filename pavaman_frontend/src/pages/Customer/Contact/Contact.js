@@ -4,19 +4,25 @@ import './Contact.css';
 const Contact = () => {
   return (
     <div className="contact-container">
-      <h1>Contact Us</h1>
+      <h1 className="contact-header">Contact Us</h1>
 
-      <p><strong>Address:</strong><br />
-        Kapil Kavuri Hub, 2nd Floor, Financial District, Nanakramguda, Hyderabad,<br />
-        Telangana, INDIA – 500 032
-      </p>
+      <div className="contact-content">
+        <p>
+          <span className="strong-text">Address:</span><br />
+          Kapil Kavuri Hub, 2nd Floor, Financial District, Nanakramguda, Hyderabad,<br />
+          Telangana, INDIA – 500 032
+        </p>
 
-      <p><strong>Phone:</strong><br />
-        <span className="phone-number">+91 88850 30341</span><br />
-        <span className="phone-number">+91 98898 86936</span>
-      </p>
+        <p>
+          <span className="strong-text">Phone:</span><br />
+          <a href="tel:+918885030341" className="phone-number">+91 88850 30341</a><br />
+          <a href="tel:+919889886936" className="phone-number phone-number-2">+91 98898 86936</a>
+        </p>
 
-      <p><strong>Email:</strong> <a href="mailto:kapilitskillhub@gmail.com">kapilitskillhub@gmail.com</a></p>
+        <p>
+          <span className="strong-text">Email:</span> <a href="mailto:kapilitskillhub@gmail.com" className="email-link">pavaman@gmail.com</a>
+        </p>
+      </div>
     </div>
   );
 };
