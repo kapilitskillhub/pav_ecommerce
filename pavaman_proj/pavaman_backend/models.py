@@ -174,7 +174,7 @@ class OrderProducts(models.Model):
     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
     shipping_status= models.CharField(default="")
     delivery_status = models.CharField(default="")
-
+    delivery_charge= models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

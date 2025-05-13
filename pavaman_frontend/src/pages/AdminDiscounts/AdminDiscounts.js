@@ -113,7 +113,7 @@ const AdminDiscountProducts = () => {
                   <th>SubCategory Name</th>
                   <th>Image</th>
                   <th>Product Name</th>
-                  <th>SKU</th>
+                  <th>HSN</th>
                   <th>Price</th>
                   <th>Discount(%)</th>
                   <th>Final Price</th>
