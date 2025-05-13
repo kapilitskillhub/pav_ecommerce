@@ -385,6 +385,7 @@ const CustomerHeader = (onSearch) => {
           location.pathname.includes("/my-orders") ||
           location.pathname.includes("/address") ||
           location.pathname.includes("/checkout-page") ||
+          location.pathname.includes("/contact") ||
           location.pathname === "/"
         ) && (
           

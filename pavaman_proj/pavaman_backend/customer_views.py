@@ -4440,8 +4440,6 @@ def customer_cart_view_search(request):
                     product_image_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{product_image_path}"
 
  
-
-
                 cart_list.append({
                     "cart_id": item.id,
                     "product_id": product.id,
