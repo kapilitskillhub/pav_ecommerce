@@ -36,7 +36,8 @@
   flex: 2;
   flex-wrap: wrap;
   gap: 30px;
-  justify-content: space-between;
+  justify-content: space-around;
+  cursor: pointer;
 }
 
 .footer-column {
@@ -48,6 +49,9 @@
   font-size: 19px;
   margin-bottom: 10px;
   color: #f9f6f6;
+  border-bottom: 2px solid #ff9900;
+  display: inline-block;
+  padding-bottom: 5px;
 }
 
 .footer-column ul {

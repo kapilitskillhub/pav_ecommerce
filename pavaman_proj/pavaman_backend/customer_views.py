@@ -2049,7 +2049,6 @@ def order_multiple_products(request):
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
 import math
-
 @csrf_exempt
 def multiple_order_summary(request):
     if request.method == 'POST':
@@ -2079,23 +2078,6 @@ def multiple_order_summary(request):
             except CustomerAddress.DoesNotExist:
                 return JsonResponse({"error": "Address not found.", "status_code": 404}, status=404)
 
-            def parse_weight(spec_str):
-                try:
-                    # Convert string-like dict to real JSON
-                    spec_dict = json.loads(spec_str.replace('""', '"').replace("'", '"'))
-                    weight_str = spec_dict.get('weight', '').lower()
-                    match = re.match(r"([\d.]+)\s*(gm|g|gram|kg|kilogram)", weight_str)
-                    if match:
-                        value = float(match.group(1))
-                        unit = match.group(2)
-                        if unit in ['gm', 'g', 'gram']:
-                            return 'gram', value
-                        elif unit in ['kg', 'kilogram']:
-                            return 'kg', value
-                except Exception:
-                    pass
-                return None, 0
-
             order_list = []
             total_delivery_charge = 0
 
@@ -2110,38 +2092,69 @@ def multiple_order_summary(request):
                     final_price = price - discounted_amount
                     image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
                     image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
-                    # weight = parse_weight(product.specifications)
-                    # quantity = order.quantity
-
-                    # Weight parsing and delivery charge logic
-                    unit, value = parse_weight(product.specifications)
+                    
+                    unit = None
                     kg_value = 0
-                    if unit == 'gram':
-                        kg_value = value / 1000
-                    elif unit == 'kg':
-                        kg_value = value
+                    # Direct weight extraction and conversion
+                    weight_str = product.specifications.get('weight', '').lower() if isinstance(product.specifications, dict) else ''
+                    print("weight_str", weight_str)
+                    match = re.match(r"([\d.]+)\s*(gm|g|gram|kg|kilogram|kilo)", weight_str)
+                    if match:
+                        value = float(match.group(1))
+                        unit = match.group(2)
+                        if unit in ['gm', 'g', 'gram']:
+                            kg_value = value / 1000
+                        elif unit in ['kg', 'kilogram', 'kilo']:
+                            kg_value = value
+                        else:
+                            kg_value = 0
                     else:
-                        kg_value = 0   
-                            
+                        kg_value = 0
+
                     quantity = order.quantity
                     total_weight = kg_value * quantity
+                    print("total_weight", total_weight)
 
-                    if total_weight < 1:
-                        base_delivery_charge = 50
-                    else:
-                         base_delivery_charge = (math.ceil(total_weight / 10)) * 100
-                        
-
+                    # if total_weight <= 10:
+                    #     base_delivery_charge = 50
+                    # elif 10 < total_weight <= 20:
+                    #     base_delivery_charge = 150
+                    # else:
+                    #     extra_weight = total_weight - 20
+                    #     extra_blocks = math.ceil(extra_weight / 10)
+                    #     base_delivery_charge = 150 + (extra_blocks * 100)
+                    # Assume kg_value is per unit weight
                     # Add state-based charge
                     normalized_state = address.state.lower().strip()
                     if normalized_state in ['andhra pradesh', 'telangana', 'hyderabad']:
                         state_charge = 20
-                    
                     else:
                         state_charge = 100
 
+                    unit_weight = kg_value
+                    base_delivery_charge = 0
+
+                    if kg_value is not None:
+                        unit_weight = kg_value
+                        base_delivery_charge = 0
+                        for _ in range(quantity):
+                            if unit_weight <= 10:
+                                unit_charge = 50.00
+                            elif 10 < unit_weight <= 20:
+                                unit_charge = 150.00
+                            else:
+                                extra_weight = unit_weight - 20
+                                extra_blocks = math.ceil(extra_weight / 10)
+                                unit_charge = 150.00 + (extra_blocks * 100)
+                            base_delivery_charge += unit_charge
+                    else:
+                        base_delivery_charge = 0  # No weight → only state charge
+
                     delivery_charge = base_delivery_charge + state_charge
+                    order.delivery_charge = delivery_charge
+                    order.save()
                     total_delivery_charge += delivery_charge
+                    print(f"{product.product_name} - State: {normalized_state}, Base: {base_delivery_charge}, State Charge: {state_charge}, Delivery: {delivery_charge}")
 
                     order_list.append({
                         "order_id": order.id,
@@ -2162,6 +2175,8 @@ def multiple_order_summary(request):
                         "order_status": order.order_status,
                         "order_date": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                         "product_images": image_url,
+                        "weight": f"{round(total_weight, 2)} {unit}" if total_weight is not None else "N/A"
+
                     })
 
                 except OrderProducts.DoesNotExist:
@@ -2197,7 +2212,6 @@ def multiple_order_summary(request):
             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
 
 
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -2446,14 +2460,20 @@ def razorpay_callback(request):
                         product_order_id= product_order_id, 
                         invoice_number=new_invoice_number,
                     )
+                    current_paid_product_ids = [order.product_id for order in order_list]
+                    CartProducts.objects.filter(
+                        product_id__in=current_paid_product_ids,
+                        customer_id=customer_id
+                    ).delete()
+
 
                     # Get all paid products for the customer
-                    paid_product_ids = OrderProducts.objects.filter(
-                        customer_id=customer_id, order_status="Paid"
-                    ).values_list("product_id", flat=True)
+                    # paid_product_ids = OrderProducts.objects.filter(
+                    #     customer_id=customer_id, order_status="Paid"
+                    # ).values_list("product_id", flat=True)
 
-                    # Remove products from CartOrder if they exist there
-                    CartProducts.objects.filter(product_id__in=paid_product_ids, customer_id=customer_id).delete()
+                    # # Remove products from CartOrder if they exist there
+                    # CartProducts.objects.filter(product_id__in=paid_product_ids, customer_id=customer_id).delete()
                     
                     product_list = []
 
@@ -2537,7 +2557,6 @@ def razorpay_callback(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
 
 def send_html_order_confirmation(to_email, customer_name, product_list, total_amount, order_id, transaction_id):
     subject = "🧾 Order Confirmation - Payment Successful"
@@ -3357,7 +3376,8 @@ def get_payment_details_by_order(request):
                     "product_image": product_image_url,
                     "product_name":product.product_name,
                     "shipping_status":order.shipping_status,
-                    "delivery_status":order.delivery_status
+                    "delivery_status":order.delivery_status,
+                    
                     
                 })
             # customer_data=[]
@@ -3505,7 +3525,8 @@ def filter_my_order(request):
                     "delivery_status": order.delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
-                    "product_name": product.product_name
+                    "product_name": product.product_name,
+                    "delivery_charge":order.delivery_charge
                 })
 
             if order_product_list:
@@ -3621,7 +3642,8 @@ def customer_get_payment_details_by_order(request):
                     "delivery_status": order.delivery_status,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
-                    "product_name": product.product_name
+                    "product_name": product.product_name,
+                    "delivery_charge":order.delivery_charge
                 })
 
             if action == 'search' and not order_product_list:

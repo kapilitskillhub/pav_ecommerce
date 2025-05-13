@@ -527,7 +527,7 @@ const CustomerMyOrders = () => {
                             ₹{product.price} (incl. GST)
                           </p>
                         )}
-                        {product.gst && parseFloat(product.gst) > 0 && <p className="gst">GST: {product.gst}</p>}
+                        {product.gst && parseFloat(product.gst) > 0 && <p className="gst-myorder">GST: {product.gst}</p>}
 
 
 

@@ -178,9 +178,11 @@ const PaidOrderDetails = () => {
 
       <div className="product-details-table">
         <h3>Payment Order Details</h3>
+        <h3 className='product_order-id'>Product Order ID: {order?.product_order_id}</h3>
+
         {order_products?.length ? (
           <table>
-            <thead>
+            <thead className='table-order '>
               <tr>
                 <th>Image</th>
                 <th>Product Name</th>

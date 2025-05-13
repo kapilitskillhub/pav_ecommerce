@@ -223,12 +223,14 @@ const CustomerHeader = (onSearch) => {
     <>
 
       <header className="customer-header">
+        
         <div className="customer-logo">
           <img src={Logo} alt="Logo" />
         </div>
-
+        <div className="header-left">
         <div
-          className="sidebar-header"
+        
+          className={`sidebar-header ${searchInput === "" ? "shift-left" : ""}`}
           onMouseEnter={() => setIsCollapsed(false)}
           onMouseLeave={() => setIsCollapsed(true)}
         >
@@ -333,6 +335,7 @@ const CustomerHeader = (onSearch) => {
               ))}
             </ul>
           </div>
+          </div>
         </div>
 
         {/* <div className="customer-search-bar">
@@ -378,8 +381,13 @@ const CustomerHeader = (onSearch) => {
           location.pathname.includes("/categories/") ||
           location.pathname.includes("/filtered-products") ||
           location.pathname.includes("/view-cart-products") ||
+          location.pathname.includes("/profile") ||
+          location.pathname.includes("/my-orders") ||
+          location.pathname.includes("/address") ||
+          location.pathname.includes("/checkout-page") ||
           location.pathname === "/"
         ) && (
+          
             <div className="customer-search-bar">
               <input
                 type="text"
