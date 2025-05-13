@@ -154,8 +154,8 @@ const EditProduct = () => {
         </div>
         <div className="input-row">
           <div>
-            <label className="label">SKU</label>
-            <input type="text" name="sku_number" value={product.sku_number} onChange={handleChange} required className="input-field" />
+            <label className="label">HSN</label>
+            <input type="text" name="sku_nUmber" value={product.sku_number} onChange={handleChange} required className="input-field" />
           </div>
           <div>
             <label className="label">Price</label>

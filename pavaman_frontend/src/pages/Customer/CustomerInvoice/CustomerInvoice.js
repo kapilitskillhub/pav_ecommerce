@@ -140,13 +140,26 @@ const generateInvoicePDF = async (customerId, order) => {
 
 
 
-        // === Grand Total Section ===
+        // // === Grand Total Section ===
+        // const totalY = doc.lastAutoTable.finalY + 10;
+        // doc.setFont('helvetica', 'bold');
+        // doc.text(`Grand Total  ${invoice.grand_total}`, 14, totalY);
+
+        // doc.setFont('helvetica', 'normal');
+        // doc.text(`Payment Mode: ${invoice.payment_mode}`, 14, totalY + 7);
+        // === Grand Total Section (Right-Aligned) ===
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const marginRight = 14;
         const totalY = doc.lastAutoTable.finalY + 10;
+
+
         doc.setFont('helvetica', 'bold');
-        doc.text(`Grand Total  ${invoice.grand_total}`, 14, totalY);
+        doc.text(`Grand Total  ${invoice.grand_total}`, 150, totalY); // approx. right-aligned
 
         doc.setFont('helvetica', 'normal');
-        doc.text(`Payment Mode: ${invoice.payment_mode}`, 14, totalY + 7);
+        doc.text(`Payment Mode: ${invoice.payment_mode}`, 150, totalY + 7);
+
+
         // doc.text(`GST Rate: ${invoice.gst_rate}`, 14, totalY + 14);
 
         // === Signature ===

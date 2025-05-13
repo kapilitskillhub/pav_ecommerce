@@ -180,7 +180,7 @@ const ViewProducts = ({ products, setProducts }) => {
             />
             <div className="product-info">
               <p className="card-name">{product.product_name || "N/A"}</p>
-              <p className="card-code">SKU: {product.sku_number || "N/A"}</p>
+              <p className="card-code">HSN: {product.sku_number || "N/A"}</p>
               <p className="card-price">
                 <FaRupeeSign /> {product.price || "N/A"}/- (Incl GST)
               </p>

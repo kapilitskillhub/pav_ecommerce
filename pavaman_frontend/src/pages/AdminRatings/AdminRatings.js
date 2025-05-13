@@ -76,7 +76,7 @@ const AdminRatings = () => {
 const downloadExcel = async () => {
   try {
     const response = await axios.post(
-      'http://127.0.0.1:8000/download-feedback-excel', // ✅ Correct new endpoint
+      'http://127.0.0.1:8000/download-feedback-excel',
       { admin_id: adminId },
       { responseType: 'blob' }
     );
@@ -84,10 +84,10 @@ const downloadExcel = async () => {
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'feedback_report.xlsx'); // ✅ New filename
+    link.setAttribute('download', 'feedback_report.xlsx');
     document.body.appendChild(link);
     link.click();
-    link.remove(); // Clean up after click
+    link.remove();
   } catch (error) {
           displayPopup('Failed to download Excel.', "error");
 

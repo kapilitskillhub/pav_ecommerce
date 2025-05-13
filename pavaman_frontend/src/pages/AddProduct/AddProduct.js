@@ -156,8 +156,8 @@ const AddProduct = () => {
                 </div>
                 <div className="input-row">
                     <div>
-                        <label className="label">SKU</label>
-                        <input type="text" name="sku_number" placeholder="Enter SKU number" onChange={handleChange} required className="input-field" />
+                        <label className="label">HSN</label>
+                        <input type="text" name="sku_number" placeholder="Enter HSN number" onChange={handleChange} required className="input-field" />
                     </div>
                     <div>
                         <label className="label">Price</label>

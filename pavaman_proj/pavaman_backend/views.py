@@ -17,6 +17,7 @@ from openpyxl import Workbook
 from io import BytesIO
 from django.http import HttpResponse
 import pytz
+from django.db.models import Sum
 
 @csrf_exempt
 def add_admin(request):
@@ -2069,93 +2070,6 @@ def discount_products(request):
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
-
-
-# @csrf_exempt
-# def download_discount_products_excel(request):
-#     if request.method == 'POST':
-#         try:
-#             data = json.loads(request.body)
-#             admin_id = data.get('admin_id')
-
-#             if not admin_id:
-#                 return JsonResponse({"error": "Admin ID is required.", "status_code": 400}, status=400)
-
-#             products = ProductsDetails.objects.filter(admin_id=admin_id)
-
-#             if not products.exists():
-#                 return JsonResponse({
-#                     "message": "No products with discount found.",
-#                     "status_code": 200,
-#                     "admin_id": str(admin_id)
-#                 }, status=200)
-
-#             # Create Excel workbook
-#             wb = Workbook()
-#             ws = wb.active
-#             ws.title = "Products Details"
-
-#             # Define headers
-#             headers = [
-#                 "Product ID", "Product Name", "SKU Number", "Price", "Discount", "Final Price",
-#                 "Quantity", "Material File", "Description", "Specifications Count", "Specifications",
-#                 "Availability", "Product Status", "Cart Status",
-#                 "Category", "Subcategory", "Category ID", "Subcategory ID", "Created At"
-#             ]
-#             ws.append(headers)
-
-#             # Populate data
-#             for product in products:
-#                 final_price = float(product.price) - float(product.discount)
-#                  # Generate the S3 URL for material file
-#                 material_file_url = (
-#                     f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{product.material_file}"
-#                     if product.material_file else ""
-#                 )
-
-#                 ws.append([
-#                     str(product.id),
-#                     product.product_name,
-#                     product.sku_number,
-#                     float(product.price),
-#                     float(product.discount),
-#                     final_price,
-#                     product.quantity,
-#                     material_file_url,
-#                     product.description,
-#                     product.number_of_specifications,
-#                     json.dumps(product.specifications) if isinstance(product.specifications, dict) else product.specifications,
-#                     product.availability,
-#                     product.product_status,
-#                     product.cart_status,
-#                     product.category.category_name if product.category else '',
-#                     product.sub_category.sub_category_name if product.sub_category else '',
-#                     product.category_id,
-#                     product.sub_category_id,
-#                     product.created_at.strftime('%Y-%m-%d %H:%M:%S') if product.created_at else ''
-#                 ])
-
-#             # Save to buffer
-#             buffer = BytesIO()
-#             wb.save(buffer)
-#             buffer.seek(0)
-
-#             # Return Excel as response
-#             response = HttpResponse(
-#                 buffer,
-#                 content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-#             )
-#             response['Content-Disposition'] = 'attachment; filename=Products_Details.xlsx'
-#             return response
-
-#         except json.JSONDecodeError:
-#             return JsonResponse({"error": "Invalid JSON data.", "status_code": 400}, status=400)
-#         except Exception as e:
-#             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
-
-#     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-
 @csrf_exempt
 def download_discount_products_excel(request):
     if request.method == 'POST':
@@ -2251,8 +2165,6 @@ def download_discount_products_excel(request):
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-
 
 @csrf_exempt
 def apply_discount_by_subcategory_only(request):
@@ -2694,126 +2606,6 @@ def customer_growth_by_state(request):
         }, status=405)
 
 
-
-
-# from django.db.models.functions import TruncMonth
-# @csrf_exempt
-# def monthly_product_orders(request):
-#     if request.method == "POST":
-#         try:
-#             data = json.loads(request.body.decode('utf-8'))
-#             admin_id = data.get("admin_id")
-
-#             if not admin_id:
-#                 return JsonResponse({
-#                     "status_code": 400,
-#                     "message": "admin_id is required."
-#                 })
-
-#             # Monthly grouping of total products ordered by quantity
-#             monthly_data = OrderProducts.objects.filter(
-#                 admin_id=admin_id
-#             ).annotate(
-#                 month=TruncMonth('created_at')
-#             ).values(
-#                 'month'
-#             ).annotate(
-#                 total_quantity=Sum('quantity')
-#             ).order_by('month')
-
-#             # Format month as string
-#             result = [
-#                 {
-#                     "month": item["month"].strftime("%Y-%m"),
-#                     "total_quantity": item["total_quantity"]
-#                 }
-#                 for item in monthly_data
-#             ]
-
-#             return JsonResponse({
-#                 "status_code": 200,
-#                 "message": "Monthly total products ordered.",
-#                 "data": result
-#             })
-
-#         except Exception as e:
-#             return JsonResponse({
-#                 "status_code": 500,
-#                 "message": "Error occurred.",
-#                 "error": str(e)
-#             })
-#     else:
-#         return JsonResponse({
-#             "status_code": 405,
-#             "message": "Method Not Allowed. Use POST."
-#         }, status=405)
-
-
-# from django.db.models.functions import TruncMonth
-# @csrf_exempt
-# def monthly_product_orders(request):
-#     if request.method == "POST":
-#         try:
-#             data = json.loads(request.body.decode('utf-8'))
-#             admin_id = data.get("admin_id")
-
-#             if not admin_id:
-#                 return JsonResponse({
-#                     "status_code": 400,
-#                     "message": "admin_id is required."
-#                 })
-
-#             # Get all successfully paid order IDs
-#             paid_order_ids = PaymentDetails.objects.filter(
-#                 admin_id=admin_id,
-#                 razorpay_payment_id__isnull=False
-#             ).values_list("order_product_ids", flat=True)
-
-#             # Flatten the list of JSONField lists
-#             order_ids = []
-#             for item in paid_order_ids:
-#                 order_ids.extend(item)  # Because order_product_ids is a list (JSONField)
-
-#             # Monthly grouping of only paid orders
-#             monthly_data = OrderProducts.objects.filter(
-#                 admin_id=admin_id,
-#                 id__in=order_ids
-#             ).annotate(
-#                 month=TruncMonth('created_at')
-#             ).values(
-#                 'month'
-#             ).annotate(
-#                 total_quantity=Sum('quantity')
-#             ).order_by('month')
-
-            
-#             result = [
-#                 {
-#                     "month": item["month"].strftime("%Y-%m"),
-#                     "total_quantity": item["total_quantity"]
-#                 }
-#                 for item in monthly_data
-#             ]
-
-#             return JsonResponse({
-#                 "status_code": 200,
-#                 "message": "Monthly total products ordered.",
-#                 "data": result
-#             })
-
-#         except Exception as e:
-#             return JsonResponse({
-#                 "status_code": 500,
-#                 "message": "Error occurred.",
-#                 "error": str(e)
-#             })
-#     else:
-#         return JsonResponse({
-#             "status_code": 405,
-#             "message": "Method Not Allowed. Use POST."
-#         }, status=405)
-
-
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from datetime import datetime
@@ -2955,3 +2747,181 @@ def download_feedback_excel(request):
             return JsonResponse({"error": f"Server error: {str(e)}", "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST allowed.", "status_code": 405}, status=405)
+
+# @csrf_exempt
+# def product_discount_inventory_view(request):
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body)
+#             admin_id = data.get('admin_id')
+#             action = data.get('action')  # "inventory" or "discount"
+
+#             if not admin_id:
+#                 return JsonResponse({"error": "Admin ID is required.", "status_code": 400}, status=400)
+#             if not action or action not in ['inventory', 'discount']:
+#                 return JsonResponse({"error": "Valid 'action' is required: 'inventory' or 'discount'.", "status_code": 400}, status=400)
+
+#             # Only fetch products with discount > 0
+#             products = ProductsDetails.objects.filter(admin_id=admin_id, discount__gt=0)
+
+#             if not products.exists():
+#                 return JsonResponse({
+#                     "message": "No products with discount found.",
+#                     "status_code": 200,
+#                     "admin_id": str(admin_id)
+#                 }, status=200)
+
+#             product_list = []
+
+#             for product in products:
+#                 # Product image handling
+#                 if isinstance(product.product_images, list):
+#                     image_urls = [
+#                         f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{img}"
+#                         for img in product.product_images
+#                     ]
+#                 elif isinstance(product.product_images, str):
+#                     image_urls = [
+#                         f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{product.product_images}"
+#                     ]
+#                 else:
+#                     image_urls = []
+
+#                 # Material file URL
+#                 material_file_url = (
+#                     f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{product.material_file}"
+#                     if product.material_file else ""
+#                 )
+
+#                 price = float(product.price or 0)
+#                 discount = float(product.discount or 0)
+#                 gst = float(product.gst or 0)
+#                 final_price = price - (price * discount / 100)
+
+#                 product_data = {
+#                     "product_id": str(product.id),
+#                     "product_name": product.product_name,
+#                     "sku_number": product.sku_number,
+#                     "price": round(price, 2),
+#                     "gst": f"{round(gst, 2)}%",
+#                     "final_price": round(final_price, 2),
+#                     "discount": f"{round(discount)}%",
+#                     "quantity": product.quantity,
+#                     "material_file": material_file_url,
+#                     "description": product.description,
+#                     "number_of_specifications": product.number_of_specifications,
+#                     "specifications": product.specifications,
+#                     "product_images": image_urls,
+#                     "created_at": product.created_at,
+#                     "category": product.category.category_name if product.category else None,
+#                     "sub_category": product.sub_category.sub_category_name if product.sub_category else None,
+#                     "category_id": product.category_id,
+#                     "sub_category_id": product.sub_category_id,
+#                     "availability": product.availability,
+#                     "product_status": product.product_status,
+#                     "cart_status": product.cart_status,
+#                 }
+
+#                 # If action is inventory, add total quantity sold
+#                 if action == 'inventory':
+#                     total_sold = OrderProducts.objects.filter(
+#                         product_id=product.id,
+#                         order_status='Paid'
+#                     ).aggregate(total=Sum('quantity'))['total'] or 0
+#                     product_data["total_quantity_sold"] = total_sold
+
+#                 product_list.append(product_data)
+
+#             return JsonResponse({
+#                 "message": f"{action.capitalize()} products retrieved successfully.",
+#                 "products": product_list,
+#                 "status_code": 200,
+#                 "admin_id": str(admin_id)
+#             }, status=200)
+
+#         except json.JSONDecodeError:
+#             return JsonResponse({"error": "Invalid JSON data.", "status_code": 400}, status=400)
+#         except Exception as e:
+#             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
+
+#     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
+
+# @csrf_exempt
+# def download_inventory_products_excel(request):
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body)
+#             admin_id = data.get('admin_id')
+
+#             if not admin_id:
+#                 return JsonResponse({"error": "Admin ID is required.", "status_code": 400}, status=400)
+
+#             products = ProductsDetails.objects.filter(admin_id=admin_id)
+
+#             if not products.exists():
+#                 return JsonResponse({
+#                     "message": "No products found.",
+#                     "status_code": 200,
+#                     "admin_id": str(admin_id)
+#                 }, status=200)
+
+#             # Create Excel workbook
+#             wb = Workbook()
+#             ws = wb.active
+#             ws.title = "Products Inventory Details"
+
+#             # Define headers
+#             headers = [
+#                 "Product ID", "Product Name", "HSN Number", "Price", "Discount (%)", "GST (%)", "Final Price",
+#                 "Quantity", "Total Sold Quantity", "Specifications",
+#             ]
+#             ws.append(headers)
+
+#             # Populate data
+#             for product in products:
+#                 price = float(product.price)
+#                 discount = float(product.discount)
+#                 gst = float(product.gst) if hasattr(product, 'gst') and product.gst else 0
+
+#                 # Final price (after discount)
+#                 final_price = round(price - discount, 2) if price > 0 else 0
+
+#                 # Total quantity sold from OrderProducts where status is 'Paid'
+#                 total_sold = OrderProducts.objects.filter(
+#                     product_id=product.id,
+#                     order_status='Paid'
+#                 ).aggregate(total=Sum('quantity'))['total'] or 0
+
+#                 # Append row
+#                 ws.append([
+#                     str(product.id),
+#                     product.product_name,
+#                     product.sku_number,
+#                     round(price, 2),
+#                     f"{round(discount)}%",
+#                     f"{round(gst)}%",
+#                     round(final_price, 2),
+#                     product.quantity,
+#                     total_sold,
+#                     json.dumps(product.specifications) if isinstance(product.specifications, dict) else product.specifications,
+#                 ])
+
+#             # Save to buffer
+#             buffer = BytesIO()
+#             wb.save(buffer)
+#             buffer.seek(0)
+
+#             # Return as downloadable Excel file
+#             response = HttpResponse(
+#                 buffer,
+#                 content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+#             )
+#             response['Content-Disposition'] = 'attachment; filename=Products_Inventory_Details.xlsx'
+#             return response
+
+#         except json.JSONDecodeError:
+#             return JsonResponse({"error": "Invalid JSON data.", "status_code": 400}, status=400)
+#         except Exception as e:
+#             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
+
+#     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
