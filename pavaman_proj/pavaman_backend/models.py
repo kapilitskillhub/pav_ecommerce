@@ -61,6 +61,7 @@ class ProductsDetails(models.Model):
     product_status = models.IntegerField(default=1)
     cart_status = models.BooleanField(default=False)
     gst = models.FloatField(default=0.0)
+    hsn_code = models.CharField(max_length=30, default='')
 
     #product_url_id = models.CharField(default="")
 

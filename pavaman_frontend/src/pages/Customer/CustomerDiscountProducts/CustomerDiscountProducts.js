@@ -166,12 +166,14 @@ const ViewDiscountedProducts = () => {
                                     onClick={() => handleViewProductDetails(product)}
                                 >
 
+                                <div className="product-image-wrapper">
                                     <img
                                         src={product.product_image_url}
                                         alt={product.product_name}
                                         className="customer-discount-product-image"
                                         // onError={(e) => (e.target.src = defaultImage)}
                                     />
+                                    </div>
                                     <div className="customer-product-name customer-discount-section-name">
                                         {product.product_name}
                                     </div>
@@ -181,12 +183,13 @@ const ViewDiscountedProducts = () => {
                                     <div >
                                         <div className="customer-discount-section-original-price">
                                             ₹{product.price}.00 (incl. GST)
-                                        </div>
-
-                                        <div className="discount-tag">
+                                            <div className="discount-tag">
                                             {product.discount && `${product.discount} off`}
                                         </div>
+                                        </div>
+
                                         
+            
                                         <div className="add-cart-section">
                                             <span
                                                 className={`availability ${product.availability === "Out of Stock"

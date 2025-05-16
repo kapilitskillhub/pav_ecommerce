@@ -31,6 +31,7 @@
     align-items: center;
     position: relative;
     justify-content: center;
+    
 }
 
 .customer-main-image {
@@ -41,6 +42,8 @@
     height: 300px;
     width: 220px;
     height: 220px;
+    border: 2px solid #dadada ;/* Highlight border */
+    box-shadow: 0 0 10px rgba(253, 147, 59, 0.3);
 }
 
 
@@ -50,7 +53,7 @@
 }
 
 .image-arrow {
-    color: #555;
+    color: #555555;
     border: none;
     background: none;
     font-size: 28px;
@@ -69,7 +72,7 @@
     height: 50px;
     object-fit: contain;
     cursor: pointer;
-    border: 2px solid #ddd;
+    border: 2px solid #25156d;
     border-radius: 5px;
     transition: transform 0.2s;
 }

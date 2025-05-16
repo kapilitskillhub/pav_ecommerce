@@ -33,8 +33,9 @@ const AdminDiscountProducts = () => {
 
   const fetchDiscountProducts = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/discount-products', {
+      const response = await axios.post('http://127.0.0.1:8000/product-discount-inventory-view', {
         admin_id: adminId,
+        action: "discount"
       });
 
       if (response.data.status_code === 200 && response.data.products) {

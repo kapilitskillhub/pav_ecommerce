@@ -1,0 +1,57 @@
+/* Show only on mobile view */
+.mobile-profile-options {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .mobile-profile-options {
+    display: block;
+    padding: 16px;
+    background-color: #ffffff;
+    min-height: 100vh;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  .profile-header {
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .profile-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .profile-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 12px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .profile-option:hover {
+    background-color: #eaeaea;
+  }
+
+  .profile-option svg {
+    font-size: 18px;
+    color: #555;
+  }
+
+  .profile-option.logout {
+    background-color: #ffe6e6;
+    color: #d9534f;
+  }
+
+  .profile-option.logout svg {
+    color: #d9534f;
+  }
+}

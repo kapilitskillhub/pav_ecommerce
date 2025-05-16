@@ -368,13 +368,13 @@ const CustomerViewProductDetails = () => {
                                 </span>
                             </p>
                             <p className="customer-sku">SKU: {productDetails.sku_number}</p>
-                            <p className="customer-price">₹ {productDetails.final_price} /- <span>(Incl. GST)</span></p>
-                            <span className="discount-tag-product-details">
-                                            {productDetails.discount &&  parseFloat (productDetails.discount) > 0 && `${productDetails.discount} off`}
-                                        </span>
+                            <p className="customer-price">₹ {productDetails.final_price.toFixed(2)}  <span>(Incl. GST)</span></p>
+                           
                             
                             {productDetails.price !== productDetails.final_price && (
-                            <p className="customer-original-price">₹ {productDetails.price}  /- <span>(Incl. GST)</span></p>
+                            <p className="customer-original-price">₹ {productDetails.price.toFixed(2)}   <span>(Incl. GST)</span> <span className="discount-tag-product-details">
+                                            {productDetails.discount &&  parseFloat (productDetails.discount) > 0 && `${productDetails.discount} off`}
+                                        </span></p>
                         )}
                         
                             {(productDetails.availability === "Very Few Products Left" || productDetails.availability === "In Stock") && (
@@ -395,7 +395,7 @@ const CustomerViewProductDetails = () => {
 
                                 </div>
                             )}
-                            <div className="customer-options">
+                            {/* <div className="customer-options">
                                 <div className="customer-options-icons">
                                     <div>< RiCustomerService2Line /> </div>
                                     <div className="customer-icon-text">customer support</div>
@@ -412,7 +412,7 @@ const CustomerViewProductDetails = () => {
                                     <div><FaRupeeSign /></div>
                                     <div className="customer-icon-text">online payment</div>
                                 </div>
-                            </div>
+                            </div> */}
 
 
                         </div>

@@ -19,6 +19,7 @@ const EditProduct = () => {
     price: productData.price || "",
     quantity: productData.quantity || "",
     gst: productData.gst || "",
+    hsn_code:productData.hsn_code||"",
     discount: productData.discount !== undefined ? productData.discount : "",
     description: productData.description || "",
     product_images: productData.product_images || [], 
@@ -65,7 +66,8 @@ const EditProduct = () => {
       return prev;
     });
 
-    console.log(`${name} updated. Selected ${files.length} file(s).`);
+console.log(`${name} updated. Selected ${files.length} file(s).`);
+
   };
 
   const handleSubmit = async (e) => {
@@ -158,6 +160,10 @@ const EditProduct = () => {
             <input type="text" name="sku_number" value={product.sku_number} onChange={handleChange} required className="input-field" />
           </div>
           <div>
+            <label className="label">HSN</label>
+            <input type="text" name="hsn_code" value={product.hsn_code} onChange={handleChange} required className="input-field" />
+          </div>
+          <div>
             <label className="label">Price</label>
             <input type="text"  name="price" value={product.price} onChange={handleChange} required className="input-field" />
           </div>
@@ -169,7 +175,9 @@ const EditProduct = () => {
           </div>
           <div>
             <label className="label">GST</label>
-            <input type="text"  name="discount" value={product.gst} onChange={handleChange} className="input-field" />
+            <input type="text" name="gst" value={product.gst} onChange={handleChange} className="input-field" />
+
+            {/* <input type="text"  name="gst" value={product.gst} onChange={handleChange} className="input-field" /> */}
           </div>
           <div>
             <label className="label">Discount</label>

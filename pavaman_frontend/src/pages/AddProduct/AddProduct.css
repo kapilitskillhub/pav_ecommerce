@@ -6,12 +6,13 @@
 }
 
 /* Title */
-.form-title {
-    color: #000;
+.form-title-product{
+    color: #413b94;
     font-family: Inter;
-    font-size: 24px;
+    font-size: 26px;
     font-style: normal;
     font-weight: 700;
+    margin-top: 15px;
     line-height: normal;
     margin-bottom: 20px;
 }
