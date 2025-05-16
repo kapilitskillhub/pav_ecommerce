@@ -3,9 +3,13 @@ import { Link } from 'react-router-dom';
 import "./AdminRatings.css";
 import axios from 'axios';
 import PopupMessage from "../../components/Popup/Popup";
+import { useNavigate } from 'react-router-dom';
+
+
 
 const AdminRatings = () => {
   const [feedbackList, setFeedbackList] = useState([]);
+  const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,7 +38,7 @@ const AdminRatings = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ admin_id: adminId }),
+          body: JSON.stringify({ admin_id: adminId,action: "customer_rating" }),
         });
 
         const data = await response.json();
@@ -93,12 +97,17 @@ const downloadExcel = async () => {
 
   }
 };
+const navigateToAverageRatings = () => {
+  navigate("/average-ratings");
+};
+
 
 
   return (
     <div className="report-wrapper">
       <div className="discount-header">
         <h3 className="report-title heading-admin">Feedback Reports</h3>
+        <button className='rating-button' onClick={navigateToAverageRatings}>Average Rating Page</button>
         <button className='cart-place-order' onClick={downloadExcel}>Download Excel</button>
       </div>
            <div className="admin-popup">

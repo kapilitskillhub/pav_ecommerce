@@ -24,7 +24,8 @@ from pavaman_backend.views import (add_admin,admin_login,admin_logout,
     search_categories,search_subcategories,search_products,download_discount_products_excel,
     apply_discount_by_subcategory_only,order_or_delivery_status,admin_verify_otp,
     report_inventory_summary,top_buyers_report,customer_growth_by_state,
-    monthly_product_orders,download_feedback_excel,discount_products
+    monthly_product_orders,download_feedback_excel,download_average_rating_excel,
+    product_discount_inventory_view,download_inventory_products_excel
     )
 
 from pavaman_backend.customer_views import (customer_register,customer_login,view_categories_and_discounted_products,
@@ -125,6 +126,7 @@ urlpatterns = [
     path("customer-search-products",customer_search_products, name="customer_search_products"),
     path("get-payment-details-by-order",get_payment_details_by_order, name="get_payment_details_by_order"),
     path("customer-my-order",customer_get_payment_details_by_order, name="customer_get_payment_details_by_order"),
+    
     path('download-material/<int:product_id>/', download_material_file, name='download_material'),
     path('edit-customer-profile', edit_customer_profile, name='edit_customer_profile'),
     path('get-customer-profile', get_customer_profile, name='get_customer_profile'),
@@ -136,12 +138,14 @@ urlpatterns = [
     path("get-all-category-subcategory",get_all_category_subcategory, name="get_all_category_subcategory"),
     path("not-selling-products",not_selling_products, name="not_selling_products"),
     path("generate-invoice-for-customer",generate_invoice_for_customer, name="generate_invoice_for_customer"),
+    
     path("order-status-summary",admin_order_status, name="admin_order_status"),
     path('customer-cart-view-search', customer_cart_view_search, name='customer_cart_view_search'),
     path('edit-profile-mobile', edit_profile_mobile_otp_handler, name='edit_profile_mobile_otp_handler'),
     path('edit-profile-email',edit_profile_email_otp_handler,name= 'edit_profile_email_otp_handler'),
-    path('discount-products',discount_products,name= 'discount_products'),
+    # path('discount-products',discount_products,name= 'discount_products'),
     path('filter-and-sort-products',filter_and_sort_products,name= 'filter_and_sort_products'),
+    
     path('download-discount-products-excel',download_discount_products_excel,name= 'download_discount_products_excel'),
     path('apply-discount-subcategory',apply_discount_by_subcategory_only,name= 'apply_discount_by_subcategory_only'),
     path('submit-feedback-rating',submit_feedback_rating,name= 'submit_feedback_rating'),
@@ -154,8 +158,9 @@ urlpatterns = [
     path('customer-growth-by-state',customer_growth_by_state,name= 'customer_growth_by_state'),
     path('monthly-product-orders',monthly_product_orders,name= 'monthly_product_orders'),
     path('download-feedback-excel',download_feedback_excel,name= 'download_feedback_excel'),
-    # path('product_discount_inventory_view',product_discount_inventory_view,name= 'product_discount_inventory_view'),
-    # path('download_inventory_products_excel',download_inventory_products_excel,name= 'download_inventory_products_excel'),
+    path('product-discount-inventory-view',product_discount_inventory_view,name= 'product_discount_inventory_view'),
+    path('download-inventory-products-excel',download_inventory_products_excel,name= 'download_inventory_products_excel'),
+    path('download-average-rating-excel',download_average_rating_excel,name= 'download_average_rating_excel'),
 
 
 

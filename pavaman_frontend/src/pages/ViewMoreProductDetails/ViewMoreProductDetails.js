@@ -268,7 +268,7 @@ const displayPopup = (text, type = "success") => {
               </div>
               <div className="view-product-codes">
 
-                <p className="view-product-sku"><strong>HSN : </strong> {productDetails.product_details.sku_number || "N/A"}</p>
+                <p className="view-product-sku"><strong>SKU : </strong> {productDetails.product_details.sku_number || "N/A"}</p>
                 {/* <p className="view-product-category"><strong>Category: </strong>{category_name} / {sub_category_name}</p> */}
               </div>
             </div>

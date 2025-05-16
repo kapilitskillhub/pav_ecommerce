@@ -2243,6 +2243,8 @@ def create_razorpay_order(request):
                 }, status=404)
 
             total_amount = 0
+            # total_delivery_charge = 0
+            # grand_total=0
             valid_orders = []
             order_ids = [] 
             product_ids = [] 
@@ -2254,6 +2256,8 @@ def create_razorpay_order(request):
                 try:
                     order = OrderProducts.objects.get(id=order_id, customer=customer, product_id=product_id)
                     total_amount += order.final_price
+                    # total_delivery_charge+=order.delivery_charge
+                    # grand_total=total_amount + total_delivery_charge
                     order_ids.append(str(order.id))  
                     product_ids.append(str(order.product.id)) 
                     
@@ -2266,6 +2270,7 @@ def create_razorpay_order(request):
                         "quantity": order.quantity,
                         "amount": float(order.price),
                         "total_price": order.final_price,
+                        # "total_delivery_charge":total_delivery_charge,
                         "order_status": order.order_status
                     })
                 except OrderProducts.DoesNotExist:
@@ -2311,7 +2316,6 @@ def create_razorpay_order(request):
             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
 
 @csrf_exempt
 def razorpay_callback(request):
@@ -2379,6 +2383,8 @@ def razorpay_callback(request):
                 product_ids = []
                 total_quantity = 0
                 total_amount = 0
+                total_delivery_charge = 0
+                grand_total=0
 
                 first_order = None  # Reference for ForeignKey relations
 
@@ -2413,6 +2419,8 @@ def razorpay_callback(request):
                     # Calculate totals
                     total_quantity += order.quantity
                     total_amount += order.final_price
+                    total_delivery_charge +=order.deliver_chage
+                    grand_total =total_amount+ total_delivery_charge
                 try:
                     customer_address = CustomerAddress.objects.get(id=address_id, customer_id=customer_id)
                 except CustomerAddress.DoesNotExist:
@@ -2453,7 +2461,7 @@ def razorpay_callback(request):
                         razorpay_payment_id=razorpay_payment_id,
                         razorpay_signature=razorpay_signature,
                         amount=total_amount,
-                        total_amount=total_amount,
+                        total_amount=grand_total,
                         payment_type="online",
                         payment_mode=payment_mode,
                         transaction_id=transaction_id,
@@ -2467,37 +2475,17 @@ def razorpay_callback(request):
                         customer_id=customer_id
                     ).delete()
 
-
-                    # Get all paid products for the customer
-                    # paid_product_ids = OrderProducts.objects.filter(
-                    #     customer_id=customer_id, order_status="Paid"
-                    # ).values_list("product_id", flat=True)
-
-                    # # Remove products from CartOrder if they exist there
-                    # CartProducts.objects.filter(product_id__in=paid_product_ids, customer_id=customer_id).delete()
-                    
                     product_list = []
 
                     for order in order_list:
                         try:
                             product_details = ProductsDetails.objects.get(id=order.product.id)
-
-                            # Take only the first image from the list if available
-                            # image_url = (
-                            #     request.build_absolute_uri(product_details.product_images[0])
-                            #     if isinstance(product_details.product_images, list) and product_details.product_images
-                            #     else ""
-                            # )
                             image_path = product_details.product_images[0] if isinstance(product_details.product_images, list) and product_details.product_images else None
                             image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
-
-
                             product_name = product_details.product_name
-
                         except ProductsDetails.DoesNotExist:
                             image_url = ""
                             product_name = "Product Not Found"
-
                         product_list.append({
                             "image_url": image_url,
                             "name": product_name,
@@ -2509,28 +2497,21 @@ def razorpay_callback(request):
                         to_email=first_order.customer.email,
                         customer_name=f"{first_order.customer.first_name} {first_order.customer.last_name}",
                         product_list=product_list,
-                        total_amount=total_amount,
+                        total_amount=grand_total,
                         order_id=product_order_id,
                         transaction_id=transaction_id,
                         # delivery_date=(datetime.now() + timedelta(days=3)).strftime('%a, %b %d, %Y')
-                    )
-                    
-                    # Send SMS to the customer
-                                  
+                    )                    
                     mobile_no = first_order.customer.mobile_no
-                    # sms_message = f"Dear {first_order.customer.first_name} {first_order.customer.last_name},\nYour order with ID {product_order_id} has been successfully placed. Total Amount: ₹{total_amount}. Thank you for shopping with us!"
                     sms_message = (
                         f"Dear {first_order.customer.first_name} {first_order.customer.last_name},\n"
                         f"Your order (ID: {product_order_id}) has been confirmed and payment was successful."
                         f"Total Amount: ₹{total_amount}.\nThank you for shopping with us!"
                     )
-
                     try:
                         send_bulk_sms([mobile_no], sms_message)  # Pass the mobile number as a list
                     except Exception as e:
                         return JsonResponse({"error": f"Failed to send SMS: {str(e)}", "status_code": 500}, status=500)
-
-
                     return JsonResponse({
                         "message": "Payment successful for all orders!",
                         "razorpay_order_id": razorpay_order_id,
@@ -2538,7 +2519,8 @@ def razorpay_callback(request):
                         "total_orders_paid": len(order_product_ids),
                         "payment_mode": payment_mode,
                         "transaction_id": transaction_id,
-                        "total_amount": total_amount,
+                        "amount": amount,
+                        "total_amount":grand_total,
                         "order_product_ids": order_product_ids,  
                         "category_ids": category_ids,  
                         "sub_category_ids": sub_category_ids, 
@@ -2558,73 +2540,6 @@ def razorpay_callback(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-
-# def send_html_order_confirmation(to_email, customer_name, product_list, total_amount, order_id, transaction_id):
-#     subject = "🧾 Order Confirmation - Payment Successful"
-
-#     logo_url = f"{settings.AWS_S3_BUCKET_URL}/static/images/aviation-logo.png"
-
-#     product_html = ""
-#     for product in product_list:
-#         image_path = product.get('image_url', '')
-#         if not image_path.startswith('http'):
-#             image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}"
-#         else:
-#             image_url = image_path
-
-#         product_html += f"""
-#         <tr>
-#             <td style="padding: 10px;">
-#                 <img src="{image_url}" width="80" height="80" style="border-radius: 5px;" />
-#             </td>
-#             <td style="padding: 10px;">
-#                 <strong>{product['name']}</strong><br>
-#                 Qty: {product['quantity']}<br>
-#                 Price: ₹{product['price']}
-#             </td>
-#         </tr>
-#         """
-
-#     html_content = f"""
-#     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
-#         <div style="display: flex; justify-content: space-between; align-items: center;">
-#             <h2 style="color: #2E7D32; margin: 0;">Payment Successful!</h2>
-#             <img src="{logo_url}" alt="Pavaman Logo" style="max-height: 50px; text-align="start" />
-#         </div>
-        
-#         <p style="margin-top: 20px;">Hi {customer_name},</p>
-#         <p>Thank you for your order. Your payment was successful.</p>
-
-#         <p><strong>Order ID:</strong> {order_id}<br>
-#         <strong>Transaction ID:</strong> {transaction_id}<br>
-#         <strong>Total Amount Paid:</strong> ₹{total_amount}</p>
-
-#         <h3 style="border-bottom: 1px solid #ddd; padding-bottom: 5px;">Your Products</h3>
-#         <table style="width: 100%; border-collapse: collapse;">
-#             {product_html}
-#         </table>
-
-#         <p style="margin-top: 20px;">We’ll send you another update when your products are out for delivery.</p>
-
-#         <p>Regards,<br>Pavaman Team</p>
-#     </div>
-#     """
-
-#     try:
-#         email = EmailMessage(
-#             subject=subject,
-#             body=html_content,
-#             from_email=settings.DEFAULT_FROM_EMAIL,
-#             to=[to_email]
-#         )
-#         email.content_subtype = "html"
-#         email.send(fail_silently=False)
-#         return True
-#     except Exception as e:
-#         print(f"[Email Error] {e}")
-#         return False
-
 
 def send_html_order_confirmation(to_email, customer_name, product_list, total_amount, order_id, transaction_id):
     subject = "🧾 Order Confirmation - Payment Successful"
@@ -2675,7 +2590,6 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
         <p>Regards,<br>Pavaman Team</p>
     </div>
     """
-
     try:
         email = EmailMessage(
             subject=subject,
