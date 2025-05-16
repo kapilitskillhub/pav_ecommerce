@@ -139,8 +139,10 @@ const generateInvoicePDF = async (customerId, order, mode = 'download') => {
 
         // === Grand Total Section ===
         const totalY = doc.lastAutoTable.finalY + 10;
+
+
         doc.setFont('helvetica', 'bold');
-        doc.text(`Grand Total  ${invoice.grand_total}`, 14, totalY);
+        doc.text(`Grand Total  ${invoice.grand_total}`, 150, totalY); // approx. right-aligned
 
         doc.setFont('helvetica', 'normal');
         doc.text(`Payment Mode: ${invoice.payment_mode}`, 14, totalY + 7);

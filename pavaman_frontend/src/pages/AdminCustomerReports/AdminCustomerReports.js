@@ -202,7 +202,7 @@ const AdminCustomerReports = () => {
       <div className="charts-status">
 
         <div className="chart-box">
-          <h3>Yearly Revenue ({reportYear})</h3>
+          <h3>Yearly Sales ({reportYear})</h3>
           <div className="admin-popup">
             <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
           </div>

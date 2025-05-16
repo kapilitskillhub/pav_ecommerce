@@ -442,9 +442,6 @@ const searchCart = async (query) => {
                                             </span></p>)}
                                     {item.gst && parseFloat(item.gst) > 0 && <p className="gst-view-cart">GST: {item.gst}</p>}
 
-
-
-
                                 </div>
                                 <div>
 

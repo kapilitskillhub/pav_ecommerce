@@ -9,6 +9,7 @@ import { IoMdPeople } from "react-icons/io";
 import { TbReportSearch } from "react-icons/tb";
 import { RiDiscountPercentLine } from "react-icons/ri";
 import { FaStar } from "react-icons/fa";
+import { MdOutlineInventory } from "react-icons/md";
 
 const SideMenu = ({ setIsAuthenticated }) => {
     const navigate = useNavigate();
@@ -57,6 +58,12 @@ const SideMenu = ({ setIsAuthenticated }) => {
 
                 <FaStar className="sidemenu-img" />
                 <span className="sidemenu-label">Ratings</span>
+            </Link>
+            
+            <Link to="/inventory" className="sidemenu-item ">
+
+                <MdOutlineInventory className="sidemenu-img" /> 
+                <span className="sidemenu-label">Inventory</span>
             </Link>
 
             <Link to="/admin-login" className="sidemenu-item logout-link" onClick={handleLogout}>

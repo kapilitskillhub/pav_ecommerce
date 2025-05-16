@@ -34,6 +34,7 @@ import boto3
 from botocore.exceptions import ClientError
 from django.utils.timezone import now
 from collections import Counter
+import math
 
 
 def is_valid_password(password):
@@ -2048,6 +2049,7 @@ def order_multiple_products(request):
             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
+
 import math
 @csrf_exempt
 def multiple_order_summary(request):
@@ -2213,7 +2215,6 @@ def multiple_order_summary(request):
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
-
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 @csrf_exempt
@@ -2242,6 +2243,8 @@ def create_razorpay_order(request):
                 }, status=404)
 
             total_amount = 0
+            # total_delivery_charge = 0
+            # grand_total=0
             valid_orders = []
             order_ids = [] 
             product_ids = [] 
@@ -2253,6 +2256,8 @@ def create_razorpay_order(request):
                 try:
                     order = OrderProducts.objects.get(id=order_id, customer=customer, product_id=product_id)
                     total_amount += order.final_price
+                    # total_delivery_charge+=order.delivery_charge
+                    # grand_total=total_amount + total_delivery_charge
                     order_ids.append(str(order.id))  
                     product_ids.append(str(order.product.id)) 
                     
@@ -2265,6 +2270,7 @@ def create_razorpay_order(request):
                         "quantity": order.quantity,
                         "amount": float(order.price),
                         "total_price": order.final_price,
+                        # "total_delivery_charge":total_delivery_charge,
                         "order_status": order.order_status
                     })
                 except OrderProducts.DoesNotExist:
@@ -2310,7 +2316,6 @@ def create_razorpay_order(request):
             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
 
 @csrf_exempt
 def razorpay_callback(request):
@@ -2378,6 +2383,8 @@ def razorpay_callback(request):
                 product_ids = []
                 total_quantity = 0
                 total_amount = 0
+                total_delivery_charge = 0
+                grand_total=0
 
                 first_order = None  # Reference for ForeignKey relations
 
@@ -2412,6 +2419,8 @@ def razorpay_callback(request):
                     # Calculate totals
                     total_quantity += order.quantity
                     total_amount += order.final_price
+                    total_delivery_charge +=order.deliver_chage
+                    grand_total =total_amount+ total_delivery_charge
                 try:
                     customer_address = CustomerAddress.objects.get(id=address_id, customer_id=customer_id)
                 except CustomerAddress.DoesNotExist:
@@ -2452,7 +2461,7 @@ def razorpay_callback(request):
                         razorpay_payment_id=razorpay_payment_id,
                         razorpay_signature=razorpay_signature,
                         amount=total_amount,
-                        total_amount=total_amount,
+                        total_amount=grand_total,
                         payment_type="online",
                         payment_mode=payment_mode,
                         transaction_id=transaction_id,
@@ -2466,37 +2475,17 @@ def razorpay_callback(request):
                         customer_id=customer_id
                     ).delete()
 
-
-                    # Get all paid products for the customer
-                    # paid_product_ids = OrderProducts.objects.filter(
-                    #     customer_id=customer_id, order_status="Paid"
-                    # ).values_list("product_id", flat=True)
-
-                    # # Remove products from CartOrder if they exist there
-                    # CartProducts.objects.filter(product_id__in=paid_product_ids, customer_id=customer_id).delete()
-                    
                     product_list = []
 
                     for order in order_list:
                         try:
                             product_details = ProductsDetails.objects.get(id=order.product.id)
-
-                            # Take only the first image from the list if available
-                            # image_url = (
-                            #     request.build_absolute_uri(product_details.product_images[0])
-                            #     if isinstance(product_details.product_images, list) and product_details.product_images
-                            #     else ""
-                            # )
                             image_path = product_details.product_images[0] if isinstance(product_details.product_images, list) and product_details.product_images else None
                             image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
-
-
                             product_name = product_details.product_name
-
                         except ProductsDetails.DoesNotExist:
                             image_url = ""
                             product_name = "Product Not Found"
-
                         product_list.append({
                             "image_url": image_url,
                             "name": product_name,
@@ -2508,28 +2497,21 @@ def razorpay_callback(request):
                         to_email=first_order.customer.email,
                         customer_name=f"{first_order.customer.first_name} {first_order.customer.last_name}",
                         product_list=product_list,
-                        total_amount=total_amount,
+                        total_amount=grand_total,
                         order_id=product_order_id,
                         transaction_id=transaction_id,
                         # delivery_date=(datetime.now() + timedelta(days=3)).strftime('%a, %b %d, %Y')
-                    )
-                    
-                    # Send SMS to the customer
-                                  
+                    )                    
                     mobile_no = first_order.customer.mobile_no
-                    # sms_message = f"Dear {first_order.customer.first_name} {first_order.customer.last_name},\nYour order with ID {product_order_id} has been successfully placed. Total Amount: ₹{total_amount}. Thank you for shopping with us!"
                     sms_message = (
                         f"Dear {first_order.customer.first_name} {first_order.customer.last_name},\n"
                         f"Your order (ID: {product_order_id}) has been confirmed and payment was successful."
                         f"Total Amount: ₹{total_amount}.\nThank you for shopping with us!"
                     )
-
                     try:
                         send_bulk_sms([mobile_no], sms_message)  # Pass the mobile number as a list
                     except Exception as e:
                         return JsonResponse({"error": f"Failed to send SMS: {str(e)}", "status_code": 500}, status=500)
-
-
                     return JsonResponse({
                         "message": "Payment successful for all orders!",
                         "razorpay_order_id": razorpay_order_id,
@@ -2537,7 +2519,8 @@ def razorpay_callback(request):
                         "total_orders_paid": len(order_product_ids),
                         "payment_mode": payment_mode,
                         "transaction_id": transaction_id,
-                        "total_amount": total_amount,
+                        "amount": amount,
+                        "total_amount":grand_total,
                         "order_product_ids": order_product_ids,  
                         "category_ids": category_ids,  
                         "sub_category_ids": sub_category_ids, 
@@ -2560,7 +2543,6 @@ def razorpay_callback(request):
 
 def send_html_order_confirmation(to_email, customer_name, product_list, total_amount, order_id, transaction_id):
     subject = "🧾 Order Confirmation - Payment Successful"
-
     logo_url = f"{settings.AWS_S3_BUCKET_URL}/static/images/aviation-logo.png"
 
     product_html = ""
@@ -2585,13 +2567,14 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
         """
 
     html_content = f"""
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="color: #2E7D32; margin: 0;">Payment Successful!</h2>
-            <img src="{logo_url}" alt="Pavaman Logo" style="max-height: 50px; text-align="start" />
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; position: relative;">
+        <!-- Logo in top-right -->
+        <div style="text-align: right;">
+            <img src="{logo_url}" alt="Pavaman Logo" style="max-height: 60px; margin-bottom: 10px;" />
         </div>
-        
-        <p style="margin-top: 20px;">Hi {customer_name},</p>
+
+        <h2 style="color: #2E7D32; margin-top: 0;">Payment Successful!</h2>
+        <p>Hi {customer_name},</p>
         <p>Thank you for your order. Your payment was successful.</p>
 
         <p><strong>Order ID:</strong> {order_id}<br>
@@ -2604,11 +2587,9 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
         </table>
 
         <p style="margin-top: 20px;">We’ll send you another update when your products are out for delivery.</p>
-
         <p>Regards,<br>Pavaman Team</p>
     </div>
     """
-
     try:
         email = EmailMessage(
             subject=subject,
@@ -2622,6 +2603,7 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
     except Exception as e:
         print(f"[Email Error] {e}")
         return False
+
 @csrf_exempt
 def cancel_order(request):
     if request.method == 'POST':
@@ -3523,6 +3505,7 @@ def filter_my_order(request):
                     "order_status": order.order_status,
                     "shipping_status": order.shipping_status,
                     "delivery_status": order.delivery_status,
+                    "delivery_charge": order.delivery_charge,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
                     "product_name": product.product_name,
@@ -3640,6 +3623,7 @@ def customer_get_payment_details_by_order(request):
                     "order_status": order.order_status,
                     "shipping_status": order.shipping_status,
                     "delivery_status": order.delivery_status,
+                    "delivery_charge": order.delivery_charge,
                     "product_id": order.product_id,
                     "product_image": product_image_url,
                     "product_name": product.product_name,
@@ -5238,152 +5222,3 @@ def view_rating(request):
             "status_code": 405
         }, status=405)
 
-# import math
-
-# @csrf_exempt
-# def multiple_order_summary(request):
-#     if request.method == 'POST':
-#         try:
-#             data = json.loads(request.body.decode('utf-8'))
-#             order_ids = data.get('order_ids')
-#             product_ids = data.get('product_ids')
-#             customer_id = data.get('customer_id')
-#             address_id = data.get('address_id')
-
-#             if not all([order_ids, product_ids, customer_id, address_id]):
-#                 return JsonResponse({"error": "order_ids, product_ids, customer_id, and address_id are required.", "status_code": 400}, status=400)
-
-#             if len(order_ids) != len(product_ids):
-#                 return JsonResponse({"error": "Mismatch between orders and products count.", "status_code": 400}, status=400)
-
-#             try:
-#                 customer = CustomerRegisterDetails.objects.get(id=customer_id)
-#                 address = CustomerAddress.objects.get(id=address_id, customer_id=customer_id)
-
-#                 CustomerAddress.objects.filter(customer_id=customer_id).update(select_address=False)
-#                 address.select_address = True
-#                 address.save()
-
-#             except CustomerRegisterDetails.DoesNotExist:
-#                 return JsonResponse({"error": "Customer not found.", "status_code": 404}, status=404)
-#             except CustomerAddress.DoesNotExist:
-#                 return JsonResponse({"error": "Address not found.", "status_code": 404}, status=404)
-
-#             def parse_weight(spec_str):
-#                 try:
-#                     # Convert string-like dict to real JSON
-#                     spec_dict = json.loads(spec_str.replace('""', '"').replace("'", '"'))
-#                     weight_str = spec_dict.get('weight', '').lower()
-#                     match = re.match(r"([\d.]+)\s*(gm|g|gram|kg|kilogram)", weight_str)
-#                     if match:
-#                         value = float(match.group(1))
-#                         unit = match.group(2)
-#                         if unit in ['gm', 'g', 'gram']:
-#                             return 'gram', value
-#                         elif unit in ['kg', 'kilogram']:
-#                             return 'kg', value
-#                 except Exception:
-#                     pass
-#                 return None, 0
-
-#             order_list = []
-#             total_delivery_charge = 0
-
-#             for order_id, product_id in zip(order_ids, product_ids):
-#                 try:
-#                     order = OrderProducts.objects.get(id=order_id, product_id=product_id, customer_id=customer_id)
-#                     product = ProductsDetails.objects.get(id=product_id)
-
-#                     price = float(product.price)
-#                     discount = float(product.discount or 0)
-#                     discounted_amount = (price * discount) / 100
-#                     final_price = price - discounted_amount
-#                     image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
-#                     image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
-#                     # weight = parse_weight(product.specifications)
-#                     # quantity = order.quantity
-
-#                     # Weight parsing and delivery charge logic
-#                     unit, value = parse_weight(product.specifications)
-#                     kg_value = 0
-#                     if unit == 'gram':
-#                         kg_value = value / 1000
-#                     elif unit == 'kg':
-#                         kg_value = value
-#                     else:
-#                         kg_value = 0   
-                            
-#                     quantity = order.quantity
-#                     total_weight = kg_value * quantity
-
-#                     if total_weight < 1:
-#                         base_delivery_charge = 50
-#                     else:
-#                          base_delivery_charge = (math.ceil(total_weight / 10)) * 100
-                        
-
-#                     # Add state-based charge
-#                     normalized_state = address.state.lower().strip()
-#                     if normalized_state in ['andhra pradesh', 'telangana', 'hyderabad']:
-#                         state_charge = 20
-                    
-#                     else:
-#                         state_charge = 100
-
-#                     delivery_charge = base_delivery_charge + state_charge
-#                     total_delivery_charge += delivery_charge
-
-#                     order_list.append({
-#                         "order_id": order.id,
-#                         "order_name": f"Order {order.id}",
-#                         "customer_name": f"{address.first_name} {address.last_name}",
-#                         "customer_email": address.email,
-#                         "customer_mobile": address.mobile_number,
-#                         "alternate_customer_mobile": address.mobile_number,
-#                         "product_name": product.product_name,
-#                         "product_id": product_id,
-#                         "product_price": order.price,
-#                         "quantity": order.quantity,
-#                         "discount": f"{int(discount)}%" if discount else "0%",
-#                         "gst": f"{int(product.gst or 0)}%",
-#                         "final_price": round(final_price, 2),
-#                         "total_price": order.final_price,
-#                         "delivery_charges": delivery_charge,
-#                         "order_status": order.order_status,
-#                         "order_date": order.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-#                         "product_images": image_url,
-#                     })
-
-#                 except OrderProducts.DoesNotExist:
-#                     product_name = ProductsDetails.objects.filter(id=product_id).values_list('product_name', flat=True).first() or f"Product {product_id}"
-#                     return JsonResponse({"error": f"Order {order_id} with product '{product_name}' not found.", "status_code": 404}, status=404)
-#                 except ProductsDetails.DoesNotExist:
-#                     return JsonResponse({"error": f"Product with ID {product_id} not found.", "status_code": 404}, status=404)
-
-#             shipping_address = {
-#                 "address_id": address.id,
-#                 "customer_name": f"{address.first_name} {address.last_name}",
-#                 "select_address": address.select_address,
-#                 "address_type": address.address_type,
-#                 "street": address.street,
-#                 "landmark": address.landmark,
-#                 "village": address.village,
-#                 "mandal": address.mandal,
-#                 "postoffice": address.postoffice,
-#                 "district": address.district,
-#                 "state": address.state,
-#                 "pincode": address.pincode
-#             }
-
-#             return JsonResponse({
-#                 "message": "Multiple order summaries fetched successfully!",
-#                 "orders": order_list,
-#                 "shipping_address": shipping_address,
-#                 "total_delivery_charge": total_delivery_charge,
-#                 "status_code": 200
-#             }, status=200)
-
-#         except Exception as e:
-#             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-#     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)

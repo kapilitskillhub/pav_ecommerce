@@ -23,8 +23,6 @@ class CategoryDetails(models.Model):
     category_image = models.CharField(max_length=120)
     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
     category_status = models.IntegerField(default=1)
-    #category_url_id = models.CharField(default="")
-    
 
     def __str__(self):
         return self.category_name
@@ -36,7 +34,6 @@ class SubCategoryDetails(models.Model):
     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
     category = models.ForeignKey(CategoryDetails, on_delete=models.CASCADE)
     sub_category_status = models.IntegerField(default=1)
-    #sub_category_url_id = models.CharField(default="")
 
     def __str__(self):
         return self.sub_category_name
@@ -44,6 +41,7 @@ class SubCategoryDetails(models.Model):
 class ProductsDetails(models.Model):
     product_name = models.CharField(max_length=200)
     sku_number = models.CharField(max_length=100, unique=True)
+    hsn_code = models.CharField(max_length=30, default='')
     price = models.FloatField()
     quantity = models.IntegerField(default=0) 
     discount = models.FloatField(default=0.0)
@@ -80,19 +78,11 @@ class CustomerRegisterDetails(models.Model):
     verification_link = models.CharField(max_length=255, null=True, blank=True)
     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
     account_status = models.IntegerField(default=0)
-    
-    # Fields for OTP and Password Reset
     otp = models.IntegerField(null=True, blank=True)  # Store OTP
     otp_send_type = models.CharField(max_length=255, null=True, blank=True)  # Email/SMS
     reset_link = models.CharField(max_length=255, null=True, blank=True)  # Reset Token
     changed_on = models.DateTimeField(null=True, blank=True)  # Last Password Reset Time
     register_type = models.CharField(max_length=20,default='mannual_acc')
-
-    # def save(self, *args, **kwargs):
-    #     if not self.password.startswith("pbkdf2_sha256$"):
-    #         self.password = make_password(self.password)  # Ensure password is hashed
-    #     super().save(*args, **kwargs)
-
     def save(self, *args, **kwargs):
         # Prevent hashing when password is None (Google Sign-In case)
         if self.password and not self.password.startswith("pbkdf2_sha256$"):
@@ -103,7 +93,7 @@ class CustomerRegisterDetails(models.Model):
         """Check if OTP is still valid (within 2 minutes)."""
         if self.changed_on:
             expiry_time = self.changed_on + timedelta(minutes=2)
-            return timezone.now() < expiry_time  # Use timezone-aware datetime
+            return timezone.now() < expiry_time
         return False
 
     def clear_expired_otp(self):
@@ -185,36 +175,30 @@ class PaymentDetails(models.Model):
     admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
     customer = models.ForeignKey(CustomerRegisterDetails, on_delete=models.CASCADE)
     customer_address = models.ForeignKey(CustomerAddress, on_delete=models.CASCADE)
-
-    # Store multiple IDs as JSON
-    category_ids = JSONField(default=list)  # List of category IDs
-    sub_category_ids = JSONField(default=list)  # List of sub-category IDs
-    product_ids = JSONField(default=list)  # List of product IDs
-    order_product_ids = JSONField(default=list)  # List of order IDs
-
+    category_ids = JSONField(default=list)
+    sub_category_ids = JSONField(default=list)
+    product_ids = JSONField(default=list)
+    order_product_ids = JSONField(default=list)
     razorpay_order_id = models.CharField(max_length=255, unique=True)
     razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)
     razorpay_signature = models.CharField(max_length=255, blank=True, null=True)
-
     PAYMENT_TYPE_CHOICES = [
         ('online', 'Online'),
         ('offline', 'Offline'),
     ]
-    
     PAYMENT_MODE_TYPE_CHOICES = [
         ('cash', 'Cash'),
         ('upi', 'UPI'),
         ('card', 'Card'),
     ]
-
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE_CHOICES, default='online')
     payment_mode = models.CharField(max_length=40, choices=PAYMENT_MODE_TYPE_CHOICES, default='cash')
-    transaction_id = models.CharField(max_length=255, blank=True, null=True)  # Transaction ID for payment
-    quantity = models.PositiveIntegerField(default=1)  # Number of products purchased
-    created_at = models.DateTimeField(auto_now_add=True)  # To track payment time
-    product_order_id = models.CharField(default="") #manually generating unique id
+    transaction_id = models.CharField(max_length=255, blank=True, null=True)
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    product_order_id = models.CharField(default="")
     invoice_number = models.CharField(default="")
     invoice_date = models.DateTimeField(auto_now_add=True,null=True)
     order_status= models.CharField(default="")
