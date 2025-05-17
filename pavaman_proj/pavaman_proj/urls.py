@@ -25,7 +25,7 @@ from pavaman_backend.views import (add_admin,admin_login,admin_logout,
     apply_discount_by_subcategory_only,order_or_delivery_status,admin_verify_otp,
     report_inventory_summary,top_buyers_report,customer_growth_by_state,
     monthly_product_orders,download_feedback_excel,download_average_rating_excel,
-    product_discount_inventory_view,download_inventory_products_excel
+    product_discount_inventory_view,download_inventory_products_excel,
     )
 
 from pavaman_backend.customer_views import (customer_register,customer_login,view_categories_and_discounted_products,
