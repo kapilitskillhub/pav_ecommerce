@@ -173,7 +173,11 @@ const ViewProducts = ({ products, setProducts }) => {
         {products.map((product) => (
           <div key={product.product_id} className="category-card product-card">
             <img
-              src={product.product_images ||  product.product_image_url[0] || product.product_image_url}
+             src={
+  product.product_images ||
+  (Array.isArray(product.product_image_url) ? product.product_image_url[0] : product.product_image_url) ||
+  "default_image_url.jpg"
+}
               alt={product.product_name}
               className="card-image"
               onClick={() => handleProductClick(product)}

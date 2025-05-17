@@ -31,6 +31,12 @@ const CustomerMyOrders = () => {
   const [editFeedback, setEditFeedback] = useState("");
 
 
+// Add pagination states
+const [currentPage, setCurrentPage] = useState(1);
+const ordersPerPage = 10; // Number of orders to show per page
+
+
+
   const displayPopup = (text, type = "success") => {
     setPopupMessage({ text, type });
     setShowPopup(true);
@@ -412,6 +418,25 @@ const CustomerMyOrders = () => {
   }
 };
 
+// Assuming 'orders' is your full list of orders
+const indexOfLastOrder = currentPage * ordersPerPage;
+const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+const currentOrders = products.slice(indexOfFirstOrder, indexOfLastOrder);
+
+// Function to change the page
+const paginate = pageNumber => {
+  setCurrentPage(pageNumber);
+  scrollToTop(); // Call scrollToTop when navigating to a new page
+};
+const totalPages = Math.ceil(products.length / ordersPerPage);
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+
 
   return (
     <div className="my-orders-wrapper container">
@@ -509,7 +534,8 @@ const CustomerMyOrders = () => {
             {products.length === 0 ? (
               <p>No orders found.</p>
             ) : (
-              products.map((product, index) => (
+              currentOrders.map((product, index) => (
+                
                 <div className={`order-card ${product.order_product_id === selected_product_id ? 'highlight-product' : ''}`} ref={product.order_product_id === selected_product_id ? highlightedRef : null}>
                   <div className="product-summary">
                     <img src={product.product_image}
@@ -683,6 +709,21 @@ const CustomerMyOrders = () => {
           </div>
         </section>
       </div>
+        <div className="pagination-myorder">
+  <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
+  {Array.from({ length: totalPages }, (_, index) => (
+    <button
+      key={index + 1}
+      onClick={() => paginate(index + 1)}
+      className={currentPage === index + 1 ? 'active' : ''}
+    >
+      {index + 1}
+    </button>
+  ))}
+  <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+</div>
+
+
     </div>
   );
 

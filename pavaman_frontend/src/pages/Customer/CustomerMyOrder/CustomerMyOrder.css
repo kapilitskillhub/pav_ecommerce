@@ -19,6 +19,7 @@
   gap: 5px;
   flex-wrap: wrap;
   justify-content: flex-start;
+  text-transform: capitalize;
 }
 
 .breadcrumb-order span {
@@ -428,6 +429,33 @@
   /* display: inline-block; */
   margin-top: -15px;
 }
+
+
+
+.pagination-myorder {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.pagination-myorder button {
+  padding: 8px 14px;
+  border: none;
+  background-color: #eee;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.pagination-myorder button.active {
+  background-color: #4541c1;
+  color: white;
+}
+
+
+
 @media (max-width: 425px) {
   .toggle-details {
     font-size: 25px;

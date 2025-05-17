@@ -3,7 +3,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import signatureImg from '../../../assets/images/aviation-logo.png';
 
-const generateInvoicePDF = async (customerId, order) => {
+const generateInvoicePDF = async (customerId, order, mode = 'download') => {
     try {
         const response = await fetch('http://127.0.0.1:8000/generate-invoice-for-customer', {
             method: 'POST',
@@ -74,7 +74,7 @@ const generateInvoicePDF = async (customerId, order) => {
         y += 5;
         const deliveryAddress = delivery.address.split('\n');
         deliveryAddress.forEach(line => {
-            const splitLines = doc.splitTextToSize(line, 90); // limit width to avoid cutoff
+            const splitLines = doc.splitTextToSize(line, 90);
             splitLines.forEach(subLine => {
                 doc.text(subLine, 105, y);
                 y += 5;
@@ -129,7 +129,6 @@ const generateInvoicePDF = async (customerId, order) => {
                 fillColor: [245, 245, 245]
             },
             willDrawCell: (data) => {
-                // Apply fonts properly without causing layout glitches
                 if (data.section === 'head') {
                     doc.setFont('helvetica', 'bold');
                 } else if (data.section === 'body') {
@@ -138,18 +137,7 @@ const generateInvoicePDF = async (customerId, order) => {
             }
         });
 
-
-
-        // // === Grand Total Section ===
-        // const totalY = doc.lastAutoTable.finalY + 10;
-        // doc.setFont('helvetica', 'bold');
-        // doc.text(`Grand Total  ${invoice.grand_total}`, 14, totalY);
-
-        // doc.setFont('helvetica', 'normal');
-        // doc.text(`Payment Mode: ${invoice.payment_mode}`, 14, totalY + 7);
-        // === Grand Total Section (Right-Aligned) ===
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const marginRight = 14;
+        // === Grand Total Section ===
         const totalY = doc.lastAutoTable.finalY + 10;
 
 
@@ -157,20 +145,10 @@ const generateInvoicePDF = async (customerId, order) => {
         doc.text(`Grand Total  ${invoice.grand_total}`, 150, totalY); // approx. right-aligned
 
         doc.setFont('helvetica', 'normal');
-        doc.text(`Payment Mode: ${invoice.payment_mode}`, 150, totalY + 7);
-
-
-        // doc.text(`GST Rate: ${invoice.gst_rate}`, 14, totalY + 14);
+        doc.text(`Payment Mode: ${invoice.payment_mode}`, 14, totalY + 7);
 
         // === Signature ===
-        // // === Signature ===
-        // doc.setFont('helvetica', 'italic');
-        // doc.text('Authorized Signatory', 160, totalY + 25);
-
-        // Add Signature Image
-        doc.addImage(signatureImg, 'PNG', 150, totalY + 10, 40, 15); // (image, type, x, y, width, height)
-
-
+        doc.addImage(signatureImg, 'PNG', 150, totalY + 10, 40, 15);
         doc.setFont('helvetica', 'italic');
         doc.text('Authorized Signatory', 150, totalY + 35);
 
@@ -182,8 +160,14 @@ const generateInvoicePDF = async (customerId, order) => {
         doc.text('The goods sold are intended for end-user consumption and not for re-sale.', 14, footerY + 5);
         doc.text('For support, contact us at: support@yourstore.com', 14, footerY + 10);
 
-        // === Save PDF ===
-        doc.save(`Invoice_${invoice.invoice_number}.pdf`);
+        // === Output PDF ===
+        if (mode === 'view') {
+            const pdfBlob = doc.output('blob');
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+            window.open(pdfUrl, '_blank'); // Open in new tab
+        } else {
+            doc.save(`Invoice_${invoice.invoice_number}.pdf`);
+        }
 
     } catch (error) {
         console.error("PDF generation error:", error);

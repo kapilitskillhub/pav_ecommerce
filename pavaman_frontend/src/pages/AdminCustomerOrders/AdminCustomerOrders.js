@@ -3,6 +3,10 @@ import axios from "axios";
 import "./AdminCustomerOrders.css";
 import { Link } from "react-router-dom";
 import "./AdminCustomerOrders.css"
+import { FaEye } from "react-icons/fa";
+import generateInvoicePDF from '../Customer/CustomerInvoice/CustomerInvoice';
+
+
 const Report = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +60,7 @@ const Report = () => {
 
   return (
     <div className="report-wrapper">
-      <h2 className="report-title">Payment Reports</h2>
+      <h2 className="report-title">Ordered Payment Reports</h2>
       {loading && <p className="loading-text">Loading reports...</p>}
       {error && <p className="error-text">{error}</p>}
 
@@ -72,7 +76,7 @@ const Report = () => {
                   <th>Amount</th>
                   <th>Payment Method</th>
                   <th>Razorpay Order ID</th>
-                  <th>Order Status</th>
+                  <th>Invoice</th>
                   <th>Shipping Status</th>
                   <th>Delivery Status</th>
                   <th>Details</th>
@@ -92,14 +96,14 @@ const Report = () => {
                       <td className="order-table-data payment-mode">{report.payment_mode}</td>
                       <td>{orderId}</td>
                       <td className="order-table-data payment-mode">
-                        {report.order_products && report.order_products.length > 0
-                          ? report.order_products.map((product, index) => (
-                            <div key={index}>
-                              {product.order_status}
-                            </div>
-                          ))
-                          : "N/A"}
-                      </td> 
+                        <button
+                          className="invoice-button-customer-order"
+                          onClick={() => generateInvoicePDF(report.customer_id, report, 'view')}
+                          title="View Invoice"
+                        >
+                          <FaEye />
+                        </button>
+                      </td>
                       <td className="order-table-data payment-mode">
                         {report.order_products && report.order_products.length > 0
                           ? report.order_products.map((product, index) => (
@@ -108,7 +112,7 @@ const Report = () => {
                             </div>
                           ))
                           : "N/A"}
-                      </td>                     
+                      </td>
                       <td className="order-table-data payment-mode">
                         {report.order_products && report.order_products.length > 0
                           ? report.order_products.map((product, index) => (

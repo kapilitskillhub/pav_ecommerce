@@ -19,6 +19,7 @@ const EditProduct = () => {
     price: productData.price || "",
     quantity: productData.quantity || "",
     gst: productData.gst || "",
+    hsn_code:productData.hsn_code||"",
     discount: productData.discount !== undefined ? productData.discount : "",
     description: productData.description || "",
     product_images: productData.product_images || [], 
@@ -65,7 +66,8 @@ const EditProduct = () => {
       return prev;
     });
 
-    console.log(`${name} updated. Selected ${files.length} file(s).`);
+console.log(`${name} updated. Selected ${files.length} file(s).`);
+
   };
 
   const handleSubmit = async (e) => {
@@ -156,6 +158,10 @@ const EditProduct = () => {
           <div>
             <label className="label">SKU</label>
             <input type="text" name="sku_nUmber" value={product.sku_number} onChange={handleChange} required className="input-field" />
+          </div>
+          <div>
+            <label className="label">HSN</label>
+            <input type="text" name="hsn_code" value={product.hsn_code} onChange={handleChange} required className="input-field" />
           </div>
           <div>
             <label className="label">Price</label>

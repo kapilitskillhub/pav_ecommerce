@@ -17,6 +17,8 @@ const AddProduct = () => {
         quantity: "",
         discount: "",
         description: "",
+        gst:"",
+        hsn_code:"",
         category_id: category_id,
         sub_category_id: sub_category_id,
         product_images: [],
@@ -136,7 +138,7 @@ const AddProduct = () => {
 
     return (
         <div className="add-product-container">
-            <h2 className="form-title">Add Product</h2>
+            <h2 className="form-title-product">Add Product</h2>
             <div className="admin-popup">
         <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
       </div>
@@ -160,6 +162,10 @@ const AddProduct = () => {
                         <input type="text" name="sku_number" placeholder="Enter SKU number" onChange={handleChange} required className="input-field" />
                     </div>
                     <div>
+                        <label className="label">HSN</label>
+                        <input type="text" name="hsn_code" placeholder="Enter HSN" onChange={handleChange} required className="input-field" />
+                    </div>
+                    <div>
                         <label className="label">Price</label>
                         <input type="text"  name="price" placeholder="Enter price" onChange={handleChange} required className="input-field" />
                     </div>
@@ -171,8 +177,9 @@ const AddProduct = () => {
                     </div>
                     <div>
                         <label className="label">Discount</label>
-                        <input type="text"  name="discount" placeholder="Enter discount" onChange={handleChange} required className="input-field" />
+                        <input type="text"  name="discount" placeholder="Enter discount" onChange={handleChange} className="input-field" />
                     </div>
+                    
                     <div>
                         <label className="label">GST</label>
                         <input type="text" name="gst" placeholder="Enter GST" onChange={handleChange} required className="input-field" />

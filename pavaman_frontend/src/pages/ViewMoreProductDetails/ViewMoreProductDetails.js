@@ -257,8 +257,9 @@ const displayPopup = (text, type = "success") => {
                 <p className="view-product-header"> {category_name} / {sub_category_name} / <span>{product_name}</span></p>
 
                 <p className="view-product-name">{productDetails.product_details.product_name || "N/A"}</p>
-                <p className="view-product-price"> <FaRupeeSign /> {productDetails.product_details.price || "N/A"}/- (include GST)</p>
+                <p className="view-product-price"> <FaRupeeSign /> {productDetails.product_details.price || "N/A"}(include GST)</p>
                 <p className="view-product-discount"> <strong> Discount:</strong> {productDetails.product_details.discount || "N/A"}</p>
+                <p className="view-product-discount"> <strong> GST:</strong> {productDetails.product_details.gst || "N/A"}</p>
 
                 <p className="view-product-availablity" style={{
                   color: getAvailabilityColor(productDetails.product_details.availability),
@@ -269,7 +270,7 @@ const displayPopup = (text, type = "success") => {
               <div className="view-product-codes">
 
                 <p className="view-product-sku"><strong>SKU : </strong> {productDetails.product_details.sku_number || "N/A"}</p>
-                {/* <p className="view-product-category"><strong>Category: </strong>{category_name} / {sub_category_name}</p> */}
+                <p className="view-product-hsn"><strong>HSN: </strong> {productDetails.product_details.hsn_code || "N/A"}</p> 
               </div>
             </div>
           </div>

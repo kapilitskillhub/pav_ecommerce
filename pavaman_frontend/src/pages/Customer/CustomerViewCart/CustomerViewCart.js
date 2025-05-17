@@ -83,51 +83,62 @@ const CustomerViewCart = () => {
             setLoading(false);
         }
     };
+const searchCart = async (query) => {
+    setLoading(true);
+    const customer_id = localStorage.getItem("customer_id");
 
-    const searchCart = async (query) => {
-        setLoading(true);
-        const customer_id = localStorage.getItem("customer_id");
+    if (!customer_id) {
+        displayPopup(
+            <>
+                Please <Link to="/customer-login" className="popup-link">log in</Link> to search your cart.
+            </>,
+            "error"
+        );
+        setLoading(false);
+        return;
+    }
 
-        if (!customer_id) {
-            displayPopup(
-                <>
-                    Please <Link to="/customer-login" className="popup-link">log in</Link> to search your cart.
-                </>,
-                "error"
-            );
-            setLoading(false);
-            return;
-        }
+    try {
+        const response = await fetch("http://127.0.0.1:8000/customer-cart-view-search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ customer_id, product_name: query }),
+        });
 
-        try {
-            const response = await fetch("http://127.0.0.1:8000/customer-cart-view-search", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ customer_id, product_name: query }),
-            });
+        const data = await response.json();
 
-            const data = await response.json();
+        if (data.status_code === 200) {
+            // Normalize cart items to ensure price and discount values are always present
+          const normalizedItems = data.cart_items.map((item) => {
+    const discountPercent = item.discount
+        ? parseFloat(item.discount.replace('%', '')) || 0
+        : 0;
+    const discountAmount = (item.price || 0) * (discountPercent / 100);
 
-            if (data.status_code === 200) {
-                setCartItems(data.cart_items || []);
-                // setTotalPrice(data.cart_items?.reduce((acc, item) => acc + (item.final_price * item.quantity), 0) || 0);
-                setTotalPrice(
-                    data.cart_items?.reduce(
-                        (acc, item) => acc + (item.final_price * item.quantity),
-                        0
-                    ) || 0
-                );
-
-
-            } else {
-                setError(data.message || "Failed to search cart.");
-            }
-        } catch (error) {
-            setError("An unexpected error occurred during search.");
-        } finally {
-            setLoading(false);
-        }
+    return {
+        ...item,
+        price_per_item: item.price ?? item.final_price ?? 0,
+        discounted_amount: discountAmount,
     };
+});
+            setCartItems(normalizedItems);
+
+            // Calculate total price
+            setTotalPrice(
+                normalizedItems.reduce(
+                    (acc, item) => acc + (item.final_price * item.quantity),
+                    0
+                ) || 0
+            );
+        } else {
+            setError(data.message || "Failed to search cart.");
+        }
+    } catch (error) {
+        setError("An unexpected error occurred during search.");
+    } finally {
+        setLoading(false);
+    }
+};
 
     const handleDeleteCartItem = async (product_id) => {
         const customer_id = localStorage.getItem("customer_id");
@@ -178,23 +189,36 @@ const CustomerViewCart = () => {
         }
     };
 
-     const calculatePrice = (items) => {
-        return items.reduce((sum,item) => sum + item.price_per_item  * item.quantity, 0);
-    };
+    const calculatePrice = (items) => {
+    return items.reduce((sum, item) => sum + (item.price_per_item * item.quantity), 0);
+};
+
+    
 
     const calculateTotalPrice = (items) => {
         return items.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
     };
+
+     const calculateSelectedPrice = () => {
+        const selectedItems = cartItems.filter(item => selectedProducts.includes(item.product_id));
+        return selectedItems.reduce((sum, item) => sum + item.price_per_item * item.quantity, 0);
+    };
+
+    const calculateSelectedTotal = () => {
+        const selectedItems = cartItems.filter(item => selectedProducts.includes(item.product_id));
+        return selectedItems.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
+    };
+
     const calculateTotalDiscount = () => {
         return cartItems.reduce((acc, item) => acc + (item.discounted_amount || 0) * item.quantity, 0)
-            .toFixed(2);
+            ;
     };
 
     const calculateSelectedDiscount = () => {
         return cartItems
             .filter(item => selectedProducts.includes(item.product_id))
             .reduce((acc, item) => acc + (item.discounted_amount || 0) * item.quantity, 0)
-            .toFixed(2);
+            ;
     };
     const calculateTotalGST = () => {
         return cartItems
@@ -202,7 +226,7 @@ const CustomerViewCart = () => {
             const gstPercent = parseFloat(item.gst) || 0;
             return acc + item.price_per_item * item.quantity * (gstPercent / 100);
           }, 0)
-          .toFixed(2);
+          ;
       };
       const calculateSelectedGST = () => {
         return cartItems
@@ -211,7 +235,7 @@ const CustomerViewCart = () => {
             const gstPercent = parseFloat(item.gst) || 0;
             return acc + item.price_per_item * item.quantity * (gstPercent / 100);
           }, 0)
-          .toFixed(2);
+          ;
       };
 
     const handleDeleteSelectedItems = async () => {
@@ -341,16 +365,9 @@ const CustomerViewCart = () => {
         });
     };
 
-    const calculateSelectedPrice = () => {
-        const selectedItems = cartItems.filter(item => selectedProducts.includes(item.product_id));
-        return selectedItems.reduce((sum, item) => sum + item.price_per_item * item.quantity, 0);
-    };
+   
 
-    const calculateSelectedTotal = () => {
-        const selectedItems = cartItems.filter(item => selectedProducts.includes(item.product_id));
-        return selectedItems.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
-    };
-
+    
     return (
         <div className="cart-container container">
             <div className="popup-cart">
@@ -413,9 +430,10 @@ const CustomerViewCart = () => {
                                             : "in-stock"
                                         }`}>{item.availability}</p>
 
-                                    <p className="discounted-price">₹ {item.final_price.toFixed(2)} /-(incl. GST)</p>
+                                    <p className="discounted-price">₹ {item.final_price ? item.final_price.toFixed(2) : "0.00"}(incl. GST)</p>
                                     {item.price_per_item !== item.final_price && (
-                                        <p className="original-price">₹ {item.price_per_item.toFixed(2)} /-(incl. GST)
+                                        <p className="original-price">₹ {item.price_per_item ? item.price_per_item.toFixed(2) : "0.00"}
+ (incl. GST)
 
                                             <span className="discount-tag">
 
@@ -427,7 +445,8 @@ const CustomerViewCart = () => {
                                 </div>
                                 <div>
 
-                                    <p className="subtotal"><b>Subtotal: ₹ </b>{(item.final_price * item.quantity).toFixed(2)} /-</p>
+                                    <p className="subtotal"><b>Subtotal: ₹ </b>{item.final_price && item.quantity ? (item.final_price * item.quantity).toFixed(2) : "0.00"}
+ </p>
 
 
                                 </div>
@@ -457,19 +476,19 @@ const CustomerViewCart = () => {
                                 <div className="cart-prices">
                                     <div className="cart-price">
                                         <div className="cart-price-label">Price ({cartItems.length} items)</div>
-                                        <div className="cart-price-value">₹ {calculatePrice(cartItems).toFixed(2)} /-</div>
+                                        <div className="cart-price-value">₹ {calculatePrice(cartItems) ? calculatePrice(cartItems).toFixed(2) : "0.00"} </div>
                                     </div>
                                     <div className="cart-price cart-disfee">
                                         <div className="cart-price-label">Gst Amount</div>
-                                        <div className="cart-price-value">+ ₹{calculateTotalGST()} /-</div>
+                                        <div className="cart-price-value">+ ₹ {calculateTotalGST() ? calculateTotalGST().toFixed(2) : "0.00"} </div>
                                     </div>
                                     <div className="cart-price cart-disfee">
                                         <div className="cart-price-label">Discount Amount</div>
-                                        <div className="cart-price-value">- ₹{calculateTotalDiscount()} /-</div>
+                                        <div className="cart-price-value">- ₹{calculateTotalDiscount() ? calculateTotalDiscount().toFixed(2) : "0.00"} </div>
                                     </div>
                                     <div className="cart-price cart-total">
                                         <div className="cart-price-label">Total Price</div>
-                                        <div className="cart-price-value">₹ {total_price.toFixed(2)} /-</div>
+                                        <div className="cart-price-value">₹ {total_price ? total_price.toFixed(2) : "0.00"} </div>
                                     </div>
                                 </div>
                             </div>
@@ -484,19 +503,19 @@ const CustomerViewCart = () => {
                                 <div className="cart-prices">
                                     <div className="cart-price cart-payable">
                                         <div className="cart-price-label"><b>Price ({selectedProducts.length} items)</b></div>
-                                        <div className="cart-price-value"><b>₹ {calculateSelectedPrice().toFixed(2)} /-</b></div>
+                                        <div className="cart-price-value"><b>₹ {calculateSelectedPrice() ? calculateSelectedPrice().toFixed(2) : "0.00"} </b></div>
                                     </div>
                                     <div className="cart-price cart-disfee">
                                         <div className="cart-price-label">Gst Amount</div>
-                                        <div className="cart-price-value">+ ₹{calculateSelectedGST()} /-</div>
+                                        <div className="cart-price-value">+ ₹ {calculateSelectedGST() ? calculateSelectedGST().toFixed(2) : "0.00"} </div>
                                     </div>
                                     <div className="cart-price cart-disfee">
                                         <div className="cart-price-label"><b>Discount Amount</b></div>
-                                        <div className="cart-price-value">- ₹{calculateSelectedDiscount()} /-</div>
+                                        <div className="cart-price-value">- ₹{calculateSelectedDiscount() ? calculateSelectedDiscount().toFixed(2) : "0.00"} </div>
                                     </div>
                                     <div className="cart-price cart-total">
                                         <div className="cart-price-label">Total Price</div>
-                                        <div className="cart-price-value">₹ {calculateSelectedTotal().toFixed(2)} /-</div>
+                                        <div className="cart-price-value">₹ {calculateSelectedTotal() ? calculateSelectedTotal().toFixed(2) : "0.00"}</div>
                                     </div>
                                 </div>
                             </div>
