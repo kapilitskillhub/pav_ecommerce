@@ -38,7 +38,7 @@ const SignIn = ({ setIsAuthenticated }) => {
 
       if (response.data.status_code === 200) {
         setAdminEmail(email);
-        setIsOtpStep(true); // Show OTP popup
+        setIsOtpStep(true);
         showPopup("OTP sent to your registered mobile number", "success");
       } else {
         showPopup(response.data.error || "Login failed.", "error");
@@ -76,24 +76,18 @@ const SignIn = ({ setIsAuthenticated }) => {
         sessionStorage.setItem("admin_id", id);
         navigate("/admin/dashboard");
       } else {
-        // Handles invalid OTP or other backend errors
         const errorMessage = error || "OTP verification failed.";
         showPopup(errorMessage, "error");
-        setOtp(""); // clear OTP field
+        setOtp(""); 
 
       }
     } catch (err) {
-      // Handles network or unexpected errors
       const message =
         err.response?.data?.error || "Something went wrong during OTP verification.";
       showPopup(message, "error");
-      setOtp(""); // clear OTP field
-
+      setOtp(""); 
     }
   };
-  
-
-
   return (
     <div className="login-container">
       <div className="login-form-section">

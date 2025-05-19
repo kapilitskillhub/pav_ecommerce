@@ -4,12 +4,11 @@ import "../Popup/Popup.css";
 
 const PopupMessage = ({ message, type, onClose }) => {
     useEffect(() => {
-        const timer = setTimeout(onClose, 10000); // Auto-close after 10 seconds
+        const timer = setTimeout(onClose, 10000); 
         return () => clearTimeout(timer);
     }, [onClose]);
 
-    if (!message) return null; // Don't render if no message
-
+    if (!message) return null;
     return (
         <div className={`popup-message ${type}`}>
             <span className="popup-text">{message}</span>

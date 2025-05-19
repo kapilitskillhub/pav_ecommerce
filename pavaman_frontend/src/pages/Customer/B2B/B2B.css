@@ -1,0 +1,116 @@
+
+.b2b-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px 25px;
+  border: 3px solid #4450A2;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e0f0ff 0%, #c2e0ff 100%);;
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: transform 0.3s ease;
+}
+
+.b2b-container:hover {
+  transform: translateY(-5px);
+}
+.b2b-container h1 {
+  font-size: 2.4rem;
+  margin-bottom: 15px;
+  color: #4450A2;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.b2b-container p {
+  font-size: 1.15rem;
+  color: #003366;
+  line-height: 1.6;
+}
+
+.b2b-contact-box {
+  margin-top: 35px;
+  padding: 20px 25px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 115, 230, 0.15);
+  transition: box-shadow 0.3s ease;
+}
+
+.b2b-contact-box:hover {
+  box-shadow: 0 8px 20px rgba(0, 115, 230, 0.35);
+}
+
+.b2b-contact-box h2 {
+  font-size: 1.8rem;
+  color: #4450A2;
+  margin-bottom: 15px;
+  letter-spacing: 0.05em;
+}
+
+.b2b-phone {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #4450A2;
+  margin-bottom: 12px;
+  user-select: all;
+}
+
+.b2b-contact-box a {
+  color: #0056b3;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.b2b-contact-box a:hover {
+  border-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .b2b-container {
+    max-width: 90%;
+    padding: 25px 20px;
+  }
+
+  .b2b-container h1 {
+    font-size: 2rem;
+  }
+
+  .b2b-contact-box h2 {
+    font-size: 1.5rem;
+  }
+
+  .b2b-phone {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .b2b-container {
+    margin: 20px 10px;
+    padding: 20px 15px;
+    border-width: 2px;
+  }
+
+  .b2b-container h1 {
+    font-size: 1.6rem;
+  }
+
+  .b2b-container p {
+    font-size: 1rem;
+  }
+
+  .b2b-contact-box {
+    padding: 15px 15px;
+  }
+
+  .b2b-contact-box h2 {
+    font-size: 1.3rem;
+  }
+
+  .b2b-phone {
+    font-size: 1.1rem;
+  }
+}

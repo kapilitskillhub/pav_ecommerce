@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import "../ViewSubCategories/ViewSubCategories.css";
 import "../ViewCategories/ViewCategories.css";
 import AddIcon from "../../assets/images/addicon.svg";
 import { FaEdit, FaTrash, FaTimes } from "react-icons/fa";
@@ -15,7 +14,6 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Try getting from location first, fallback to sessionStorage
   const initialCategoryId = location.state?.category_id || sessionStorage.getItem("current_category_id");
   const initialCategoryName = location.state?.category_name || sessionStorage.getItem("current_category_name");
 
@@ -40,8 +38,6 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
       setError("Category ID is missing.");
       return;
     }
-
-    // Store category info in sessionStorage for persistent access
     sessionStorage.setItem("current_category_id", categoryId);
     sessionStorage.setItem("current_category_name", categoryName);
 
@@ -53,7 +49,6 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
     if (successMessage && categoryId) {
       displayPopup(successMessage, "success");
   
-      // Clean up the success message but retain category info
       navigate(location.pathname, {
         replace: true,
         state: {
@@ -141,7 +136,7 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
       
         setTimeout(() => {
           displayPopup("Subcategory deleted successfully!", "success");
-        }, 100); // slight delay allows re-render to settle
+        }, 100); 
       }
        else {
         setError(data.error || "Failed to delete subcategory.");

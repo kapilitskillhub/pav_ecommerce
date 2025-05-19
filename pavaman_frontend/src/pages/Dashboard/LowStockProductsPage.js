@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-// import "./LowStockProductsPage.css"; // make sure to create this or use existing styles
-
 const LowStockProductsPage = () => {
   const [lowStock, setLowStock] = useState([]);
   const [loading, setLoading] = useState(true);

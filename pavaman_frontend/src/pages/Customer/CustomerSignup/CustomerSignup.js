@@ -72,7 +72,6 @@ const CustomerSignup = () => {
             const response = await fetch("http://127.0.0.1:8000/customer-register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                // body: JSON.stringify(formData),
                 body: JSON.stringify({
                     ...formData,
                     mobile_no: formData.mobile_no.startsWith("+") ? formData.mobile_no : "+" + formData.mobile_no
@@ -111,11 +110,6 @@ const CustomerSignup = () => {
 
             <div className="signup-form-section customer-signup-form">
                 <img src={Logo} className="signup-logo" alt="Logo" />
-
-                {/* <div>
-                    <img src={Logo} className="signup-logo" alt="Logo" />
-                </div> */}
-
                 <div className="signup-text">Create Account</div>
                 <div className="signup-form-fields">
                 {popupMessage.text && (

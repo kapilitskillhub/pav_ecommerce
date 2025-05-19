@@ -36,10 +36,6 @@ const FilteredProducts = () => {
             console.error("Missing category_id or sub_category_id");
             return;
         }
-
-        // sessionStorage.setItem("category_id", category_id);
-        // sessionStorage.setItem("sub_category_id", sub_category_id);
-
         localStorage.setItem("category_id", category_id);
         localStorage.setItem("sub_category_id", sub_category_id);
 
@@ -55,8 +51,7 @@ const FilteredProducts = () => {
                     Please <Link to="/customer-login" className="popup-link">log in</Link> to add products to cart.
                 </>,
                 "error"
-            );
-            // navigate("/customer-login");
+            )
             return;
         }
 
@@ -66,7 +61,6 @@ const FilteredProducts = () => {
 
             return;
         }
-
         try {
             const response = await fetch("http://127.0.0.1:8000/add-cart-product", {
                 method: "POST",
@@ -113,7 +107,6 @@ const FilteredProducts = () => {
                                     src={product.product_image_url}
                                     alt={product.product_name}
                                     className="customer-product-image"
-                                    // onError={(e) => (e.target.src = defaultImage)}
                                 />
                                 <div className="customer-product-name">{product.product_name}</div>
                                 <div className="customer-discount-section-price ">₹{product.final_price}.00 (incl. GST)</div>
@@ -141,7 +134,7 @@ const FilteredProducts = () => {
                                             <BiSolidCartAdd
                                                 className="add-to-cart-button"
                                                 onClick={(e) => {
-                                                    e.stopPropagation(); // Prevents navigation when clicking on the cart icon
+                                                    e.stopPropagation(); 
                                                     handleAddCart(product.product_id);
                                                 }}
                                             />

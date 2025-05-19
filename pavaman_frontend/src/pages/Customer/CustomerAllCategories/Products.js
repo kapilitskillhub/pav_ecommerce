@@ -164,14 +164,36 @@ const AllProducts = () => {
                                 className="all-product-item"
                                 onClick={() => handleViewProductDetails(product)}
                             >
+                                <div>
                                 <img
                                     className="all-product-image"
                                     src={product.product_image_url}
                                     alt={product.product_name}
                                     // onError={(e) => (e.target.src = defaultImage)}
                                 />
+                                </div>
                                 <p className="all-product-name">{product.product_name}</p>
-                                <p className="all-product-price">₹ {product.final_price}.00</p>
+      {product.final_price === product.price ? (
+  <>
+    <p className="all-product-price">₹ {product.final_price}.00 (incl. GST)</p>
+    <div className="all-product-discount">
+      <span className="all-product-discount-price invisible-price">₹{product.price}.00 (incl. GST)</span>
+      <div className="all-discount-tag">
+        <span className="invisible-discount">--</span>
+      </div>
+    </div>
+  </>
+) : (
+  <>
+    <p className="all-product-price">₹ {product.final_price}.00 (incl. GST)</p>
+    <div className="all-product-discount">
+      <span className="all-product-discount-price">₹{product.price}.00 (incl. GST)</span>
+      <div className="all-discount-tag">
+        {product.discount ? `${product.discount} off` : <span className="invisible-discount">--</span>}
+      </div>
+    </div>
+  </>
+)}
                                 <p className="all-product-availability">
                                     <span
                                         className={`availability ${

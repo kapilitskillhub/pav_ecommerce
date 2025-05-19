@@ -22,19 +22,17 @@ const CustomerMyOrders = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [deliveryStatus, setDeliveryStatus] = useState("");
   const [orderTime, setOrderTime] = useState("");
-  const [showReviewFormFor, setShowReviewFormFor] = useState(null); // product.order_product_id
+  const [showReviewFormFor, setShowReviewFormFor] = useState(null);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
 
-  const [editReviewFor, setEditReviewFor] = useState(null); // order_product_id
+  const [editReviewFor, setEditReviewFor] = useState(null); 
   const [editRating, setEditRating] = useState(0);
   const [editFeedback, setEditFeedback] = useState("");
 
 
-// Add pagination states
 const [currentPage, setCurrentPage] = useState(1);
-const ordersPerPage = 10; // Number of orders to show per page
-
+const ordersPerPage = 10; 
 
 
   const displayPopup = (text, type = "success") => {
@@ -57,7 +55,6 @@ const ordersPerPage = 10; // Number of orders to show per page
     if (!customerId) return;
 
     try {
-      // Fetch orders
       const response = await fetch('http://127.0.0.1:8000/customer-my-order', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -75,8 +72,6 @@ const ordersPerPage = 10; // Number of orders to show per page
             flatProducts.push({ ...product, order });
           });
         });
-
-        // Now fetch ratings
         const ratingResponse = await fetch('http://127.0.0.1:8000/view-rating', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -94,8 +89,6 @@ const ordersPerPage = 10; // Number of orders to show per page
             };
           });
         }
-
-        // Merge ratings into products
         const productsWithRatings = flatProducts.map(product => {
           const ratingInfo = ratingsMap[product.order_product_id] || {};
           return {
@@ -105,7 +98,6 @@ const ordersPerPage = 10; // Number of orders to show per page
           };
         });
 
-        // Bring selected product to the top
         const sortedProducts = productsWithRatings.sort((a, b) => {
           return a.order_product_id === selected_product_id ? -1 : b.order_product_id === selected_product_id ? 1 : 0;
         });
@@ -192,8 +184,6 @@ const ordersPerPage = 10; // Number of orders to show per page
             };
           });
         }
-
-        // Merge ratings into products
         const productsWithRatings = flatProducts.map(product => {
           const ratingInfo = ratingsMap[product.order_product_id] || {};
           return {
@@ -272,8 +262,7 @@ const ordersPerPage = 10; // Number of orders to show per page
 
       const result = await response.json();
 
-      if (response.ok) {
-        // alert("Thank you! Your review has been submitted.");
+      if (response.ok) {;
         displayPopup("Thank you! Your review has been submitted.", "success");
 
         setProducts((prevProducts) =>
@@ -291,17 +280,13 @@ const ordersPerPage = 10; // Number of orders to show per page
         setShowReviewFormFor(null);
         setRating(0);
         setFeedback("");
-        // Optionally refresh product list
       } else {
         displayPopup(result.error || "Failed to submit review.", "error");
-
-        // alert(result.error || "Failed to submit review.");
       }
     } catch (error) {
       console.error("Error submitting review:", error);
       displayPopup("An error occurred while submitting your review.", "error");
 
-      // alert("An error occurred while submitting your review.");
     }
   };
 
@@ -327,8 +312,6 @@ const ordersPerPage = 10; // Number of orders to show per page
 
       if (response.ok) {
         displayPopup("Your review has been updated.", "success");
-
-        // alert("Your review has been updated.");
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.order_product_id === product.order_product_id
@@ -343,17 +326,13 @@ const ordersPerPage = 10; // Number of orders to show per page
         setEditReviewFor(null);
         setEditRating(0);
         setEditFeedback("");
-        // Optionally reload or refresh product list
       } else {
         displayPopup(result.error || "Failed to update review.", "error");
-
-        // alert(result.error || "Failed to update review.");
       }
     } catch (error) {
       console.error("Error updating review:", error);
       displayPopup("An error occurred while updating your review.", "error");
 
-      // alert("An error occurred while updating your review.");
     }
   };
 
@@ -379,8 +358,6 @@ const ordersPerPage = 10; // Number of orders to show per page
           flatProducts.push({ ...product, order });
         });
       });
-
-      // Fetch ratings
       const ratingResponse = await fetch('http://127.0.0.1:8000/view-rating', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -418,15 +395,13 @@ const ordersPerPage = 10; // Number of orders to show per page
   }
 };
 
-// Assuming 'orders' is your full list of orders
 const indexOfLastOrder = currentPage * ordersPerPage;
 const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
 const currentOrders = products.slice(indexOfFirstOrder, indexOfLastOrder);
 
-// Function to change the page
 const paginate = pageNumber => {
   setCurrentPage(pageNumber);
-  scrollToTop(); // Call scrollToTop when navigating to a new page
+  scrollToTop(); 
 };
 const totalPages = Math.ceil(products.length / ordersPerPage);
 
@@ -446,8 +421,6 @@ const scrollToTop = () => {
       </div>
 
       <div className="order-page-container">
-        {/* Sidebar Filters */}
-        {/* Toggle Filters for Mobile */}
         {isMobile && (
           <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
             {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
@@ -459,7 +432,6 @@ const scrollToTop = () => {
 
           <div className="filter-section">
             <div className='filter-header'>ORDER STATUS</div>
-            {/* {["On the way", "Delivered", "Cancelled", "Returned"].map(status => ( */}
             {["On the way", "Delivered"].map(status => (
 
               <label key={status}>
@@ -495,11 +467,8 @@ const scrollToTop = () => {
           </div>
 
         </aside>
-
-
-        {/* Orders Section */}
         <section className="orders-section">
-          {/* Search Bar */}
+  
           <div className="orders-search">
             <input
               type="text"
@@ -517,8 +486,6 @@ const scrollToTop = () => {
 
           </div>
 
-
-          {/* Heading */}
           <h2 className="heading-my-order">My Orders</h2>
           <div className="popup-cart">
             {showPopup && (
@@ -529,7 +496,7 @@ const scrollToTop = () => {
               />
             )}
           </div>
-          {/* Order Cards */}
+
           <div className="orders-list">
             {products.length === 0 ? (
               <p>No orders found.</p>
@@ -555,9 +522,6 @@ const scrollToTop = () => {
                         )}
                         {product.gst && parseFloat(product.gst) > 0 && <p className="gst-myorder">GST: {product.gst}</p>}
 
-
-
-                        {/* <p>{product.shipping_status}</p> */}
                         <p className={product.delivery_status === "Delivered"
                           ? "delivery_status"
                           : product.shipping_status === "Shipped"
@@ -569,7 +533,7 @@ const scrollToTop = () => {
                               ? "Shipped, Item will be delivered soon"
                               : "Order Placed. Item will be shipped soon"}
                         </p>
-                        {console.log(product.delivery_status, product.rating)} {/* Log delivery status and rating */}
+                        {console.log(product.delivery_status, product.rating)} 
 
                         {product.delivery_status === "Delivered" && product.rating && (
                           <div className="product-rating">
@@ -588,7 +552,6 @@ const scrollToTop = () => {
                           </div>
                         )}
 
-                        {/* Review Form */}
                         {showReviewFormFor === product.order_product_id && (
                           <div className="review-form">
                             <div className="stars-display">

@@ -29,12 +29,10 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
     const [showPopup, setShowPopup] = useState(false);
     const [loading, setLoading] = useState(false);
     const customer_id = localStorage.getItem("customer_id");
-
-    // Close when clicking outside
     useEffect(() => {
         function handleClickOutside(event) {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-                onEditCompleted(""); // Call cancel logic
+                onEditCompleted(""); 
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -151,25 +149,15 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
 
                     <div className="form-row">
                         <div className="input-group">
-                            {/* <input
-                                className="input-text-field"
-                                type="text"
-                                name="mobile_number"
-                                value={formData.mobile_number}
-                                onChange={handleChange}
-                                required
-                            /> */}
-
+                       
                         <label>Mobile Number <span className="required-star">*</span></label>
                             <PhoneInput
                                 country={"in"}
                                 value={formData.mobile_number}
                                 onChange={(value) => handlePhoneChange(value, "mobile_number")}
                                 inputProps={{ name: "mobile_number", required: true }}
-                                // placeholder="Mobile Number"
                                 required
                             />
-                            {/* <label>Mobile Number <span className="required-star">*</span></label> */}
                         </div>
                         <div className="input-group">
                         <label>Alternate Mobile (Optional)</label>
@@ -179,7 +167,6 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
                                 onChange={(value) => handlePhoneChange(value, "alternate_mobile")}
                                 inputProps={{ name: "alternate_mobile" }}
                             />
-                            {/* <label>Alternate Mobile (Optional)</label> */}
                         </div>
                     </div>
 

@@ -8,12 +8,14 @@ import axios from "axios";
 const CustomerProfileOptions = () => {
   const navigate = useNavigate();
   const [customerName, setCustomerName] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const customerId = localStorage.getItem("customer_id"); // get ID from localStorage
+    const customerId = localStorage.getItem("customer_id");
     if (customerId) {
+      setIsLoggedIn(true);
       axios
-        .get(`http://127.0.0.1:8000/get-customer-profile/${customerId}/`) // send customerId in URL
+        .get(`http://127.0.0.1:8000/get-customer-profile/${customerId}/`)
         .then((response) => {
           const data = response.data;
           if (data.first_name && data.last_name) {
@@ -25,13 +27,14 @@ const CustomerProfileOptions = () => {
           console.error("Error fetching customer profile:", error);
         });
     } else {
-      // No customer ID in localStorage
+      setIsLoggedIn(false);
       setCustomerName("Guest");
     }
   }, []);
 
   const handleLogout = () => {
     localStorage.clear();
+    setIsLoggedIn(false);
     navigate("/login");
   };
 
@@ -41,25 +44,45 @@ const CustomerProfileOptions = () => {
         <h2>Hello, {customerName || "Guest"} 👋</h2>
       </div>
 
-      <div className="profile-option" onClick={() => navigate("/profile")}>
-        <span>My Profile</span>
-        <IoIosArrowForward />
-      </div>
+      {isLoggedIn ? (
+        <>
+          <div className="profile-option" onClick={() => navigate("/profile")}>
+            <span>My Profile</span>
+            <IoIosArrowForward />
+          </div>
 
-      <div className="profile-option" onClick={() => navigate("/my-orders")}>
-        <span>My Orders</span>
-        <IoIosArrowForward />
-      </div>
+          <div className="profile-option" onClick={() => navigate("/my-orders")}>
+            <span>My Orders</span>
+            <IoIosArrowForward />
+          </div>
 
-      <div className="profile-option" onClick={() => navigate("/address")}>
-        <span>Address</span>
-        <IoIosArrowForward />
-      </div>
+          <div className="profile-option" onClick={() => navigate("/address")}>
+            <span>Address</span>
+            <IoIosArrowForward />
+          </div>
 
-      <div className="profile-option logout" onClick={handleLogout}>
-        <span>Logout</span>
-        <FiLogOut />
-      </div>
+          <div className="profile-option" onClick={() => navigate("/contact")}>
+            <span>Contact</span>
+            <IoIosArrowForward />
+          </div>
+
+          <div className="profile-option logout" onClick={handleLogout}>
+            <span>Logout</span>
+            <FiLogOut />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="profile-option" onClick={() => navigate("/customer-login")}>
+            <span>Login</span>
+            <IoIosArrowForward />
+          </div>
+          <div className="profile-option" onClick={() => navigate("/customer-login")}>
+            <span>Signup</span>
+            <IoIosArrowForward />
+          </div>
+        </>
+      )}
     </div>
   );
 };

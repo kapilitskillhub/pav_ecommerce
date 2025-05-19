@@ -7,10 +7,9 @@ const CustomerMobileVerification = () => {
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const location = useLocation();
     const navigate = useNavigate();
-    // const userId = 1
     const userId = "17";
 
-    console.log("User ID in Mobile Verification:", userId); // Debugging
+    console.log("User ID in Mobile Verification:", userId);
 
     if (!userId) {
         navigate("/customer-login");
@@ -29,7 +28,7 @@ const CustomerMobileVerification = () => {
                 mobile_no: mobile,
             });
 
-            console.log("Submit Mobile Response:", response.data); // Debugging
+            console.log("Submit Mobile Response:", response.data);
 
             if (response.data.message) {
                 setPopupMessage({ text: response.data.message, type: "success" });

@@ -21,3 +21,14 @@
     cursor: pointer;
     
   }
+  .cart-place-order-average-btn {
+    width: 196px;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    height: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color:#4450A2;
+
+}

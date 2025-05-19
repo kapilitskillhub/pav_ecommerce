@@ -47,17 +47,6 @@ const AdminAverageRatings = () => {
       setError(data.error || 'An error occurred');
       displayPopup(data.error || 'An error occurred', "error");
 }
-
-      //   if (response.ok) {
-      //     const startIndex = (currentPage - 1) * itemsPerPage;
-      //     const paginatedData = data.feedback.slice(startIndex, startIndex + itemsPerPage);
-      //     setFeedbackList(paginatedData);
-      //     setTotalPages(Math.ceil(data.feedback.length / itemsPerPage));
-      //   } else {
-      //     setError(data.error || 'An error occurred');
-      // displayPopup(data.error || 'An error occurred', "error");
-
-        // }
       } catch (err) {
         setError('Server error: ' + err.message);
       displayPopup('Server error: ' + err.message, "error");
@@ -128,9 +117,6 @@ const downloadExcel = async () => {
                   <th>SKU</th>
                   <th>HSN</th>
                   <th>Average Rating</th>
-
-                 
-                  
                 </tr>
               </thead>
               <tbody>
@@ -145,21 +131,12 @@ const downloadExcel = async () => {
                     <td className="order-table-data">{item.HSN}</td>
                     <td className="order-table-data">{item.average_rating}</td>
 
-                   
-
-                    {/* <td className="order-table-data">{item.feedback}</td>
-                    <td className="order-table-data">{item.created_at}</td>
-                    <td className="order-table-data">{item.customer_name}</td>
-                    <td className="order-table-data text-style">{item.customer_email}</td> */}
-
-
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          {/* Pagination */}
           <div className="pagination-container">
             <button
               onClick={prevPage}

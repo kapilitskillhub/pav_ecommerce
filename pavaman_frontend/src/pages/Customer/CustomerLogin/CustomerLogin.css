@@ -2,7 +2,6 @@
     display: flex;
     justify-content: center;
     height: auto;
-    /* max-height: 750px; */
     width: min(90%, 1440px);
     margin: 50px auto;
     border-radius: 20px;
@@ -33,7 +32,6 @@
     object-fit: cover;
     height: 500px;
     max-width: 581px;
-    /* max-height: 500px; */
 }
 
 .customer-login-form-fields {
@@ -64,7 +62,6 @@
     height: 54px;
     border-radius: 20px;
     background: #4450A2;
-    /* margin: 30px auto; */
 }
 
 
@@ -174,8 +171,6 @@
     background: none;
     border: 1px solid #4450A2;
     font-size: 16px;
-    /* cursor: pointer; */
-    /* color: #007bff; */
     width: 160px;
     height: 54px;
     border-radius: 20px;
@@ -207,7 +202,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -231,25 +226,6 @@
     font-size: 20px;
     margin-bottom: 10px;
 }
-/* 
-.mobile-popup-content button {
-    margin: 10px 5px;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 9px;
-    background-color: #0077ff;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.mobile-popup-content button:last-child {
-    background-color: #dc3545;
-}
-
-.mobile-popup-content button:hover {
-    opacity: 0.8;
-} */
 
 .forgot-password{
     color: red;
@@ -257,15 +233,13 @@
 }
 
 .phone-input-otp{
-    /* margin: auto; */
     margin-bottom: 20px;
     margin-left: 30px;
     border-radius: 20px;
 }
 .react-tel-input {
     position: relative;
-    width: 100%; /* Let it scale */
-    /* max-width: 300px; */
+    width: 100%; 
 }
 .react-tel-input .form-control {
     position: relative;
@@ -310,7 +284,6 @@
 .forgot-phone-input-otp{
     margin: 20px auto;
 }
-/* Responsive design */
 @media screen and (max-width: 500px) {
     .react-tel-input {
         max-width: 100%;
@@ -324,13 +297,12 @@
         font-size: 14px;
         height: 32px;
         padding-left: 44px;
-        /* right: 27px ; */
     }
 
     .react-tel-input .selected-flag {
         width: 34px;
         padding-left: 6px;
-        /* left: -30px; */
+    
     }
 }
 .otp-verification-popup,.forgot-password-popup {
@@ -346,7 +318,6 @@
     z-index: 1000;
 }
 
-/* Popup Box */
 .popup-content {
     background: linear-gradient(to right,#b9caf7, #838486); 
     padding: 25px;
@@ -466,19 +437,6 @@
   
 }
 
-
-/* .verify_cancel{
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    gap: 10px;
-
-} */
-
 .verifyOTP_buttons{
 
     display: flex;
@@ -496,7 +454,6 @@
     gap: 10px;   
 }
 
-/* {forget_Password_buttons} */
 .sendotp {
     background: #4450A2;
     color: white;
@@ -522,7 +479,6 @@
     transform: scale(0.95); 
 }
 
-/* {OTP verification_buttons} */
 .verifyOTP{
     background: #4450A2;
     color: white;
@@ -530,16 +486,13 @@
     padding-bottom: 7px 12px;
     border-radius: 20px;  
 }
-/* .verify_cancel:hover{
-    transform: scale(1.05);
-} */
+
 
 .verifyOTP:hover{
     background: #4450A2;
     transform: scale(1.0);
 }
 
-/* {reset_buttons} */
  .reset_password{
     background: #4450A2;
     color: white;
@@ -596,14 +549,8 @@
   transform: translate(-50%, -50%);
   padding: 20px;
   border-radius: 10px;
-  
- 
-    
   }
 
-
-
-  /* OTP verification box */
   .box {
     background-color: white;
     padding: 30px;
@@ -620,15 +567,13 @@
     margin-bottom: 20px;
   }
   
-  /* OTP input container */
   .otp-container {
     display: flex;
     justify-content: center;
     gap: 5px;
     margin-bottom: 20px;
   }
-  
-  /* OTP input boxes */
+ 
   .otp-input {
     width: 45px;
     height: 45px;
@@ -644,7 +589,6 @@
     background-color: #3b35c4;
   }
   
-  /* Resend text */
   .resend-container {
     text-align: center;
     margin-top: 10px;
@@ -670,7 +614,6 @@
   }
 
   .password-tool-tip{
-        /* position: absolute; */
         background: #fff;
         color: #333;
         padding: 8px;
@@ -780,7 +723,7 @@
     }
     .customer-login-container{
         align-items: center;
-        /* padding: 10px; */
+
     }
     .customer-login-label{
         font-size: 16px;

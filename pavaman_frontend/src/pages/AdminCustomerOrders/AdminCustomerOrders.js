@@ -46,8 +46,6 @@ const Report = () => {
 
     fetchReports();
   }, []);
-
-  // Pagination logic
   const indexOfLastReport = currentPage * reportsPerPage;
   const indexOfFirstReport = indexOfLastReport - reportsPerPage;
   const currentReports = reports.slice(indexOfFirstReport, indexOfLastReport);
@@ -85,8 +83,6 @@ const Report = () => {
               <tbody>
                 {currentReports.map((report, index) => {
                   const orderId = report.razorpay_order_id;
-                  // const status = statusMap[orderId] || {};
-
                   return (
                     <tr key={index}>
                       <td className="order-table-data">{indexOfFirstReport + index + 1}</td>
@@ -122,38 +118,6 @@ const Report = () => {
                           ))
                           : "N/A"}
                       </td>
-
-
-                      {/* Order Status */}
-                      {/* <td>
-                        {status.dispatched ? (
-                          <span className="status-tag dispatched">Dispatched</span>
-                        ) : (
-                          <input
-                            type="checkbox"
-                            onChange={() => handleOrderDispatch(orderId)}
-                            checked={false}
-                          />
-                        )}
-                      </td> */}
-
-                      {/* Delivery Status */}
-                      {/* <td>
-                        {status.dispatched ? (
-                          status.delivered ? (
-                            <span className="status-tag delivered">Delivered</span>
-                          ) : (
-                            <input
-                              type="checkbox"
-                              onChange={() => handleOrderDelivery(orderId)}
-                              checked={false}
-                            />
-                          )
-                        ) : (
-                          <span className="status-tag disabled">--</span>
-                        )}
-                      </td> */}
-
                       <td>
                         <Link to={`/admin-order-details/${orderId}`} className="view-link">
                           View
@@ -166,8 +130,6 @@ const Report = () => {
 
             </table>
           </div>
-
-          {/* Pagination */}
           <div className="pagination-container">
             <button
               onClick={prevPage}

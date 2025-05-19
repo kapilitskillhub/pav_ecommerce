@@ -16,9 +16,7 @@
 .customer-product-card{
     border: 1px solid rgba(0, 0, 0, .125);
     border-radius: 22px;
-    /* padding: 16px; */
     margin: 16px auto;
-    /* display: flex; */
     flex-direction: column;
     justify-content: space-between;
 }
@@ -78,13 +76,6 @@
 
 .discount-section .customer-product-card{
     padding: 0px;
-
-    /* .customer-product-image,
-    .customer-discount-section-name,
-    .customer-discount-section-price,
-    .add-cart-section{
-        margin: 16px auto;
-    } */
 }
 
 .filter-sort-section{
@@ -95,8 +86,6 @@
 }
 
 .sorting-section{
-  
-        /* justify-content: flex-end; */
         border: 2px solid grey;
         border-radius: 20px;
         height: 40px;
@@ -122,7 +111,6 @@
 
 .sorting-section input{
     font-size: 16px;
-    /* color: grey; */
 }
 @media (max-width: 1440px) {
     .customer-products-section {

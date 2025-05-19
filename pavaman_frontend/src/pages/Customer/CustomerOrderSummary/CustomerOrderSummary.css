@@ -51,12 +51,6 @@
     color: #4450A2;
 }
 
-
-/* .price-section {
-    display: flex;
-    align-items: center;
-    margin-top: 5px;
-} */
 .order-discount-price {
     font-size: 16px;
 
@@ -70,7 +64,7 @@
     text-decoration: line-through;
 }
 .order-total-summary {
-  background-color: #f0f4fb; /* light background */
+  background-color: #f0f4fb;
   padding: 15px 20px;
   text-align: left;
   font-size: 16px;

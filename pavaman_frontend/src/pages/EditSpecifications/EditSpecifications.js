@@ -9,7 +9,6 @@ const EditSpecification = () => {
   const location = useLocation();
   const { admin_id, category_id, sub_category_id, product_id, specifications } = location.state || {};
 
-  // Convert object to array format for editing
   const initialSpecs = specifications
     ? Object.entries(specifications).map(([name, value]) => ({ name, value }))
     : [];
@@ -51,7 +50,7 @@ const EditSpecification = () => {
         displayPopup("Specifications updated successfully!","success");
         setTimeout(() => {
         navigate(-1);
-      }, 2000); // Go back to product details page
+      }, 2000); 
       } else {
         displayPopup("Failed to update specifications.","error");
       }
@@ -74,7 +73,7 @@ const EditSpecification = () => {
               type="text"
               value={spec.name}
               onChange={(e) => handleChange(index, "name", e.target.value)}
-              readOnly // Prevent name editing
+              readOnly 
             />
             <label>Value:</label>
             <input

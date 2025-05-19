@@ -1,18 +1,16 @@
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
-const { Range } = Slider; // Fix for import
+const { Range } = Slider; 
 
 const PriceSlider = ({ minPrice, maxPrice, setMinPrice, setMaxPrice }) => {
     const handleSliderChange = (values) => {
         setMinPrice(values[0]);
         setMaxPrice(values[1]);
     };
-
     return (
         <div className="price-filter-slider">
             <h4 className="price-label">PRICE</h4>
-
             <Range
                 min={0}
                 max={10000}

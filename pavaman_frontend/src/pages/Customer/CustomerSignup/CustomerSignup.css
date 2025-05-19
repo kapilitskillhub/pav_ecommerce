@@ -11,7 +11,6 @@
 }
 
 .signup-logo {
-    /* height: 100%; */
     max-width: 330px;
     margin-top: 50px;
     margin-left: -24px;
@@ -33,7 +32,6 @@
     object-fit: cover;
     height: 500px;
     max-width: 581px;
-    /* max-height: 500px; */
 }
 
 .signup-form-fields {
@@ -47,7 +45,6 @@
     border-radius: 20px;
     border: 1px solid #D9D9D9;
     height: 50px;
-    /* margin-top: 8px; */
     padding: 10px;
 }
 
@@ -65,7 +62,6 @@
     height: 54px;
     border-radius: 20px;
     background: #4450A2;
-    /* margin: 30px auto; */
 }
 
 
@@ -136,7 +132,6 @@
 .signup-phone-input {
     width: 80% !important;
     position: relative;
-    /* margin-top: 8px; */
 }
 
 .signup-phone-input .react-tel-input {
@@ -156,7 +151,6 @@
 
 .signup-phone-input .flag-dropdown {
     border-radius: 20px 0 0 20px !important;
-    /* border: 1px solid #D9D9D9 !important; */
     height: 50px !important;
 }
 
@@ -199,7 +193,6 @@
 
     .signup-image-section {
         width: 100%;
-        /* margin: 50px 10px; */
         border-radius: 20px;
     }
 
@@ -251,7 +244,6 @@
     }
     .signup-container{
         align-items: center;
-        /* padding: 10px; */
     }
     .signup-label{
         font-size: 16px;

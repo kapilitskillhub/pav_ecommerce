@@ -19,20 +19,17 @@
     margin-top: -9px;
 }
 
-/* Form Grid Layout */
 .form-grid {
     display: flex;
     flex-direction: column;
     gap: 25px;
 }
 
-/* Form Row */
 .form-row {
     display: flex;
     gap: 15px;
 }
 
-/* Input Group */
 .input-group {
     flex: 1;
     position: relative;
@@ -76,7 +73,6 @@
     font-weight: bold;
 }
 
-/* Address Type */
 .address-type-container {
     display: flex;
     flex-direction: column;
@@ -131,18 +127,15 @@
     display: inherit; 
 }
 
-/* Buttons */
 .button-container {
     display: flex;
     gap: 15px;
     justify-content: space-between;
 }
 
-
-/* 🔹 Responsive Design */
 @media (max-width: 1024px) {
     .form-row {
-        flex-direction: column; /* Stack inputs on smaller screens */
+        flex-direction: column;
         gap: 8px;
     }
 

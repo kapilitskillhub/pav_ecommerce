@@ -32,8 +32,6 @@ const Customer = () => {
                 if (response.data.status === "success" && Array.isArray(response.data.customers)) {
                     const sortedCustomers = response.data.customers.sort((a, b) => a.id - b.id);
                     setCustomers(sortedCustomers);
-
-                    // Set counts from backend response
                     setActivatedCount(response.data.activated_count || 0);
                     setInactivatedCount(response.data.inactivated_count || 0);
                     setTotalCount(response.data.total_count || 0);
@@ -66,8 +64,6 @@ const Customer = () => {
                         c.id === customerId ? { ...c, account_status: newStatus } : c
                     )
                 );
-
-                // Update counts locally
                 if (newStatus === 1) {
                     setActivatedCount(prev => prev + 1);
                     setInactivatedCount(prev => prev - 1);

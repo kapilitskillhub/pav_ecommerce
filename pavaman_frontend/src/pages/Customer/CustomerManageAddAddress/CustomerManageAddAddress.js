@@ -27,7 +27,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
     const [showPopup, setShowPopup] = useState(false);
     const formRef = useRef(null);
 
-    // Close form on outside click
     useEffect(() => {
         const handleOutsideClick = (event) => {
             if (formRef.current && !formRef.current.contains(event.target)) {
@@ -125,7 +124,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
             const response = await fetch("http://127.0.0.1:8000/add-customer-address", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                // body: JSON.stringify({ customer_id, ...formData }),
                 body: JSON.stringify({ customer_id,...formData, mobile_number: `+${formData.mobile_number}`, alternate_mobile: formData.alternate_mobile ? `+${formData.alternate_mobile}` : "" }),
             });
 
@@ -178,7 +176,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                     )}
                 </div>
                 <form onSubmit={handleSubmit} className="manage-address-form">
-                    {/* First & Last Name */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>First Name <span className="required-star">*</span></label>
@@ -190,7 +187,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                         </div>
                     </div>
 
-                    {/* Mobile & Alternate */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>Mobile Number <span className="required-star">*</span></label>
@@ -214,8 +210,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                             />
                         </div>
                     </div>
-
-                    {/* Email & Pincode */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>Email <span className="required-star">*</span></label>
@@ -226,8 +220,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                             <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} pattern="\d{6}" required />
                         </div>
                     </div>
-
-                    {/* District & State */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>District <span className="required-star">*</span></label>
@@ -239,17 +231,13 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                         </div>
                     </div>
 
-                    {/* Address */}
                     <label className="address-label">Address <span className="required-star">*</span></label>
                     <textarea className="manage-address-input" name="street" placeholder="Address (Street, Area, Flat No.)" value={formData.street} onChange={handleChange} required />
 
-                    {/* Mandal */}
                     <div className="manage-input-group">
                         <label>Mandal <span className="required-star">*</span></label>
                         <input type="text" name="mandal" placeholder="Mandal" value={formData.mandal} onChange={handleChange} required />
                     </div>
-
-                    {/* Landmark & Locality */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>Landmark</label>
@@ -260,8 +248,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                             <input type="text" name="locality" placeholder="Locality" value={formData.locality} onChange={handleChange} required />
                         </div>
                     </div>
-
-                    {/* Address Type */}
                     <div className="cm-manage-address-type">
                         <div className="address-space">
                             <label>Address Type</label>
@@ -275,8 +261,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                             </label>
                         </div>
                     </div>
-
-                    {/* Buttons */}
                     <div className="cart-actions">
                         <button type="submit" className="cart-place-order" disabled={isSaveDisabled}>
                             {loading ? "Saving..." : "SAVE"}

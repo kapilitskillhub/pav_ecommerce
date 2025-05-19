@@ -41,7 +41,6 @@ const ViewDiscountedProducts = () => {
             const response = await fetch("http://127.0.0.1:8000/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                // body: JSON.stringify({ customer_id: sessionStorage.getItem("customer_id") || null }),
                 body: JSON.stringify({ customer_id: localStorage.getItem("customer_id") || null }),
 
             });
@@ -61,7 +60,6 @@ const ViewDiscountedProducts = () => {
     };
 
     const handleAddCart = async (product_id) => {
-        // const customer_id = sessionStorage.getItem("customer_id");
         const customer_id = localStorage.getItem("customer_id");
 
 
@@ -72,7 +70,6 @@ const ViewDiscountedProducts = () => {
                           </>,
                           "error"
                       );
-            // navigate("/customer-login");
             return;
         }
 
@@ -132,8 +129,6 @@ const ViewDiscountedProducts = () => {
                 category_name: product.category_name,
                 sub_category_name: product.sub_category_name,
                 product_name: product.product_name,
-                // category_id: product.category_id,
-                // sub_category_id: product.sub_category_id,
             },
         });
     };
@@ -171,7 +166,6 @@ const ViewDiscountedProducts = () => {
                                         src={product.product_image_url}
                                         alt={product.product_name}
                                         className="customer-discount-product-image"
-                                        // onError={(e) => (e.target.src = defaultImage)}
                                     />
                                     </div>
                                     <div className="customer-product-name customer-discount-section-name">
@@ -205,13 +199,11 @@ const ViewDiscountedProducts = () => {
                                                         ? "Very Few Products Left"
                                                         : "In Stock"}
                                             </span>
-
-                                            {/* Hide "Add to Cart" if product is out of stock */}
                                             {(product.availability === "Very Few Products Left" || product.availability === "In Stock") && (
                                                 <BiSolidCartAdd
                                                     className="add-to-cart-button"
                                                     onClick={(e) => {
-                                                        e.stopPropagation(); // Prevents navigation when clicking on the cart icon
+                                                        e.stopPropagation(); 
                                                         handleAddCart(product.product_id);
                                                     }}
                                                 />
@@ -224,13 +216,8 @@ const ViewDiscountedProducts = () => {
                             ))}
                         </Slider>
                     ) : (<p className="no-discount-products">No Discounted Products Available</p>)}
-                    {/* **Slick Slider for Discounted Products** */}
-
-
                 </div>
             )}
-
-
         </div>
     );
 };

@@ -116,8 +116,7 @@ console.log(`${name} updated. Selected ${files.length} file(s).`);
         navigate("/view-products", {
           state: { category_id, category_name, sub_category_id, sub_category_name, successMessage: "Product updated successfully!" },
         });
-      }, 2000); // delay so the user sees the popup
-
+      }, 2000); 
       } else {
         setError(response.data.error || "Failed to update product.");
         displayPopup(response.data.error || "Failed to update product.", "error");
@@ -176,8 +175,6 @@ console.log(`${name} updated. Selected ${files.length} file(s).`);
           <div>
             <label className="label">GST</label>
             <input type="text" name="gst" value={product.gst} onChange={handleChange} className="input-field" />
-
-            {/* <input type="text"  name="gst" value={product.gst} onChange={handleChange} className="input-field" /> */}
           </div>
           <div>
             <label className="label">Discount</label>
@@ -188,8 +185,6 @@ console.log(`${name} updated. Selected ${files.length} file(s).`);
           <label className="label">Description</label>
           <textarea name="description" value={product.description} onChange={handleChange} required className="textarea-field"></textarea>
         </div>
-
-        {/* Upload Product Images */}
         <div className="upload-file">
           <label htmlFor="product_images" className="upload-label">Upload (1 or more) Product Images</label>
           <div className="upload-box">
@@ -208,7 +203,6 @@ console.log(`${name} updated. Selected ${files.length} file(s).`);
           </div>
         </div>
 
-        {/* Upload Material File */}
         <div className="upload-file">
           <label htmlFor="material_file" className="upload-label">Upload Material File</label>
           <div className="upload-box">
@@ -221,7 +215,6 @@ console.log(`${name} updated. Selected ${files.length} file(s).`);
               <>
                 <img src={UploadFileIcon} alt="Upload Icon" className="upload-icon" />
                 <p className="upload-text"><span>Upload File</span> or Drag and Drop</p>
-                {/* <p className="upload-text-mb">Up to 20MB</p> */}
               </>
             )}
             <input type="file" id="material_file" name="material_file" className="upload-input" onChange={handleFileChange} />

@@ -1,4 +1,4 @@
-// import React, { useState } from "react";
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -73,48 +73,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
 
 
     };
-
-    // const handleGoogleSuccess = async (response) => {
-    //     if (!response.credential) {
-    //         showPopup("Google Sign-In failed. No credential received.", "error");
-    //         return;
-    //     }
-
-    //     try {
-    //         const res = await axios.post("http://127.0.0.1:8000/google-login",
-    //             { token: response.credential },
-    //             { headers: { "Content-Type": "application/json" } }
-    //         );
-
-    //         if (res.data.existing_user) {
-    //             if (res.data.register_status === 0) {
-    //                 // User needs to enter mobile number
-    //                 console.log("Setting Google User ID:", res.data.customer_id); // Debug log
-    //                 setGoogleUserId(res.data.customer_id);
-    //                 setShowMobilePopup(true);
-    //             } else {
-    //                 showPopup("Login successful!", "success");
-
-    //                 localStorage.setItem("customerData", JSON.stringify(res.data));
-    //                 localStorage.setItem("customer_id", res.data.customer_id);
-
-    //                 navigate("/");
-    //             }
-    //         } else if (res.data.new_user) {
-    //             showPopup("Account created successfully! A verification email has been sent to your email address. Please verify before logging in.", "success");
-    //         }
-    //     } catch (error) {
-    //         if (error.response?.status === 403) {
-    //             showPopup("Your account is not verified. Please check your email.", "error");
-    //             setShowResendLink(true);
-    //             setUserEmail(error.response.data.email);
-    //         } else {
-    //             showPopup(error.response?.data?.error || "Google login failed. Please try again later.", "error");
-
-    //         }
-    //     }
-    // };
-
     const handleGoogleSuccess = async (response) => {
         if (!response.credential) {
             showPopup("Google Sign-In failed. No credential received.", "error");
@@ -129,8 +87,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
 
             if (res.data.existing_customer) {
                 if (res.data.register_status === 0) {
-                    // User needs to enter mobile number
-                    console.log("Setting Google User ID:", res.data.customer_id); // Debug log
+                    console.log("Setting Google User ID:", res.data.customer_id);
                     setGoogleUserId(res.data.customer_id);
                     setShowMobilePopup(true);
                 } else {
@@ -163,29 +120,27 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
 
 
     const handleResendVerification = async () => {
-        if (!userEmail) {
+        if (!email) {
             showPopup("User email is required to resend verification.", "error");
             return;
         }
 
         try {
-            setShowResendLink(false); // Hide resend link button while processing
+            setShowResendLink(false); 
 
-            const response = await axios.post("http://127.0.0.1:8000/resend-verification-email", { email: userEmail });
+            const response = await axios.post("http://127.0.0.1:8000/resend-verification-email", { email});
 
             if (response.data.message) {
                 showPopup("Verification email resent successfully.", "success");
             } else {
                 showPopup(response.data.error || "Failed to resend verification email.", "error");
-                setShowResendLink(true); // Show resend button again if failed
+                setShowResendLink(true);
             }
         } catch (error) {
             showPopup(error.response?.data?.error || "Error resending verification email. Please try again later.", "error");
-            setShowResendLink(true); // Show resend link if error occurs
+            setShowResendLink(true); 
         }
     };
-
-
     const handleSubmitMobile = async () => {
         const formattedNumber = mobileNumber.startsWith("+") ? mobileNumber : "+" + mobileNumber;
 
@@ -210,14 +165,13 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         try {
             const response = await axios.post("http://127.0.0.1:8000/google-submit-mobile", {
                 customer_id: googleUserId,
-                // mobile_no: mobileNumber,
                 mobile_no: formattedNumber,
             });
 
             if (response.data.message) {
                 showPopup("Mobile number added successfully!", "success");
                 localStorage.setItem("customerData", JSON.stringify(response.data));
-                localStorage.setItem("customer_id", googleUserId); // assuming it's the same
+                localStorage.setItem("customer_id", googleUserId); 
                 setShowMobilePopup(false);
                 navigate("/");
             }
@@ -230,24 +184,19 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
     const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
     const [forgotPasswordIdentifier, setForgotPasswordIdentifier] = useState("");
     const [showOTPVerification, setShowOTPVerification] = useState(false);
-    // const [otp, setOtp] = useState("");
     const [resetLink, setResetLink] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showResetPasswordPopup, setShowResetPasswordPopup] = useState(false);
-    const [otpTimer, setOtpTimer] = useState(120); // 120 seconds for OTP verification
-    const [resendDisabled, setResendDisabled] = useState(true); // Disable resend initially
+    const [otpTimer, setOtpTimer] = useState(120); 
+    const [resendDisabled, setResendDisabled] = useState(true); 
 
-
-    // Step 1: Handle Forgot Password Click
     const handleForgotPassword = async () => {
         if (!forgotPasswordIdentifier) {
             showPopup("Please enter Email or Mobile Number", "error");
             return;
         }
 
-
-        // Ensure mobile number starts with "+"
         if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier.startsWith("+")) {
             showPopup("Please enter a valid mobile number with country code.", "error");
             return;
@@ -264,9 +213,8 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                 setShowForgotPasswordPopup(false);
                 setShowOTPVerification(true);
                 setResendDisabled(true);
-                setOtpTimer(120); // Reset timer
+                setOtpTimer(120); 
             }
-
 
         } catch (error) {
             showPopup(error.response?.data?.error || "Failed to send OTP.", "error");
@@ -274,40 +222,34 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         }
     };
 
-
-
-
-    // Start countdown
     useEffect(() => {
         if (showOTPVerification && otpTimer > 0) {
             const interval = setInterval(() => {
                 setOtpTimer((prev) => {
                     if (prev === 1) {
                         clearInterval(interval);
-                        setResendDisabled(false); // Enable resend when timer reaches 0
+                        setResendDisabled(false); 
                         return 0;
                     }
                     return prev - 1;
                 });
             }, 1000);
 
-            return () => clearInterval(interval); // Cleanup interval on unmount
+            return () => clearInterval(interval); 
         }
     }, [showOTPVerification, otpTimer]);
 
 
-    const [otp, setOtp] = useState(["", "", "", "", "", ""]); // 6-digit OTP array
+    const [otp, setOtp] = useState(["", "", "", "", "", ""]); 
 
     const handleInputChange = (e, index) => {
         const value = e.target.value;
-        if (!/^\d*$/.test(value)) return; // Ensure only numbers
+        if (!/^\d*$/.test(value)) return; 
 
         let newOtp = [...otp];
-        newOtp[index] = value.substring(value.length - 1); // Allow only 1 digit
+        newOtp[index] = value.substring(value.length - 1); 
 
         setOtp(newOtp);
-
-        // Move to the next input if not the last digit
         if (value && index < otp.length - 1) {
             document.getElementById(`otp-input-${index + 1}`).focus();
         }
@@ -328,7 +270,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
     };
 
     const handleVerifyOTP = async () => {
-        const enteredOTP = otp.join(""); // Combine all OTP digits
+        const enteredOTP = otp.join(""); 
         if (enteredOTP.length !== 6) {
             showPopup("Please enter a valid 6-digit OTP.", "error");
             return;
@@ -352,8 +294,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         }
     };
 
-
-    // Step 3: Handle Password Reset
     const handleResetPassword = async () => {
         if (!newPassword || !confirmPassword) {
             showPopup("Please enter and confirm your new password.", "error");
@@ -378,7 +318,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
     };
 
     useEffect(() => {
-        // Check if there's a success message passed from the signup page
         if (location.state && location.state.successMessage) {
             setPopupMessage({
                 text: location.state.successMessage,
@@ -441,7 +380,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
 
 
                 <div className="customer-login-form-fields" >
-                    {/* Password Label with Info Icon */}
                     <label className="customer-login-label">
                         Password
                         <span
@@ -453,8 +391,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                             <FaInfoCircle />
                         </span>
                     </label>
-
-                    {/* Tooltip for Password Requirements */}
                     {showTooltip && (
                         <div className="password-tool-tip">
                             <ul className="password-tool-tip-list" >
@@ -466,8 +402,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                             </ul>
                         </div>
                     )}
-
-                    {/* Password Input with Eye Icon */}
                     <div className="customer-login-password-input-wrapper">
                         <input
                             type={showPassword ? "text" : "password"}
@@ -513,16 +447,12 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                 </div>
                 <img className="customer-login-image" alt="LogIn" src={LogInImage} />
             </div>
-
-            {/* Forgot Password Popup */}
-
             {showForgotPasswordPopup && (
                 <div className="forgot-password-popup">
                     <div className="popup-content">
                         <h3>Forgot Password</h3>
 
                         {!forgotPasswordIdentifier || isNaN(forgotPasswordIdentifier) ? (
-                            // Email input field
                             <input
                                 type="email"
                                 placeholder="Enter Email/Mobile No."
@@ -530,12 +460,12 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                                 onChange={(e) => setForgotPasswordIdentifier(e.target.value)}
                             />
                         ) : (
-                            // Phone input field with country code
+            
                             <PhoneInput
                                 className="forgot-phone-input-otp"
                                 country={"in"}
                                 value={forgotPasswordIdentifier}
-                                onChange={(value) => setForgotPasswordIdentifier("+" + value)} // Ensure the number includes '+'
+                                onChange={(value) => setForgotPasswordIdentifier("+" + value)} 
                                 inputProps={{
                                     required: true,
                                 }}
@@ -550,13 +480,9 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
 
                 </div>
             )}
-
-            {/* OTP Verification Popup */}
             {showOTPVerification && (
                 <div className="otp-verification-popup">
                     <div className="verify-popup-content">
-                        {/* <button className="verify_cancel" onClick={() => setShowOTPVerification(false)}>❌</button> */}
-
                         <h3 className="verify-otp-heading">Verify OTP</h3>
                         <p className="subtitle">Enter the 6-digit verification OTP.</p>
 
@@ -574,14 +500,10 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                                 />
                             ))}
                         </div>
-                        {/* <button className="verify-otp-btn" onClick={handleVerifyOTP}>Verify OTP</button> */}
-
-
                         <div className="forget_buttons">
                             <button className="verifyOTP" onClick={handleVerifyOTP}>Verify OTP</button>
                             <button className="verify-cancel" onClick={() => setShowOTPVerification(false)}>Cancel</button>
-                            {/* <button className="verify_cancel" onClick={() => setShowOTPVerification(false)}>❌</button> */}
-
+                        
                         </div>
                         <div className="resend-container">
                             <p className="resend" disabled={resendDisabled} onClick={handleForgotPassword}>
@@ -592,8 +514,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                     </div>
                 </div>
             )}
-
-            {/* Reset Password Popup */}
             {showResetPasswordPopup && (
                 <div className="reset-password-popup">
                     <div className="popup-content">

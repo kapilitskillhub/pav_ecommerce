@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-// import "./TopBuyersPage.css"; // Create or reuse shared CSS
 
 const TopBuyersPage = () => {
   const [buyers, setBuyers] = useState([]);

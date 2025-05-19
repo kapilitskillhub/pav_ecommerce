@@ -27,7 +27,6 @@
     line-height: normal;
     display: flex;
     flex-direction: column;
-    /* margin-left: 91px; */
     align-items: baseline;
     padding: 0px 109px;
 }
@@ -127,7 +126,6 @@
 
 .form-actions {
     margin-top: 50px;
-    /* margin-left: 91px; */
     display: flex;
     flex-direction: row;
     gap: 90px;

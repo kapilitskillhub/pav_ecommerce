@@ -23,28 +23,23 @@ const AddSpecification = () => {
     }, 10000);
   };
 
-  // Increment counter
   const handleIncrement = () => {
     setNumSpecifications((prev) => prev + 1);
     setSpecifications([...specifications, { name: "", value: "" }]);
   };
 
-  // Decrement counter
   const handleDecrement = () => {
     if (numSpecifications > 0) {
       setNumSpecifications((prev) => prev - 1);
-      setSpecifications(specifications.slice(0, -1)); // Remove last item
+      setSpecifications(specifications.slice(0, -1)); 
     }
   };
 
-  // Handle input field changes
   const handleSpecificationChange = (index, field, value) => {
     const updatedSpecs = [...specifications];
     updatedSpecs[index] = { ...updatedSpecs[index], [field]: value };
     setSpecifications(updatedSpecs);
   };
-
-  // Submit data to API
   const handleSubmitSpecifications = async () => {
     if (numSpecifications === 0) {
       displayPopup("Please add at least one specification.", "error");
@@ -89,7 +84,6 @@ const AddSpecification = () => {
       <div className="admin-popup">
         <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
       </div>
-      {/* Counter Section */}
       <div >
         <button onClick={handleDecrement} disabled={numSpecifications === 0} >
           -
@@ -99,8 +93,6 @@ const AddSpecification = () => {
           +
         </button>
       </div>
-
-      {/* Dynamic Specification Input Fields */}
       {specifications.map((spec, index) => (
         <div key={index} >
           <input
@@ -119,8 +111,6 @@ const AddSpecification = () => {
           />
         </div>
       ))}
-
-      {/* Buttons */}
       <button onClick={handleSubmitSpecifications} disabled={numSpecifications === 0}>
         Add
       </button>

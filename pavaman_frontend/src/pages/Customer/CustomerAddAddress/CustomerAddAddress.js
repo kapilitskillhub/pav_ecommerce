@@ -42,7 +42,7 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
     const handlePhoneChange = (value, name) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-    // Auto fetch state/district/mandal from pincode
+
     useEffect(() => {
         const fetchLocationDetails = async () => {
             if (formData.pincode.length === 6) {
@@ -108,8 +108,6 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
             setLoading(false);
         }
     };
-
-    // Close on outside click
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
@@ -136,7 +134,7 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
             <div ref={wrapperRef}>
                 <h3 className="manage-form-title">ADD A NEW ADDRESS</h3>
                 <form onSubmit={handleSubmit} className="manage-address-form">
-                    {/* First & Last Name */}
+
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>First Name<span className="required-star">*</span></label>
@@ -147,8 +145,6 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                             <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required />
                         </div>
                     </div>
-
-                    {/* Mobile Numbers */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>Mobile Number<span className="required-star">*</span></label>
@@ -173,8 +169,6 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                               />
                         </div>
                     </div>
-
-                    {/* Email & Pincode */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>Email<span className="required-star">*</span></label>
@@ -186,11 +180,9 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                         </div>
                     </div>
 
-                    {/* Address */}
                     <label className="address-label">Address<span className="required-star">*</span></label>
                     <textarea className="manage-address-input" name="street" value={formData.street} onChange={handleChange} required />
 
-                    {/* City & State */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>District<span className="required-star">*</span></label>
@@ -202,13 +194,11 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                         </div>
                     </div>
 
-                    {/* Mandal */}
                     <div className="manage-input-group">
                         <label>Mandal<span className="required-star">*</span></label>
                         <input type="text" name="mandal" value={formData.mandal} onChange={handleChange} required />
                     </div>
 
-                    {/* Landmark & Locality */}
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>Landmark</label>
@@ -220,7 +210,6 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                         </div>
                     </div>
 
-                    {/* Address Type */}
                     <div className="edit-manage-address-type address-space">
                         <label>Address Type</label>
                         <label>
@@ -233,7 +222,6 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                         </label>
                     </div>
 
-                    {/* Buttons */}
                     <div className="cart-actions">
                         <button type="submit" className="cart-place-order" disabled={loading}>
                             {loading ? "Saving..." : "SAVE"}

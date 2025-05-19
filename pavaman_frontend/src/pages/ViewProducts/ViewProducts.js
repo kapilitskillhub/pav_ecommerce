@@ -45,7 +45,7 @@ const ViewProducts = ({ products, setProducts }) => {
 
   useEffect(() => {
     if (successMessage) {
-      displayPopup(successMessage, "success"); // 👈 this is missing
+      displayPopup(successMessage, "success"); 
       setShowActionSuccessPopup(true);
     }
   }, [successMessage]);
@@ -156,12 +156,19 @@ const ViewProducts = ({ products, setProducts }) => {
       },
     });
   };
+  const uploadproductExcel = () => {
+    const adminId = sessionStorage.getItem("admin_id");
+  navigate("/uploadproductexcel", {
+      state: { admin_id:adminId,category_id, sub_category_id },
+    });
+};
 
   return (
     <div>
 
       <div className="category-div">
         <div className="category-heading">Products</div>
+            <button  className="upload-product-excel" onClick={uploadproductExcel}>Upload Product Excel</button>
         <div className="admin-popup">
         <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
       </div>
@@ -214,7 +221,6 @@ const ViewProducts = ({ products, setProducts }) => {
         </div>
       </div>
 
-      {/* Delete Confirmation Popup */}
       {showDeletePopup && (
         <div className="admin-popup-overlay popup-overlay">
           <div className="popup-content">

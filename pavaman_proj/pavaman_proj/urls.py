@@ -25,7 +25,7 @@ from pavaman_backend.views import (add_admin,admin_login,admin_logout,
     apply_discount_by_subcategory_only,order_or_delivery_status,admin_verify_otp,
     report_inventory_summary,top_buyers_report,customer_growth_by_state,
     monthly_product_orders,download_feedback_excel,download_average_rating_excel,
-    product_discount_inventory_view,download_inventory_products_excel,
+    product_discount_inventory_view,download_inventory_products_excel,upload_products_excel
     )
 
 from pavaman_backend.customer_views import (customer_register,customer_login,view_categories_and_discounted_products,
@@ -161,6 +161,7 @@ urlpatterns = [
     path('product-discount-inventory-view',product_discount_inventory_view,name= 'product_discount_inventory_view'),
     path('download-inventory-products-excel',download_inventory_products_excel,name= 'download_inventory_products_excel'),
     path('download-average-rating-excel',download_average_rating_excel,name= 'download_average_rating_excel'),
+    path('upload-products-excel',upload_products_excel,name= 'upload_products_excel'),
 
 
 

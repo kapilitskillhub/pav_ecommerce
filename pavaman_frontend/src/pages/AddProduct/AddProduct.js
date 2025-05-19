@@ -56,7 +56,7 @@ const AddProduct = () => {
     const handleFileChange = (e) => {
         const { name, files } = e.target;
 
-        if (files.length === 0) return; // Ignore empty selections
+        if (files.length === 0) return; 
 
         setFormData((prev) => {
             if (name === "product_images") {
@@ -112,7 +112,6 @@ const AddProduct = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // alert("Product added successfully!");
                 navigate("/view-products", { 
                     state: { 
                       sub_category_id,
@@ -189,8 +188,6 @@ const AddProduct = () => {
                     <label className="label">Description</label>
                     <textarea name="description" placeholder="Enter description" onChange={handleChange} required className="textarea-field"></textarea>
                 </div>
-
-                {/* Upload Product Images */}
                 <div className="upload-file">
                     <label htmlFor="product_images" className="upload-label">
                         Upload (1 or more) Product Images
@@ -207,7 +204,6 @@ const AddProduct = () => {
                                 <p className="upload-text">
                                     <span>Upload File(s)</span> or Drag and Drop
                                 </p>
-                                {/* <p className="upload-text-mb">Up to 20MB</p> */}
                             </>
                         )}
                         <input
@@ -237,7 +233,6 @@ const AddProduct = () => {
                                 <p className="upload-text">
                                     <span>Upload File</span> or Drag and Drop
                                 </p>
-                                {/* <p className="upload-text-mb">Up to 20MB</p> */}
                             </>
                         )}
                         <input

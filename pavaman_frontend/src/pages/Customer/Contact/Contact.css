@@ -1,116 +1,119 @@
-/* General Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
-/* Main container */
 .contact-container {
- 
-  padding: 30px;
-  max-width: 960px;
+  max-width: 600px;
   margin: 40px auto;
-  background-color: #e7e4f6;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease-in-out;
+  padding: 30px 25px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e0f0ff 0%, #c2e0ff 100%);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+  text-align: left;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-/* Header Styling */
 .contact-header {
-  text-align: center;
-  font-size: 36px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 20px;
-  letter-spacing: 1.5px;
+  font-size: 2.4rem;
+  margin-bottom: 25px;
+  color: #4450A2;
+  text-align: start;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.contact-header:after {
-  content: '';
-  display: block;
-  width: 100px;
-  height: 2px;
-  background-color: #3498db;
-  margin: 20px auto;
-}
-
-/* Content Styling */
 .contact-content {
-  font-size: 18px;
-  line-height: 1.8;
-  color: #555;
-  margin-bottom: 20px;
-  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
-.contact-content .strong-text {
-  color: #2c3e50;
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+.contact-icon {
+  color: #007bff;
+  font-size: 2.2rem;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.phone{
+  color: #746e6e;
+}
+.email{
+  color: rgb(203 110 110);
+}
+.strong-text {
   font-weight: 700;
-  letter-spacing: 0.5px;
+  color: #4450A2;
+  letter-spacing: 0.03em;
+  font-size: 1.1rem;
 }
 
-/* Link Styling */
+.strong-text{
+  font-weight: 700;
+  color: #4450A2;
+  letter-spacing: 0.03em;
+  font-size: 1.1rem;
+}
+
 .phone-number,
 .email-link {
-  font-size: 18px;
-  font-weight: 500;
-  color: #3498db;
+  color: #0056b3;
+  font-weight: 600;
   text-decoration: none;
-  transition: all 0.3s ease;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color 0.3s ease;
+  cursor: pointer;
 }
 
 .phone-number:hover,
 .email-link:hover {
-  color: #2980b9;
-  text-decoration: underline;
+  border-color: #0056b3;
+  text-decoration: none;
 }
 
-/* Phone Number Styling */
-.phone-number {
-  display: block;
-  margin: 5px 0;
-}
-.phone-number-2{
-    margin-top: -36px;
+
+.contact-intro {
+  font-size: 1.1rem;
+  color: #003366;
+  line-height: 1.5;
+  margin-bottom: 25px;
+  text-align: center;
+  font-style: italic;
 }
 
-.email-link {
-  margin-top: -24px;
-  display: inline-block;
-}
-
-/* Responsive Styles */
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .contact-container {
-    padding: 20px;
+    max-width: 90%;
+    padding: 25px 20px;
   }
 
   .contact-header {
-    font-size: 30px;
+    font-size: 2rem;
   }
 
-  .contact-content {
-    font-size: 16px;
+  .contact-icon {
+    font-size: 1.8rem;
+  }
+
+  .strong-text {
+    font-size: 1rem;
   }
 }
-
-@media screen and (max-width: 480px) {
+@media (max-width: 480px) {
   .contact-container {
-    padding: 15px;
+    margin: 20px 10px;
+    padding: 20px 15px;
+    border-width: 2px;
   }
 
   .contact-header {
-    font-size: 26px;
+    font-size: 1.6rem;
   }
 
-  .contact-content {
-    font-size: 14px;
+  .contact-icon {
+    font-size: 1.5rem;
   }
 
-  .phone-number,
-  .email-link {
-    font-size: 16px;
+  .strong-text {
+    font-size: 0.95rem;
   }
 }

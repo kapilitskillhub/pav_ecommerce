@@ -47,7 +47,6 @@ const CustomerCheckoutPage = () => {
 
     return (
         <div className="checkout-page-container">
-            {/* Popup messages */}
             <div className="popup-cart">
                 {popup.text && (
                     <PopupMessage
@@ -83,8 +82,6 @@ const CustomerCheckoutPage = () => {
                     )}
                 </div>
             )}
-
-            {/* Show confirmed address with "Change" button */}
             {isAddressConfirmed && selectedAddress && (
                 <div className="confirmed-address-section container">
                     <div className="address-heading">Delivery Address</div>
@@ -104,7 +101,6 @@ const CustomerCheckoutPage = () => {
                 </div>
             )}
 
-            {/* Order Summary and Payment Section */}
             {isAddressConfirmed && orderSummary && (
                 <div className="order-summary-section" ref={orderSummaryRef}>
                     <OrderSummary

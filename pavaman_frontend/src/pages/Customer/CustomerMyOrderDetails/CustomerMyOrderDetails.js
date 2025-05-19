@@ -3,8 +3,7 @@ import './CustomerMyOrderDetails.css';
 import { useLocation } from 'react-router-dom';
 import { FaCircleArrowRight } from "react-icons/fa6";
 import { MdCloudDownload } from "react-icons/md";
-import generateInvoicePDF from '../CustomerInvoice/CustomerInvoice'; // Import the function
-
+import generateInvoicePDF from '../CustomerInvoice/CustomerInvoice';
 const CustomerMyOrderDetails = () => {
   const [orderDetails, setOrderDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,7 +74,6 @@ const CustomerMyOrderDetails = () => {
     <div className="order-box">
       <h4 className="main-heading">Order ID: {order.product_order_id}</h4>
 
-      {/* Selected Product Block */}
       {selectedProduct && (
         <div ref={topRef}>
           <div className="custom-product-card highlight-product">
@@ -101,7 +99,6 @@ const CustomerMyOrderDetails = () => {
             </div>
           </div>
 
-          {/* Address */}
           {order.customer_address?.length > 0 && (
             <div className="shipping-address-box">
               <h3>Delivery Address</h3>
@@ -111,8 +108,6 @@ const CustomerMyOrderDetails = () => {
               <p><strong>Phone:</strong> {order.customer_address[0].mobile_number}</p>
             </div>
           )}
-
-          {/* Per Product Payment Details */}
           <div className="payment-box">
             <h3 className='payment-details-heading'>
               {orderHasMultipleProducts
@@ -121,10 +116,6 @@ const CustomerMyOrderDetails = () => {
             </h3>
             <p><strong>Payment Mode:</strong> {order.payment_mode}</p>
             <p><strong>Quantity:</strong> {selectedProduct.quantity}</p>
-            {/* <p><strong>original Price:</strong> {selectedProduct.price}</p>
-            <p><strong>Price:</strong> ₹{selectedProduct.final_price}.00 (incl. GST)
-            
-            </p> */}
             <p><strong>Price:</strong> ₹{selectedProduct.price} x {selectedProduct.quantity} item(s) = ₹{(selectedProduct.price * selectedProduct.quantity).toFixed(2)}</p>
 
             {selectedProduct.gst && parseFloat(selectedProduct.gst) > 0 && (
@@ -146,13 +137,6 @@ const CustomerMyOrderDetails = () => {
  <p><strong>Delivery Fee:</strong>    +    ₹{selectedProduct.delivery_charge}</p>
   <p><strong>Price:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity + selectedProduct.delivery_charge).toFixed(2)}</p>
   
-
-{/* <p><strong>Platform Fee:</strong> ₹0.00</p>
-<p><strong>Delivery Fee:</strong> ₹0.00</p> 
-<p><strong>Total Amount:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity).toFixed(2)}</p>
-
-
-            {/* Invoice button only for single-product orders */}
             {!orderHasMultipleProducts && (
               <div className="invoice-button-wrapper">
                 <button className="invoice-button" onClick={handleGetInvoice}>
@@ -164,7 +148,6 @@ const CustomerMyOrderDetails = () => {
         </div>
       )}
 
-      {/* Other Products */}
       {otherProducts?.length > 0 && (
         <>
           <h4 className="other-items-heading">Other items in this order</h4>
@@ -198,7 +181,6 @@ const CustomerMyOrderDetails = () => {
         </>
       )}
 
-      {/* Total Payment Section for Multiple Products */}
       {orderHasMultipleProducts && (
   <div className="payment-box total-payment">
     <h3>Total Payment</h3>
