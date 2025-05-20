@@ -72,7 +72,7 @@
 }
 
 .pagination-button {
-  padding: 6px 12px;
+padding: 6px 12px;
   font-size: 14px;
   background-color: white;
   color: #6c74a4;
@@ -80,6 +80,17 @@
   border-radius: 4px;
   cursor: pointer;
   transition: 0.3s ease;
+}
+
+.pagination-button.active-page {
+  background-color: #4450A2;
+  color: white;
+  border-color: #4450A2;
+}
+
+.pagination-button:hover:not(.active-page) {
+  background-color: #e0e4f0;
+  color: #4450A2;
 }
 
 .invoice-button-customer-order {

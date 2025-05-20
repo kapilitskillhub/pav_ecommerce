@@ -943,7 +943,34 @@ def upload_products_excel(request):
     wb = openpyxl.load_workbook(excel_file)
     ws = wb.active
     headers = [cell.value for cell in ws[1]]
+    all_image_names = []
+    all_material_names = []
+    for i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+        row_data = dict(zip(headers, row))
+        
+        image_names = str(row_data.get('image_paths') or '').split(',')
+        for img_name in image_names:
+            img_name = img_name.strip()
+            if img_name:
+                all_image_names.append(img_name.lower())  # case-insensitive check
+                
+        material_name = str(row_data.get('material_paths') or '').strip()
+        if material_name:
+            all_material_names.append(material_name.lower())
 
+    duplicates_images = set([x for x in all_image_names if all_image_names.count(x) > 1])
+    duplicates_materials = set([x for x in all_material_names if all_material_names.count(x) > 1])
+
+    if duplicates_images or duplicates_materials:
+        error_parts = []
+        if duplicates_images:
+            error_parts.append(f"Duplicate image file names: {', '.join(duplicates_images)}")
+        if duplicates_materials:
+            error_parts.append(f"Duplicate material file names: {', '.join(duplicates_materials)}")
+        return JsonResponse({
+            "error": " ; ".join(error_parts) + ". Please ensure file names are unique across all products.",
+            "products": product_responses,
+        }, status=400)
     uploaded_images = {f.name: f for f in request.FILES.getlist('images[]')}
     uploaded_materials = {f.name: f for f in request.FILES.getlist('materials[]')}
 
@@ -963,11 +990,12 @@ def upload_products_excel(request):
             row_data = dict(zip(headers, row))
             product_name = row_data.get('product_name')
             if not product_name:
-                return JsonResponse({"error": f"Product name missing in row {i}"}, status=400)
+                return JsonResponse({"error": f"Product name missing in row {i}", "products": product_responses}, status=400)
             product_name = product_name.lower()
             if ProductsDetails.objects.filter(product_name=product_name,admin=admin).exists():
                 return JsonResponse({
-                "error": f"Duplicate product name '{product_name}' found in row {i}. Product name must be unique."
+                "error": f"Duplicate product name '{product_name}' found in row {i}. Product name must be unique.",
+                "products": product_responses
             }, status=400)
             product_name = product_name.lower()
             sku_number = row_data['sku_number']
@@ -991,9 +1019,10 @@ def upload_products_excel(request):
                     print(f"Uploaded images keys: {list(uploaded_images.keys())}")
                     return JsonResponse({
                         "error": f"Missing image file: '{img_name}' for product '{product_name}' in Excel row {i}. "
-                                "Please ensure the image is selected in the upload form and the file name matches exactly."
+                                "Please ensure the image is selected in the upload form and the file name matches exactly.",
+                                "products": product_responses,
                     }, status=400)
-                s3_key = f"static/images/products/{product_name.replace(' ', '_')}/{sku_number}_{img_name}"
+                s3_key = f"static/images/products/{product_name.replace(' ', '')}/{sku_number}{img_name}"
                 try:
                     s3.upload_fileobj(
                         img_file,
@@ -1013,7 +1042,8 @@ def upload_products_excel(request):
                 if material_name and not material_file:
                     return JsonResponse({
                         "error": f"Missing material file: '{material_name}' for product '{product_name}' in Excel row {i}. "
-                                "Please make sure the material file is included in the upload and named correctly."
+                                "Please make sure the material file is included in the upload and named correctly.",
+                                "products": product_responses,
                     }, status=400)
                 s3_material_key = f"static/materials/{product_name.replace(' ', '_')}.{ext}"
                 try:
@@ -1024,7 +1054,7 @@ def upload_products_excel(request):
                         ExtraArgs={'ContentType': f'application/{ext}'}
                     )
                 except ClientError as e:
-                    return JsonResponse({"error": f"Failed to upload material on row {i}: {str(e)}"}, status=500)
+                    return JsonResponse({"error": f"Failed to upload material on row {i}: {str(e)}","products": product_responses,}, status=500)
             specifications_str = str(row_data.get('specifications') or '').strip().rstrip(';')
             specs_list = [spec for spec in specifications_str.split(';') if spec]
 
@@ -1079,6 +1109,7 @@ def upload_products_excel(request):
         "products": product_responses,
         "admin_id":str(admin_id),
     }, status=200)
+
 
 @csrf_exempt
 def add_product_specifications(request):

@@ -35,7 +35,7 @@ const CustomerProfileOptions = () => {
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-    navigate("/login");
+    navigate("/"); // Redirect to homepage after logout
   };
 
   return (
