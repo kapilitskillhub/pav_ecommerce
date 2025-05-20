@@ -112,7 +112,6 @@ const EditSubcategory = () => {
           />
         </div>
 
-        {/* File Upload Field */}
         <div className="form-group upload-file edit-upload-file">
           <label  htmlFor="image" className="upload-label">Upload an Image</label>
           <div
@@ -146,8 +145,6 @@ const EditSubcategory = () => {
             />
           </div>
         </div>
-
-        {/* Buttons */}
         <div className="form-actions">
           <button type="button" onClick={() => navigate(-1)} className="admin-cancel-button">
             Cancel

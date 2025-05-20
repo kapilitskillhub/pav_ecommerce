@@ -134,16 +134,6 @@ const CustomerEditProfile = () => {
                 <div className="input-single">
                     <h3 className="profile-edit-heading-first">Mobile Number</h3>
                     <PhoneInput
-                        // className="Customer-input-row-edit-profile"
-                        // type="text"
-                        // name="mobile_no"
-                        // id="mobile_no"
-                        // placeholder="Mobile Number"
-                        // value={formData.mobile_no}
-                        // onChange={handleChange}
-                        // pattern="\d{10}"
-                        // title="Mobile number must be exactly 10 digits"
-                        // required
                                 country={"in"}
                                 value={formData.mobile_number}
                                 onChange={(value) => handlePhoneChange(value, "mobile_number")}

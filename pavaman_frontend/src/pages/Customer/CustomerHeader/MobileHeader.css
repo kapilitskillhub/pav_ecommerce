@@ -1,0 +1,18 @@
+.mobile-header-section-second {
+  display: none;
+}
+.mobile-header-section-second {
+    background: #4450A2;
+    padding: 5px;
+    display: block;
+    margin-right: 37px;
+
+  }
+    @media (max-width: 768px) {
+    .toggle-search-icon {
+        background-color: #4450A2;
+        border: none;
+        margin-left: 98px;
+    }
+}
+  

@@ -74,5 +74,4 @@ const SideMenu = ({ setIsAuthenticated }) => {
 
     );
 };
-
 export default SideMenu;

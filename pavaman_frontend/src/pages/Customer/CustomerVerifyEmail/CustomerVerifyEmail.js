@@ -3,9 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./CustomerVerifyEmail.css";
 
-// import PopupMessage from "../../../components/Popup/Popup";
-
-
 const VerifyEmail = () => {
     const { verification_link } = useParams();
     const navigate = useNavigate();

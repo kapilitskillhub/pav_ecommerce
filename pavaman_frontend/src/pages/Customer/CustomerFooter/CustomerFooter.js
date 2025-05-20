@@ -2,8 +2,6 @@ import React from 'react';
 import "../CustomerFooter/CustomerFooter.css";
 import logo from '../../../assets/images/logo.png';
 import { useNavigate } from 'react-router-dom';
- // replace with your logo path
-
 const PavamanFooter = () => {
   const navigate = useNavigate();
   return (
@@ -19,33 +17,39 @@ const PavamanFooter = () => {
         <div className="footer-links">
           <div className="footer-column">
             <h4>Address</h4>
-           <p>
-            Kapil Kavuri Hub, 2nd Floor ,
-           </p>
-           <p>
-            Financial District, Nanakramguda,
-           </p>
-           <p>Hyderabad,Telangana,</p>
-           <p>
-            INDIA – 500 032
-           </p>
+            <p>
+              Kapil Kavuri Hub, 2nd Floor ,
+            </p>
+            <p>
+              Financial District, Nanakramguda,
+            </p>
+            <p>Hyderabad,Telangana,</p>
+            <p>
+              INDIA – 500 032
+            </p>
           </div>
           <div className="footer-column">
             <h4>My Account</h4>
-             <ul  className='my-account-contact'>
-  <li><span onClick={() => navigate('/view-cart-products')}>Cart</span></li>
-  <li><span onClick={() => navigate('/my-orders')}>Checkout</span></li>
-  <li><span onClick={() => navigate('/profile')}>My Account</span></li>
-</ul>
+            <ul className='my-account-contact'>
+              <li><span onClick={() => navigate('/view-cart-products')}>Cart</span></li>
+              <li><span onClick={() => navigate('/my-orders')}>Checkout</span></li>
+              <li><span onClick={() => navigate('/profile')}>My Account</span></li>
+            </ul>
           </div>
           <div className="footer-column">
             <h4>Services</h4>
             <ul className='service-options'>
-              {/* <li><a href="#">About Us</a></li> */}
               <li><span onClick={() => navigate('/contact')}>Contact Us</span></li>
               <li><a href="#">Pavaman B2B</a></li>
             </ul>
-          </div>            
+          </div>
+          <div className="footer-column">
+            <h4>Policies</h4>
+            <ul className='my-account-contact'>
+              <li><span onClick={() => navigate('/contact')}>Return</span></li>
+              <li><span onClick={() => navigate('/contact')}>Order Cancellation</span></li>
+            </ul>
+          </div>
         </div>
       </div>
 

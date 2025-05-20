@@ -127,7 +127,6 @@
 }
 
 .button-tab-active {
-    /* text-decoration: underline #4F4892; */
     background-color: #4F4892;
     color: white;
     border-radius: 20px;
@@ -171,14 +170,6 @@
     border-bottom: 1px solid #4F4892;
     width: 600px;
 }
-
-/* .specification-item:first-child{
-    border-top:  1px solid #4F4892;
-} */
-/* .specification-item:last-child {
-    border-bottom: none;
-} */
-
 .specification-item strong{
     color: #4F4892;
     text-transform: capitalize;
@@ -236,7 +227,6 @@
 }
 
 .specification-input-placeholder{
-    /* margin-right: 50px; */
     height: 50px;
     border-radius: 5px;
     border: 0.25px solid #000;

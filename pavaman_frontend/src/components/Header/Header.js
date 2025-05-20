@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
 import SearchIcon from "../../assets/images/search.svg";
-import RefreshIcon from "../../assets/images/search.svg"; // Add an icon for refresh
+import RefreshIcon from "../../assets/images/search.svg"; 
 import { IoPerson } from "react-icons/io5";
 import { RiRefreshLine } from "react-icons/ri";
 import { LuRefreshCw } from "react-icons/lu";
@@ -32,8 +32,6 @@ const Header = ({ setIsAuthenticated, setCategories, setSubcategories, setProduc
     const toggleDropdown = () => {
         setShowDropdown((prev) => !prev);
     };
-
-    // Close dropdown if clicked outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -104,17 +102,16 @@ const handleSearch = async (event) => {
             setProducts(updatedProducts);
         }
 
-        setSearchTriggered(true); // Show Refresh button
+        setSearchTriggered(true); 
     } catch (error) {
         console.error("Search Error:", error);
         setErrorMessage("Something went wrong. Please try again.");
     }
 };
-
 const handleRefresh = () => {
-    setSearchQuery("");      // Clear search input
-    setErrorMessage("");     // Clear any error message
-    setSearchTriggered(false); // Show Search button again
+    setSearchQuery("");     
+    setErrorMessage("");    
+    setSearchTriggered(false); 
 
     if (location.pathname.includes("/view-categories")) {
         fetchCategories();
@@ -124,9 +121,6 @@ const handleRefresh = () => {
         fetchProducts();
     }
 };
-
-
-
     const fetchCategories = async () => {
         setErrorMessage("");
         try {
@@ -189,18 +183,14 @@ const handleRefresh = () => {
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
-
                                 {searchTriggered ? (
-                                    // Show Refresh button once search results are displayed
                                     <RiRefreshLine className="refresh-button" onClick={handleRefresh} />
                                 ) : (
-                                    // Show Search button initially
                                     <button type="submit" className="search-button">
                                         <img src={SearchIcon} alt="Search" className="search-icon" />
                                     </button>
                                 )}
                             </form>
-
                         )}
                 </div>
                 <div className="profile-container" ref={dropdownRef}>
@@ -222,5 +212,4 @@ const handleRefresh = () => {
         </header>
     );
 };
-
 export default Header;

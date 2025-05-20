@@ -23,13 +23,9 @@ const generateInvoicePDF = async (customerId, order) => {
 
         const invoice = result.invoices[0];
         const doc = new jsPDF();
-
-        // === Title ===
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.text('Tax Invoice', 105, 15, { align: 'center' });
-
-        // === Sold By & Ship From ===
         let y = 25;
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
@@ -52,8 +48,6 @@ const generateInvoicePDF = async (customerId, order) => {
         y += 5;
         doc.setFont('helvetica', 'bold');
         doc.text(`GSTIN: XXABCDEFGH1Z1`, 14, y);
-
-        // === Bill To & Ship To ===
         const billing = invoice["Billing To"];
         const delivery = invoice["Delivery To"];
 
@@ -74,14 +68,12 @@ const generateInvoicePDF = async (customerId, order) => {
         y += 5;
         const deliveryAddress = delivery.address.split('\n');
         deliveryAddress.forEach(line => {
-            const splitLines = doc.splitTextToSize(line, 90); // limit width to avoid cutoff
+            const splitLines = doc.splitTextToSize(line, 90); 
             splitLines.forEach(subLine => {
                 doc.text(subLine, 105, y);
                 y += 5;
             });
         });
-
-        // === Invoice Details ===
         y += 5;
         doc.setFont('helvetica', 'bold');
         doc.text(`Invoice No: ${invoice.invoice_number}`, 14, y);
@@ -90,8 +82,6 @@ const generateInvoicePDF = async (customerId, order) => {
         y += 5;
         doc.text(`Order ID: ${invoice.order_id}`, 14, y);
         doc.text(`Order Date: ${invoice.order_date}`, 105, y);
-
-        // === Product Table ===
         autoTable(doc, {
             startY: y + 10,
             head: [[
@@ -129,7 +119,6 @@ const generateInvoicePDF = async (customerId, order) => {
                 fillColor: [245, 245, 245]
             },
             willDrawCell: (data) => {
-                // Apply fonts properly without causing layout glitches
                 if (data.section === 'head') {
                     doc.setFont('helvetica', 'bold');
                 } else if (data.section === 'body') {
@@ -137,52 +126,26 @@ const generateInvoicePDF = async (customerId, order) => {
                 }
             }
         });
-
-
-
-        // // === Grand Total Section ===
-        // const totalY = doc.lastAutoTable.finalY + 10;
-        // doc.setFont('helvetica', 'bold');
-        // doc.text(`Grand Total  ${invoice.grand_total}`, 14, totalY);
-
-        // doc.setFont('helvetica', 'normal');
-        // doc.text(`Payment Mode: ${invoice.payment_mode}`, 14, totalY + 7);
-        // === Grand Total Section (Right-Aligned) ===
         const pageWidth = doc.internal.pageSize.getWidth();
         const marginRight = 14;
         const totalY = doc.lastAutoTable.finalY + 10;
 
 
         doc.setFont('helvetica', 'bold');
-        doc.text(`Grand Total  ${invoice.grand_total}`, 150, totalY); // approx. right-aligned
+        doc.text(`Grand Total  ${invoice.grand_total}`, 150, totalY);
 
         doc.setFont('helvetica', 'normal');
         doc.text(`Payment Mode: ${invoice.payment_mode}`, 150, totalY + 7);
-
-
-        // doc.text(`GST Rate: ${invoice.gst_rate}`, 14, totalY + 14);
-
-        // === Signature ===
-        // // === Signature ===
-        // doc.setFont('helvetica', 'italic');
-        // doc.text('Authorized Signatory', 160, totalY + 25);
-
-        // Add Signature Image
-        doc.addImage(signatureImg, 'PNG', 150, totalY + 10, 40, 15); // (image, type, x, y, width, height)
-
+        doc.addImage(signatureImg, 'PNG', 150, totalY + 10, 40, 15);
 
         doc.setFont('helvetica', 'italic');
         doc.text('Authorized Signatory', 150, totalY + 35);
-
-        // === Footer ===
         const footerY = totalY + 40;
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
         doc.text('*Keep this invoice and manufacturer box for warranty purposes.', 14, footerY);
         doc.text('The goods sold are intended for end-user consumption and not for re-sale.', 14, footerY + 5);
         doc.text('For support, contact us at: support@yourstore.com', 14, footerY + 10);
-
-        // === Save PDF ===
         doc.save(`Invoice_${invoice.invoice_number}.pdf`);
 
     } catch (error) {

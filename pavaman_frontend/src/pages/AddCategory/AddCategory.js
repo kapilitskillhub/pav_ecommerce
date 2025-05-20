@@ -6,7 +6,6 @@ import SuccessIcon from "../../assets/images/succes-icon.png";
 import SuccessMessageImage from "../../assets/images/success-message.svg";
 import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
-
 const AddCategory = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
@@ -26,7 +25,6 @@ const AddCategory = () => {
       setShowPopup(false);
     }, 10000);
   };
-  // Check session validity when component loads
   useEffect(() => {
     const adminId = sessionStorage.getItem("admin_id");
 
@@ -37,8 +35,6 @@ const AddCategory = () => {
     }
   }, [navigate]);
 
-
-  // Handle file selection
   const handleFileChange = (e) => {
     if (e.target.files.length === 0) return;
     const file = e.target.files[0];
@@ -50,7 +46,6 @@ const AddCategory = () => {
     e.target.value = "";
   };
 
-  // Handle category submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -67,7 +62,6 @@ const AddCategory = () => {
     }
 
     if (!name.trim()) {
-      // alert("Please enter the category name.");
       displayPopup("Please enter the category name.", "error");
 
       return;
@@ -77,10 +71,9 @@ const AddCategory = () => {
 
       return;
     }
-
     setLoading(true);
     const formData = new FormData();
-    formData.append("admin_id", adminId); // Ensure correct admin ID
+    formData.append("admin_id", adminId); 
     formData.append("category_name", name);
     formData.append("category_image", image);
 
@@ -98,24 +91,20 @@ const AddCategory = () => {
         displayPopup("Category added successfully!", "success");
         setTimeout(() => {
           navigate("/view-categories", { state: { successMessage: "Category added successfully!" } });
-        }, 2000); // delay so the user sees the popup
+        }, 2000); 
         
       } else {
-        // alert(data.error || "Failed to add category.");
         displayPopup(data.error || "Failed to add category.", "error");
 
       }
     } catch (error) {
       console.error("Error:", error);
-      // alert("Something went wrong. Please try again.");
       displayPopup(error,"Something went wrong. Please try again.", "error");
 
     } finally {
       setLoading(false);
     }
   };
-
-  // Handle cancel button
   const handleCancel = () => {
     navigate("/view-categories");
   };
@@ -172,7 +161,6 @@ const AddCategory = () => {
                   <p className="upload-text">
                     <span>Upload File</span> or Drag and Drop
                   </p>
-                  {/* <p className="upload-text-mb">Up to 20MB</p> */}
                 </>
               )}
               <input
@@ -184,7 +172,6 @@ const AddCategory = () => {
               />
             </div>
           </div>
-
           <div className="form-actions">
             <button type="button" onClick={handleCancel} className="admin-cancel-button">
               Cancel

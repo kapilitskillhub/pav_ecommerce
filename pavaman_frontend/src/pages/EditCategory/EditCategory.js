@@ -16,7 +16,7 @@ const EditCategory = () => {
   const [name, setName] = useState(category_name || "");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(category_image_url || "");
-  const [isImageUploaded, setIsImageUploaded] = useState(false); // Initially false
+  const [isImageUploaded, setIsImageUploaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +37,6 @@ const EditCategory = () => {
     const adminId = sessionStorage.getItem("admin_id");
 
     if (!adminId) {
-      // alert("Session expired. Please log in again.");
       displayPopup("Session expired. Please log in again.", "error");
 
       sessionStorage.clear();
@@ -73,8 +72,6 @@ const EditCategory = () => {
       );
       return;
     }
-   
-
 
     if (!name.trim()) {
       setError("Category name is required.");
@@ -107,7 +104,7 @@ const EditCategory = () => {
         displayPopup("Category updated successfully!", "success");
         setTimeout(() => {
           navigate("/view-categories", { state: { successMessage: "Category updated successfully!" } });
-        }, 2000); // delay so the user sees the popup
+        }, 2000); 
         
       } else {
         setError(data.error || "Failed to update category.");
@@ -169,7 +166,6 @@ const EditCategory = () => {
                   <p className="upload-text">
                     <span>Upload File</span> or Drag and Drop
                   </p>
-                  {/* <p className="upload-text-mb">Up to 20MB</p> */}
                 </>
               )}
               <input
@@ -180,12 +176,6 @@ const EditCategory = () => {
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
-
-            {/* {imagePreview && !isImageUploaded && (
-              <div className="image-preview">
-                <img src={imagePreview} alt="Uploaded Category" className="preview-img" />
-              </div>
-            )} */}
           </div>
 
           <div className="form-actions">

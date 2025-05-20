@@ -107,8 +107,10 @@ const navigateToAverageRatings = () => {
     <div className="report-wrapper">
       <div className="discount-header">
         <h3 className="report-title heading-admin">Feedback Reports</h3>
-        <button className='rating-button' onClick={navigateToAverageRatings}>Average Rating Page</button>
+        <div className='discount-buttons'>
+        <button className='cart-place-order-average-btn ' onClick={navigateToAverageRatings}>Average Rating Page</button>
         <button className='cart-place-order' onClick={downloadExcel}>Download Excel</button>
+        </div>
       </div>
            <div className="admin-popup">
         <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />

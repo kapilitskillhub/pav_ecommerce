@@ -35,7 +35,7 @@ const ViewCategories = ({ categories, setCategories }) => {
     const successMessage = location.state?.successMessage;
     if (successMessage) {
       displayPopup(successMessage, "success");
-      navigate(location.pathname, { replace: true }); // Clear state after showing message
+      navigate(location.pathname, { replace: true }); 
     }
   }, [location]);
 
@@ -104,8 +104,6 @@ const ViewCategories = ({ categories, setCategories }) => {
       if (response.ok && data.status_code === 200) {
         displayPopup(` Category deleted successfully!`, "success");
         setShowDeletePopup(false);
-
-        // Slight delay before updating categories to ensure popup displays
         setTimeout(() => {
           setCategories(categories.filter((category) => category.category_id !== categoryToDelete));
         }, 100);
@@ -166,8 +164,6 @@ const ViewCategories = ({ categories, setCategories }) => {
           <img src={AddIcon} alt="Add Category" className="add-category-image" />
         </div>
       </div>
-
-      {/* Delete Confirmation Popup */}
       {showDeletePopup && (
         <div className="admin-popup-overlay popup-overlay">
           <div className="popup-content">
@@ -185,9 +181,6 @@ const ViewCategories = ({ categories, setCategories }) => {
           </div>
         </div>
       )}
-
-      {/* Popup Message */}
-
     </div>
   );
 };

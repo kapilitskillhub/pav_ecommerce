@@ -39,7 +39,7 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen, onDeliverHer
                 if (data.error !== "No address found for the given customer ID.") {
                     displayPopup(data.error || "Failed to fetch addresses", "error");
                 }
-                setAddresses([]); // still update the addresses to an empty list
+                setAddresses([]); 
             }
 
         } catch (error) {
@@ -133,8 +133,7 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen, onDeliverHer
                     total_amount: data.total_amount,
                     product_name: data.product_name,
                 });
-                onDeliverHere();  // Scroll and collapse
-                // Set selected address to parent
+                onDeliverHere();  
                 if (selectedAddr) {
                     onAddressSelect(selectedAddr);
                 }

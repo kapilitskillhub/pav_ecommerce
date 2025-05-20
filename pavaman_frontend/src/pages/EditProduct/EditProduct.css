@@ -1,11 +1,10 @@
-/* Container styling */
+
 .edit-product-container {
     max-width: 100%;
     width: 700px;
     margin: auto;
 }
 
-/* Title */
 .form-title {
     color: #4F4892;
     font-family: Inter;
@@ -18,7 +17,6 @@
 .edit-product-form div{
     text-align: left;
     margin-bottom: 30px;
-
 }
 
 .edit-product-form div div{
@@ -35,7 +33,6 @@
     margin-bottom: 14px;
 }
 
-/* Input fields */
 .input-field,
 .textarea-field,
 .file-upload {
@@ -62,7 +59,6 @@ line-height: normal;
     cursor: not-allowed;
 }
 
-/* Input Row for Price, Quantity, and Discount */
 .input-row {
     display: flex;
     gap: 10px;
@@ -72,7 +68,6 @@ line-height: normal;
     flex: 1;
 }
 
-/* File Upload */
 .file-upload {
     border: 1px dashed #A3A3A3;
     padding: 15px;
@@ -80,8 +75,6 @@ line-height: normal;
     cursor: pointer;
     height: 260px;
 }
-
-/* Buttons */
 .button-group {
     display: flex;
     justify-content: space-around;
@@ -112,14 +105,11 @@ line-height: normal;
     background-color: #4F4892;
 }
 
-/* Error message */
 .error-message {
     color: red;
     text-align: center;
     font-weight: bold;
 }
-
-
 .edit-product-container .upload-file {
     display: flex;
     align-items: left;
@@ -127,15 +117,12 @@ line-height: normal;
     flex-direction: column;
     margin-top: 20px;
 }
-
 .edit-product-container .upload-box{
 
     align-items: center;
     display: flex;
     flex-direction: column;
 }
-
-
 .success-icon-img{
     align-items: center;
     width: 100px;

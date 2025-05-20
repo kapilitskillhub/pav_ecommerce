@@ -6,33 +6,27 @@
     text-decoration: underline;
     margin-top: 30px;
 }
-
 .customer-discount-products-section {
     display: grid;
     gap: 16px;
     grid-template-columns: repeat(5, 1fr);
     margin: 20px auto;
-    justify-content: center; /* ADD THIS */
+    justify-content: center;
     max-width: 1200px; 
-        
 }
-
 .product-image-wrapper {
     width: 230px;
     height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* overflow: hidden; */
     margin-left: 15px;
    
 }
 
-
-    
 .customer-discount-product-card {
-    border: 2px solid #dadada; /* Strong colored frame */
-    border-radius: 12px;       /* Optional: rounded corners */
+    border: 2px solid #dadada; 
+    border-radius: 12px;   
     margin: 16px auto;
     padding: 10px;
     display: flex;
@@ -40,19 +34,17 @@
     justify-content: space-between;
     align-items: center;
     object-fit: contain;
-    /* overflow: hidden; */
     background: white;
     text-align: center;
     height: 415px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
-    transition: all 0.3s ease;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); 
 }
 
 .customer-discount-product-card:hover {
-    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0); /* Deeper shadow on hover */
-    transform: scale(1.03); /* Slight zoom effect */
-   box-shadow: 0px 4px 12px rgba(36, 5, 114, 0.3); /* Optional glow */
-    z-index: 1; /* Ensures the hover card appears above others */ /* Slightly darker highlight on hover */
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0); 
+    transform: scale(1.03); 
+   box-shadow: 0px 4px 12px rgba(36, 5, 114, 0.3); 
+    z-index: 1;
 }
 .customer-discount-product-image {
     max-width: 100%;
@@ -67,7 +59,6 @@
     font-weight: 500;
     color: #485692;
     white-space: nowrap;
-    /* overflow: hidden; */
     text-overflow: ellipsis;
     max-width: 90px;
     display: block;
@@ -81,7 +72,6 @@
 .customer-discount-section-name,
 .customer-discount-section-price,
 .customer-discount-section-original-price {
-    /* margin: 10px; */
     text-align: left;
     margin: 16px auto;
     text-align: center !important;
@@ -153,12 +143,10 @@
 }
 
 .discount-tag {
-    /* background-color: #ff6666;  */
     color: #fd933b;
     font-size: 15px;
     font-weight: bold;
     padding: 5px 10px;
-    /* border-radius: 5px; */
     display: inline-block;
     margin-top: 5px;
 }
@@ -194,7 +182,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* overflow: hidden; */
     margin-left: 15px;
    
 }
@@ -218,8 +205,6 @@
         width: 100%;
     }
 }
-
-
 .customer-dashboard .popup {
     position: fixed;
     bottom: 60%;
@@ -260,10 +245,6 @@
     width: 35px; 
     height: 35px;
 }
-
-/* .discount-dashboard{
-    overflow: hidden;
-} */
 
 @keyframes fadeInOut {
     0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }

@@ -25,6 +25,7 @@ import CustomerMyOrderDetails from "../Customer/CustomerMyOrderDetails/CustomerM
 import AllCategories from "../Customer/CustomerAllCategories/AllCategories";
 import AllProducts from "../Customer/CustomerAllCategories/Products";
 import Contact from "../Customer/Contact/Contact";
+import B2B from '../Customer/B2B/B2B';
 import CustomerProfileOptions from "../../pages/Customer/CustomerHeader/CustomerProfileOptions";
 
 
@@ -36,13 +37,11 @@ const CustomerRoutes = () => {
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
       <Routes>
-        {/* Public routes */}
         <Route path="/customer-login" element={<CustomerLogin setCustomerAuthenticated={setCustomerAuthenticated} />} />
         <Route path="/customer-register" element={<CustomerSignup />} />
         <Route path="/customer-mobile-verification" element={<CustomerMobileVerification />} />
         <Route path="/verify-email/:verification_link" element={<VerifyEmail />} />
 
-        {/* Wrap other routes inside CustomerLayout */}
         <Route element={<CustomerLayout />}>
           <Route path="/" element={<ViewCategoriesAndDiscountedProducts />} />
           <Route path="categories/view-sub-categories/" element={<ViewSubCategoriesAndDiscountedProducts />} />
@@ -61,6 +60,7 @@ const CustomerRoutes = () => {
           <Route path="/all-categories" element={<AllCategories />} />
           <Route path="/all-products" element={<AllProducts/>} />
           <Route path="/contact" element={<Contact/>} />
+          <Route path="/b2b" element={<B2B />} />
           <Route path="/profile-options" element={<CustomerProfileOptions/>} />
 
           

@@ -1,4 +1,3 @@
-/* CustomerEditProfile.css */
 
 .edit-profile-container {
     max-width: 900px;
@@ -100,12 +99,9 @@
     font-weight: 600;
 }
 
-/* Popup Message */
 .profile-popup-discount {
     margin-bottom: 15px;
 }
-
-/* Responsive */
 @media (max-width: 600px) {
     .input-row {
         flex-direction: column;

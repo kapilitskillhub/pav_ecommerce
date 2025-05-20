@@ -6,10 +6,11 @@ import {
   FaHome,
 } from "react-icons/fa";
 import { IoMdPerson } from "react-icons/io";
-import { FiPhone } from "react-icons/fi";
+import "../CustomerHeader/MobileHeader.css";
 import { IoMdClose } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../../assets/images/logo.png";
+import { LuBriefcaseBusiness } from "react-icons/lu";
 
 const MobileHeader = ({ handleLogout, cartCount }) => {
   const navigate = useNavigate();
@@ -64,14 +65,14 @@ const MobileHeader = ({ handleLogout, cartCount }) => {
 
   return (
     <>
-      <div className="mobile-header-section">
+      <div className="mobile-header-section-second">
         <div className="mobile-header">
           <div className="mobile-customer-logo" onClick={() => navigate("/")}>
             <img src={Logo} alt="Logo" />
           </div>
 
           <div
-            className="mobile-search-icon toggle-search-icon"
+            className="mobile-search-icon toggle-search-icon "
             onClick={toggleSearch}
           >
             <FaSearch className="mobile-customer-search-icon search-icon-color" />
@@ -128,7 +129,6 @@ const MobileHeader = ({ handleLogout, cartCount }) => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
       <div className="mobile-nav-icon-wrapper">
         <div className="nav-item" onClick={() => navigate("/")}>
           <FaHome className="nav-icon" />
@@ -150,12 +150,12 @@ const MobileHeader = ({ handleLogout, cartCount }) => {
           )}
           <span>Cart</span>
         </div>
-
-        <div className="nav-item" onClick={() => navigate("/contact")}>
-          <FiPhone className="nav-icon" />
-          <span>Contact</span>
+         <div className="nav-item" onClick={() => navigate("/b2b")}>
+          <LuBriefcaseBusiness className="nav-icon" />
+          <span>B2B</span>
         </div>
       </div>
+      
     </>
   );
 };

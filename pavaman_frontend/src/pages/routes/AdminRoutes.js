@@ -24,6 +24,7 @@ import LowStockProductsPage from "../Dashboard/LowStockProductsPage";
 import BottomProductsPage from '../AdminCustomerReports/BottomProducts';
 import AdminInventoryProducts from "../AdminInventory/AdminInventory";
 import AdminAverageRatings from '../AdminRatings/AdminAverageRatings';
+import AddProductExcel from "../../pages/ViewProducts/AddProductExcel";
 
 
 const AdminRoutes = ({ categories, setCategories, subcategories, setSubcategories, products, setProducts }) => {
@@ -55,6 +56,8 @@ const AdminRoutes = ({ categories, setCategories, subcategories, setSubcategorie
       <Route path="/bottom-products" element={<BottomProductsPage />} />
       <Route path="/inventory" element={<AdminInventoryProducts />} />
       <Route path="/average-ratings" element={<AdminAverageRatings />} />
+      <Route path="/uploadproductexcel" element={<AddProductExcel />} />
+
 
     </Routes>
   );

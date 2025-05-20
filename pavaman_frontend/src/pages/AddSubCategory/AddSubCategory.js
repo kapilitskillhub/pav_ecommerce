@@ -11,7 +11,6 @@ const AddSubCategory = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { category_id, category_name } = location.state || {}; 
-
   const [subCategoryName, setSubCategoryName] = useState(""); 
   const [subCategoryImage, setSubCategoryImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); 
@@ -29,21 +28,16 @@ const AddSubCategory = () => {
       setShowPopup(false);
     }, 10000);
   };
-
-  // Check session validity
   useEffect(() => {
     const adminId = sessionStorage.getItem("admin_id");
 
     if (!adminId) {
-      // alert("Session expired. Please log in again.");
       displayPopup("Session expired. Please log in again.", "error");
-
       sessionStorage.clear();
       navigate("/admin-login");
     }
   }, [navigate]);
 
-  // Handle file selection
   const handleFileChange = (e) => {
     if (e.target.files.length === 0) return;
     const file = e.target.files[0];
@@ -55,7 +49,6 @@ const AddSubCategory = () => {
     e.target.value = ""; 
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -138,13 +131,10 @@ const AddSubCategory = () => {
       </header>
       <div className="add-card-form">
         <form onSubmit={handleSubmit}>
-          {/* Category Name (Non-Editable) */}
           <div className="form-group category-field">
             <label className="category-name-label">Category Name</label>
             <input type="text" value={category_name} disabled className="category-name-input" />
           </div>
-
-          {/* Subcategory Name */}
           <div className="form-group sub-category-field">
             <label htmlFor="subCategoryName" className="category-name-label">Subcategory Name</label>
             <input
@@ -156,8 +146,6 @@ const AddSubCategory = () => {
               onChange={(e) => setSubCategoryName(e.target.value)}
             />
           </div>
-
-          {/* Upload Image */}
           <div className="form-group upload-file sub-category-upload-file">
             <label htmlFor="image" className="upload-label">Upload an image</label>
             <div
@@ -178,7 +166,6 @@ const AddSubCategory = () => {
                   <p className="upload-text">
                     <span>Upload File</span> or Drag and Drop
                   </p>
-                  {/* <p className="upload-text-mb">Up to 20MB</p> */}
                 </>
               )}
               <input
@@ -190,8 +177,6 @@ const AddSubCategory = () => {
               />
             </div>
           </div>
-
-          {/* Form Actions */}
           <div className="form-actions sub-category-form-actions">
             <button type="button" onClick={handleCancel} className="admin-cancel-button">
               Cancel

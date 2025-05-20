@@ -19,13 +19,9 @@ const CustomerProfile = ({ refresh }) => {
     const [tempData, setTempData] = useState({});
     const [otpSent, setOtpSent] = useState(false);
     const [otp, setOtp] = useState("");
-    const [step, setStep] = useState(1); // 1: previous email verification, 2: new email verification
+    const [step, setStep] = useState(1);
     const [newMobileOtpSent, setNewMobileOtpSent] = useState(false);
-    // const [formData, setFormData] = useState({});
     const [showNewMobileOtpField, setShowNewMobileOtpField] = useState(false);
-
-    
-
     const fetchCustomerProfile = async () => {
         if (!customerId) {
             setLoading(false);
@@ -224,12 +220,12 @@ const CustomerProfile = ({ refresh }) => {
         const data = await response.json();
         if (response.ok) {
             triggerPopup(data.message, "success");
-            setOtp(""); // clear entered OTP
-            setOtpSent(false); // hide old otp fields
-            setNewMobileOtpSent(true); // move to new mobile otp flow
+            setOtp("");
+            setOtpSent(false);
+            setNewMobileOtpSent(true); 
             setTempData((prevData) => ({
                 ...prevData,
-                mobile_no: "", // <-- EMPTY the mobile field for new entry
+                mobile_no: "", 
             }));
         } else {
             triggerPopup(data.error, "error");
@@ -320,7 +316,6 @@ const CustomerProfile = ({ refresh }) => {
                     </div>
                 </div>
 
-                {/* Personal Info */}
                 <div className="customer-profile-header">
                     <h3 className="profile-edit-main-heading">Personal Information</h3>
                     <BiSolidPencil className="edit-icon" onClick={() => handleEditClick("name")} />
@@ -332,7 +327,6 @@ const CustomerProfile = ({ refresh }) => {
                     <input type="text" value={customer.last_name || "-"} readOnly className="customer-input-row-profile" />
                 </div>
 
-                {/* Email */}
                 <div className="customer-profile-header">
                     <h3 className="profile-edit-heading">Email Address</h3>
                     <BiSolidPencil className="edit-icon" onClick={() => handleEditClick("email")} />
@@ -341,7 +335,6 @@ const CustomerProfile = ({ refresh }) => {
                     <input type="email" value={customer.email || "-"} readOnly className="customer-input-row-profile" />
                 </div>
 
-                {/* Mobile */}
                 <div className="customer-profile-header">
                     <h3 className="profile-edit-heading">Mobile Number</h3>
                     <BiSolidPencil className="edit-icon" onClick={() => handleEditClick("mobile_no")} />
@@ -360,7 +353,7 @@ const CustomerProfile = ({ refresh }) => {
                     name="email"
                     value={tempData.email}
                     className="edit-input"
-                    disabled // Current email should be readonly
+                    disabled 
                 />
 
                 {!otpSent ? (
@@ -421,32 +414,20 @@ const CustomerProfile = ({ refresh }) => {
     </div>
 )}
 
-
-
-            {/* Mobile Edit Popup */}
             {editField === "mobile_no" && (
                 <div className="edit-popup-box">
                             <h4>Edit Profile</h4>
 
                   <PhoneInput
-    // type="text"
-    // name="mobile_no"
-    // value={tempData.mobile_no}
-    // onChange={handleInputChange}
-    // className="edit-input"
-    // placeholder={newMobileOtpSent ? "Enter new mobile number" : "Current mobile number"}
        country={"in"}
-    //    type="text"
        name="mobile_no"
        value={tempData.mobile_no}
        onChange={(value) => handlePhoneChange(value, "mobile_number")}
        inputProps={{ name: "mobile_number", required: true }}
        placeholder={newMobileOtpSent ? "Enter new mobile number" : "Current mobile number"}
        required
-    //    disabled={otpSent && !newMobileOtpSent} // Disable during old OTP verification
+   
 />
-
-
                     {!otpSent && !newMobileOtpSent && (
                         <button className="send-otp-btn" onClick={sendMobileOtp}>
                             Send OTP
@@ -496,9 +477,6 @@ const CustomerProfile = ({ refresh }) => {
                     <FaTimes className="close-popup" onClick={() => setEditField(null)} />
                 </div>
             )}
-
-
-            {/* Name Edit Popup */}
             {editField === "name" && (
                 <div className="edit-popup-box">
                     <h4>Edit Profile</h4>

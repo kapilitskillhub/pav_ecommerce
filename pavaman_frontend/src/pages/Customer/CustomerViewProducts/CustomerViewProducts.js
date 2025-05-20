@@ -396,17 +396,32 @@ const CustomerViewProducts = () => {
                                         <div className="customer-product-name">{product.product_name}</div>
                                         <div className="customer-discount-section-price">₹{product.final_price}.00 (incl. GST)</div>
                                         <div>
-                                            {product.price !== product.final_price && (
+                                            <div className="customer-discount-section-original-price">
+                                                {product.price !== product.final_price ? (
+                                                    <>
+                                                        ₹{product.price}.00 (incl. GST)
+                                                        <div className="discount-tag">
+                                                            {product.discount && parseFloat(product.discount) > 0 ? `${product.discount} off` : ''}
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    // No discount, but keep space for layout consistency
+                                                    <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>
+                                                )}
+                                            </div>
+
+                                            {/* {product.price !== product.final_price && (
 
                                                 <div className="customer-discount-section-original-price">
                                                     ₹{product.price}.00 (incl. GST)
-                                                </div>
-                                            )}
-                                            <div className="discount-tag">
+                                                    <div className="discount-tag">
 
                                                 {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
 
                                             </div>
+                                                </div>
+                                            )} */}
+
                                             <div className="add-cart-section">
                                                 <span
                                                     className={`availability ${product.availability === "Out of Stock"

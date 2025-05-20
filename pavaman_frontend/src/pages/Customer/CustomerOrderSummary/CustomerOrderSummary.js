@@ -94,7 +94,6 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                 )}
             </div>
 
-            {/* Display each order */}
             {orders.map((order, index) => (
                 <div key={order.order_id} className="order-item">
                     <div className="order-image">
@@ -136,8 +135,6 @@ return (
            </div>
     );
 })()}
-
-
             <div className="cart-actions">
                 <button className="cart-place-order"
                     onClick={() => { setShowPayment(true); }}

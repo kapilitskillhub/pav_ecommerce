@@ -1,17 +1,13 @@
 .sidemenu {
   display: flex;
-   /* width: 179px;  */
   width: 250px;  
   padding: 44px 40px 79px 39px;
-  /* padding: 20px; */
   flex-direction: column;
   align-items: flex-start;
   gap: 30px;
-
   transition: width 0.3s ease-in-out; 
 
 }
-
 .sidemenu-item {
   height: 27px;
   display: flex;
@@ -20,8 +16,6 @@
   text-decoration: none;
   margin-top: 10px;
 }
-
-
 .sidemenu-label {
   color: #4F4892;
   font-family: Inter;
@@ -31,26 +25,18 @@
   line-height: normal;
   transition: opacity 0.3s ease-in-out;
 }
-
-/* App.css */
-
 .main-layout {
   display: flex;
-  /* height: 100vh; */
 }
 
 .side-menu-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /* border-right: 2px solid #4450A2; */
   width: 250px;
-
   transition: width 0.3s ease-in-out;
   margin-left: 30px;
   height: 100vh;
-
-
 }
 
 .main-content {
@@ -71,8 +57,6 @@
   background-color: #4450A2;
   border: 1px #4450A2 solid
 }
-
-
 .sidemenu-item.logout-link {
   font-size: 28px;
   border: none;
@@ -81,7 +65,7 @@
   color: #4F4892;
 }
 .sidemenu-item img {
-  width: 24px;  /* Adjust size as needed */
+  width: 24px;  
   height: 24px;
   object-fit: contain;
   color: #4F4892;
@@ -94,7 +78,7 @@
   font-size: 24px;
 }
 .toggle-button {
-  display: none; /* Default: Hide on desktop */
+  display: none; 
 }
 
 @media (max-width: 1024px) {
@@ -105,12 +89,12 @@
 
 @media (max-width: 768px) {
   .side-menu-container {
-    width: 80px; /* Shrinks sidebar */
+    width: 80px; 
     overflow: hidden;
   }
 
   .sidemenu-label {
-    display: none; /* Hide text, keep icons */
+    display: none; 
   }
 
   .sidemenu {
@@ -127,12 +111,10 @@
     justify-content: center;
   }
 }
-/* Hide toggle button on larger screens */
 .toggle-button {
   display: none;
 }
 
-/* Show toggle button only on mobile */
 @media screen and (max-width: 768px) {
   .toggle-button {
       display: flex;
@@ -144,7 +126,6 @@
   }
 }
 
-/* Move dashboard slightly up */
 .dashboard {
-  margin-top: 10px; /* Adjust as needed */
+  margin-top: 10px; 
 }

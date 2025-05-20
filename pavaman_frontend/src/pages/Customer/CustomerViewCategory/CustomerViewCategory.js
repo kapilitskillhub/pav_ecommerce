@@ -23,8 +23,7 @@ const ViewCategoriesAndDiscountedProducts = () => {
         const handleSearch = (e) => {
           const query = e.detail;
           if (!query) {
-            fetchData(); // Reset categories
-          } else {
+            fetchData(); 
             searchCategories(query);
           }
         };
@@ -41,7 +40,6 @@ const ViewCategoriesAndDiscountedProducts = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                // body: JSON.stringify({ customer_id: sessionStorage.getItem("customer_id") || null }),
                 body: JSON.stringify({ customer_id: localStorage.getItem("customer_id") || null }),
 
             });
@@ -90,7 +88,6 @@ const ViewCategoriesAndDiscountedProducts = () => {
 
       
     const handleViewSubCategory = (category) => {
-        // sessionStorage.setItem("category_id", category.category_id);
         localStorage.setItem("category_id", category.category_id);
 
         navigate("/categories/view-sub-categories/", { state: { category_name: category.category_name } });
@@ -118,7 +115,6 @@ const ViewCategoriesAndDiscountedProducts = () => {
                                         src={category.category_image_url}
                                         alt={category.category_name}
                                         className="customer-product-image"
-                                        // onError={(e) => e.target.src = defaultImage}
                                     />
 
                                     <div className="customer-product-name">{category.category_name}</div>

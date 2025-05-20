@@ -14,16 +14,6 @@
     margin-bottom: 19px;
     text-align: center;
 }
-
-/* .popup-message {
-    background: #4caf50;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    margin-bottom: 10px;
-} */
-
 .manage-address-form {
     display: flex;
     flex-direction: column;
@@ -91,8 +81,6 @@ textarea.edit-manage-address-input input:focus {
     transition: all 0.3s ease;
 }
 
-
-/* Responsive */
 @media (max-width: 600px) {
     .manage-form-row {
         flex-direction: column;
@@ -161,7 +149,6 @@ textarea.edit-manage-address-input input:focus {
     display: inherit; 
 }
 
-/* Buttons */
 .button-container {
     display: flex;
     gap: 14px;
@@ -180,7 +167,6 @@ textarea.edit-manage-address-input input:focus {
     color: white;
     text-align: center;
 }
-/* save */
 .manage-buttons[type="submit"] {
     background: #4450A2;
     border-radius: 20px;
@@ -207,8 +193,8 @@ textarea.edit-manage-address-input input:focus {
     }
 
     .manage-buttons {
-        width: 100%; /* Full width for better mobile experience */
-        font-size: 13px; /* Slightly smaller font */
+        width: 100%; 
+        font-size: 13px; 
         padding: 7px 10px;
     }
 }

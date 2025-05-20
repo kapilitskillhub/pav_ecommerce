@@ -71,12 +71,6 @@ const AdminInventoryProducts = () => {
 
     }
   };
-
-//   const addDiscount = () => {
-
-//     navigate("/add-discount")
-//   };
-
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -91,8 +85,6 @@ const AdminInventoryProducts = () => {
       <div className="discount-header">
         <h3>Sold Quantity Products Details</h3>
         <div className="discount-buttons">
-          {/* <button onClick={addDiscount}>Add Discount</button> */}
-
           <button onClick={downloadExcel}>Download Excel</button>
         </div>
       </div>
@@ -146,8 +138,6 @@ const AdminInventoryProducts = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Pagination */}
           <div className="pagination-container">
             <span>Page {currentPage} of {totalPages}</span>
             <button className="previous-button" onClick={prevPage} disabled={currentPage === 1}>PREVIOUS</button>

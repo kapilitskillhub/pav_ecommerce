@@ -9,15 +9,20 @@ const Side = ({ categories, handleSubcategoryClick }) => {
           cat.sub_categoryies.map((sub) => (
             <li
               key={sub.id}
-              onClick={() => handleSubcategoryClick(cat.category_name, sub.sub_category_name)}
+              onClick={() =>
+                handleSubcategoryClick(cat.category_name, sub.sub_category_name)
+              }
               className="all-subcategory-item"
             >
-              <img 
-              src={sub.sub_category_image}
-              className="side-image"/>
-
-
-              <div className="side-text">{sub.sub_category_name}</div>
+              <img
+                src={sub.sub_category_image}
+                className="side-image"
+                alt={sub.sub_category_name}
+              />
+              <div className="side-text">
+                {/* Replace underscore with space and apply capitalize */}
+                {sub.sub_category_name.replace(/_/g, " ")}
+              </div>
             </li>
           ))
         )}

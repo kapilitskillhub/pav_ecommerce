@@ -1,6 +1,5 @@
 .dashboard-reports {
   padding: 20px;
-  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
   background-color: #f9f9f9;
   color: #333;
 }
@@ -42,7 +41,6 @@
   background: #ffffff;
 }
 
-/* Background gradients */
 .card-sales-first {
   background: linear-gradient(to right, rgb(177, 241, 158), rgb(118, 198, 118));
 }
@@ -55,17 +53,14 @@
   background: linear-gradient(to right, rgb(224, 200, 167), rgb(240, 195, 195));
 }
 
-/* Headings inside cards */
 .today-heading {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; /* spacing between icon and text */
+  gap: 10px; 
   margin-bottom: 10px;
   font-size: 20px;
 }
-
-/* Icons */
 .today-icon {
   color: #17823d;
   font-size: 24px;
@@ -80,8 +75,6 @@
   color: #fbaa1e;
   font-size: 24px;
 }
-
-/* Amount text */
 .card-sales-first p,
 .card-sales-second p,
 .card-sales-third p {
@@ -108,7 +101,6 @@
   overflow: hidden;
 }
 
-/* Header */
 .chart-box h3 {
   font-size: 22px;
   color: #4450A2;
@@ -116,7 +108,6 @@
   margin-bottom: 10px;
 }
 
-/* Select dropdown aligned to top-right */
 .chart-box select {
   position: absolute;
   top: 20px;
@@ -131,26 +122,21 @@
   cursor: pointer;
 }
 
-/* Full bar chart layout */
 .bar-chart {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  /* height: 240px; */
   gap: 8px;
   margin-top: 40px;
   padding: 0 10px;
 }
 
-/* Each bar container */
 .bar-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: calc(100% / 12 - 8px); /* Fit 12 bars */
+  width: calc(100% / 12 - 8px); 
 }
-
-/* Actual bar */
 .bar {
   width: 30px;
   background-color: #3b82f6;
@@ -165,7 +151,6 @@
   position: relative;
 }
 
-/* Hover popup with ₹ amount */
 .bar:hover::after {
   content: attr(data-amount);
   position: absolute;
@@ -178,15 +163,11 @@
   white-space: nowrap;
 }
 
-/* Month label */
 .bar-wrapper label {
   margin-top: 6px;
   font-size: 12px;
   color: #475569;
 }
-
-
-
 .pie-chart-box {
   flex: 1 1 100%;
   background-color: #eff3fa;
@@ -278,7 +259,6 @@
   color: #f89e03;
 }
 
-/* --- Report Filter Section --- */
 .filter-controls {
   display: flex;
   align-items: center;
@@ -293,7 +273,6 @@
   color: #1e293b;
 }
 
-/* Dropdown */
 .filter-controls select {
   padding: 8px 12px;
   font-size: 14px;
@@ -304,8 +283,6 @@
   outline: none;
   cursor: pointer;
 }
-
-/* Date Picker general tweaks */
 .react-datepicker-wrapper {
   width: auto;
 }
@@ -321,7 +298,6 @@
   cursor: pointer;
 }
 
-/* Week input box */
 .filter-controls input[type="number"] {
   padding: 8px 12px;
   font-size: 14px;
@@ -329,8 +305,6 @@
   border-radius: 8px;
   width: 100px;
 }
-
-/* Responsive adjustments */
 @media (max-width: 600px) {
   .filter-controls {
     flex-direction: column;
@@ -344,8 +318,6 @@
   }
 }
 
-
-/* Datepicker popup container */
 .react-datepicker {
   font-family: 'Inter' !important;
   border: 1px solid #cbd5e1;
@@ -356,14 +328,12 @@
   color: #4450A2 !important;
 }
 
-/* Header (month and year) */
 .react-datepicker__header {
   background-color: #e2e8f0;
   border-bottom: 1px solid #cbd5e1;
   padding-top: 10px;
 }
 
-/* Day names row */
 .react-datepicker__day-names {
   display: flex;
   justify-content: space-between;
@@ -377,7 +347,6 @@
   text-align: center;
 }
 
-/* Individual day cells */
 .react-datepicker__day {
   width: 2rem;
   line-height: 2rem;
@@ -393,20 +362,16 @@
   background-color: #c7d2fe;
 }
 
-/* Selected day */
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
   background-color: #3b82f6;
   color: white;
 }
-
-/* Today */
 .react-datepicker__day--today {
   border: 1px solid #3b82f6;
   font-weight: bold;
 }
 
-/* Navigation arrows */
 .react-datepicker__navigation {
   top: 14px;
 }

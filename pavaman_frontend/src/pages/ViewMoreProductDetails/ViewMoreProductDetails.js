@@ -75,7 +75,6 @@ const displayPopup = (text, type = "success") => {
     }
   };
 
-  // Function to go to the next image
   const nextImage = () => {
     if (productDetails?.product_details?.product_images) {
       setMainImageIndex((prevIndex) =>
@@ -84,7 +83,6 @@ const displayPopup = (text, type = "success") => {
     }
   };
 
-  // Function to go to the previous image
   const prevImage = () => {
     if (productDetails?.product_details?.product_images) {
       setMainImageIndex((prevIndex) =>
@@ -102,11 +100,11 @@ const displayPopup = (text, type = "success") => {
       case "In Stock":
         return "green";
       default:
-        return "black"; // Default color if no valid status is found
+        return "black";
     }
   };
 
-  // Open Add Specification Form
+
   const handleAddSpecification = () => {
     setIsAddingSpecifications(true);
     setIsEditingSpecifications(false);
@@ -114,7 +112,6 @@ const displayPopup = (text, type = "success") => {
     setSpecifications([{ name: "", value: "" }]);
   };
 
-  // Open Edit Specification Form
   const handleEditSpecification = () => {
     setIsEditingSpecifications(true);
     setIsAddingSpecifications(false);
@@ -125,21 +122,17 @@ const displayPopup = (text, type = "success") => {
     );
   };
 
-  // Handle Add Specification Input Changes
   const handleSpecificationChange = (index, field, value) => {
     const updatedSpecs = [...specifications];
     updatedSpecs[index][field] = value;
     setSpecifications(updatedSpecs);
   };
 
-  // Handle Edit Specification Input Changes
   const handleEditSpecificationChange = (index, field, value) => {
     const updatedSpecs = [...editableSpecs];
     updatedSpecs[index][field] = value;
     setEditableSpecs(updatedSpecs);
   };
-
-  // Submit Add Specifications
   const handleSubmitSpecifications = async () => {
     if (specifications.some((spec) => !spec.name.trim() || !spec.value.trim())) {
       displayPopup("Please fill in all specifications.","error");
@@ -171,8 +164,6 @@ const displayPopup = (text, type = "success") => {
       displayPopup("Failed to add specifications.","error");
     }
   };
-
-  // Submit Edit Specifications
   const handleSubmitEditedSpecifications = async () => {
     try {
       const response = await axios.post("http://127.0.0.1:8000/edit-product-specifications", {
@@ -311,8 +302,6 @@ const displayPopup = (text, type = "success") => {
                       ) : (
                         <p>No specifications available.</p>
                       )}
-
-                      {/* Buttons to Add/Edit Specifications */}
                       <div className="specification-actions">
                         <button className="add-specification-btn" onClick={handleAddSpecification}>
                           Add Specification
@@ -325,8 +314,6 @@ const displayPopup = (text, type = "success") => {
                       </div>
                     </div>
                   ) : null}
-
-                  {/* Add Specification Form */}
                   {isAddingSpecifications && (
                     <div className="add-specifications">
                       <div className="add-specifications-header">Add Specifications</div>
@@ -404,8 +391,6 @@ const displayPopup = (text, type = "success") => {
                       </div>
                     </div>
                   )}
-
-                  {/* Edit Specification Form */}
                   {isEditingSpecifications && (
                     <div className="edit-specifications">
                       <div className="edit-specifications-header">Edit Specifications</div>

@@ -6,7 +6,6 @@
   text-align: start;
 }
 
-/* Headings */
 .main-heading {
   font-size: 22px;
   font-weight: 600;
@@ -24,8 +23,6 @@
   font-weight: bold;
   text-align: start;
 }
-
-/* Product Cards */
 .custom-product-card {
   display: flex;
   align-items: flex-start;
@@ -65,13 +62,11 @@
   align-items: center;
 }
 
-/* Highlighted Product */
 .highlight-product {
   border: 1px solid #aaa;
   background-color: #fafafa;
 }
 
-/* Shipping Address */
 .shipping-address-box {
   background: #ffffff;
   padding: 15px;
@@ -92,13 +87,12 @@
   color: #555;
 }
 .invoice-icon {
-  /* margin-left: 8px;  */
   font-size: 20px;
 }
 .payment-details-heading{
   text-transform: capitalize;
 }
-/* Payment Box */
+
 .payment-box {
   background: #ffffff;
   padding: 15px;
@@ -119,7 +113,6 @@
   color: #444;
 }
 
-/* Invoice Button */
 .invoice-button-wrapper {
   text-align: start;
   margin-top: 10px;
@@ -139,8 +132,6 @@
 .invoice-button:hover {
   background-color: #4450A2;
 }
-
-/* Loader & Empty State */
 .order-loader {
   text-align: center;
   font-size: 16px;
@@ -170,18 +161,14 @@ margin-top: 5px;
   font-size: 12px;
   font-weight: bold;
   padding: 5px 10px;
-  /* border-radius: 5px; */
-  /* display: inline-block; */
   margin-top: -15px;
 }
 
 .discount-tag-myorder-details {
-  /* background-color: #ff6666;  */
   color: #fd933b;
   font-size: 13px;
   font-weight: bold;
   padding: 5px 10px;
-  /* border-radius: 5px; */
   display: ruby-text;
   margin-top: -20px;
 }
@@ -189,7 +176,6 @@ margin-top: 5px;
   margin-top: -12px;
 }
 
-/* Responsive Design */
 @media screen and (max-width: 768px) {
   .custom-product-card {
     flex-direction: column;

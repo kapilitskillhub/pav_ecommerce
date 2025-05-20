@@ -40,7 +40,7 @@ const Navbar = () => {
   };
 
   const fetchSubCategories = async (categoryName) => {
-    if (subcategories[categoryName]) return; // Avoid fetching again if already loaded
+    if (subcategories[categoryName]) return;
 
     setLoading(true);
     try {
@@ -49,7 +49,6 @@ const Navbar = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category_name: categoryName,
-          // customer_id: sessionStorage.getItem("customer_id") || null,
           customer_id: localStorage.getItem("customer_id") || null,
 
         }),
@@ -69,10 +68,10 @@ const Navbar = () => {
   };
 
   const fetchProducts = async (subcategoryId, categoryName, subCategoryName) => {
-    if (products[subcategoryId] !== undefined) return; // Avoid redundant API calls
-  
-    setProducts((prev) => ({ ...prev, [subcategoryId]: "loading" })); // Temporary loading state
-  
+    if (products[subcategoryId] !== undefined) return;
+
+    setProducts((prev) => ({ ...prev, [subcategoryId]: "loading" }));
+
     try {
       const response = await fetch(
         `http://127.0.0.1:8000/categories/${categoryName}/${subCategoryName}/`,
@@ -82,45 +81,42 @@ const Navbar = () => {
           body: JSON.stringify({ sub_category_id: subcategoryId }),
         }
       );
-  
+
       const data = await response.json();
       console.log("Products API response:", data);
-  
+
       setProducts((prev) => ({
         ...prev,
         [subcategoryId]: data.products?.length > 0 ? data.products : [],
       }));
     } catch (error) {
       console.error("Error fetching products:", error);
-      setProducts((prev) => ({ ...prev, [subcategoryId]: [] })); // Ensure it's never undefined
+      setProducts((prev) => ({ ...prev, [subcategoryId]: [] }));
     }
   };
-  
-  
+
+
   useEffect(() => {
     console.log("Hovered Subcategory Changed:", hoveredSubcategory);
     console.log("Products State Updated:", products);
   }, [hoveredSubcategory, products]);
-  
+
   return (
     <div className="navbar-container">
-      {/* Sidebar Toggle Button */}
-      <div className="sidebar-header"  onMouseEnter={() => setIsCollapsed(false)}  // Open on hover
-                onMouseLeave={() => setIsCollapsed(true)} >
+      <div className="sidebar-header" onMouseEnter={() => setIsCollapsed(false)}
+        onMouseLeave={() => setIsCollapsed(true)} >
         <button className="menu-btn" >
           <FiMenu size={24} />
         </button>
         <p className="menu-name">All Categories</p>
       </div>
 
-      {/* Sidebar Menu */}
       <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}
-      onMouseEnter={() => setIsCollapsed(false)}
-      onMouseLeave={() => setIsCollapsed(true)}
+        onMouseEnter={() => setIsCollapsed(false)}
+        onMouseLeave={() => setIsCollapsed(true)}
       >
         {!isCollapsed && (
           <div className="sidebar-content">
-            {/* {error && <p className="error">{error}</p>} */}
             <ul className="category-list">
               {categories.map((category) => (
                 <li
@@ -139,8 +135,6 @@ const Navbar = () => {
                   >
                     {category.category_name} <FiChevronRight className="arrow-icon" />
                   </button>
-
-                  {/* Subcategories */}
                   {hoveredCategory === category.category_name && subcategories[category.category_name] && (
                     <ul className="subcategory-list">
                       {subcategories[category.category_name].map((sub) => (
@@ -150,16 +144,13 @@ const Navbar = () => {
                           onMouseEnter={() => {
                             if (hoveredSubcategory !== sub.sub_category_id) {
                               setHoveredSubcategory(sub.sub_category_id);
-                              
-                              // Don't clear all products, only update when needed
+
                               if (!products[sub.sub_category_id]) {
                                 fetchProducts(sub.sub_category_id, category.category_name, sub.sub_category_name);
                               }
                             }
                           }}
-                          
-                          
-                          
+
                         >
                           <button
                             onClick={() =>
@@ -172,20 +163,20 @@ const Navbar = () => {
                             {sub.sub_category_name} <FiChevronRight className="arrow-icon" />
                           </button>
                           {hoveredSubcategory !== null && products.hasOwnProperty(hoveredSubcategory) && (
-  <ul className="product-list">
-    {products[hoveredSubcategory] === "loading" ? (
-      <li className="loading">Loading products...</li>
-    ) : products[hoveredSubcategory]?.length > 0 ? (
-      products[hoveredSubcategory].map((prod) => (
-        <li key={prod.product_id} className="product-item">
-          {prod.product_name}
-        </li>
-      ))
-    ) : (
-      <li className="no-products">No products available.</li>
-    )}
-  </ul>
-)}
+                            <ul className="product-list">
+                              {products[hoveredSubcategory] === "loading" ? (
+                                <li className="loading">Loading products...</li>
+                              ) : products[hoveredSubcategory]?.length > 0 ? (
+                                products[hoveredSubcategory].map((prod) => (
+                                  <li key={prod.product_id} className="product-item">
+                                    {prod.product_name}
+                                  </li>
+                                ))
+                              ) : (
+                                <li className="no-products">No products available.</li>
+                              )}
+                            </ul>
+                          )}
 
                         </li>
                       ))}
@@ -198,22 +189,20 @@ const Navbar = () => {
         )}
       </div>
 
-     
-      
       <div className="navbar-links" onClick={() => navigate("/")}>
-          <FiHome className="nav-icon" /> <span>Home</span>
-        </div>
-        <div className="navbar-links" onClick={() => navigate("/shop")}>
-          <FiShoppingBag className="nav-icon" /> <span>Shop</span>
-        </div>
-        <div className="navbar-links" onClick={() => navigate("/order")}>
-          <FaClipboardList className="nav-icon" /> <span>Order</span>
-        </div>
-        <div className="navbar-links" onClick={() => navigate("/contact")}>
-          <FiPhone className="nav-icon" /> <span>Contact</span>
-        </div>
+        <FiHome className="nav-icon" /> <span>Home</span>
       </div>
-    
+      <div className="navbar-links" onClick={() => navigate("/shop")}>
+        <FiShoppingBag className="nav-icon" /> <span>Shop</span>
+      </div>
+      <div className="navbar-links" onClick={() => navigate("/order")}>
+        <FaClipboardList className="nav-icon" /> <span>Order</span>
+      </div>
+      <div className="navbar-links" onClick={() => navigate("/contact")}>
+        <FiPhone className="nav-icon" /> <span>Contact</span>
+      </div>
+    </div>
+
   );
 };
 

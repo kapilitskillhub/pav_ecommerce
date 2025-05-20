@@ -23,9 +23,9 @@ const AdminCustomerReports = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const [reportYear, setReportYear] = useState(new Date().getFullYear());
-  const [reportFilter, setReportFilter] = useState('yearly'); // 'yearly' | 'monthly' | 'weekly'
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // 1-12
-  const [selectedWeek, setSelectedWeek] = useState(1); // week number
+  const [reportFilter, setReportFilter] = useState('yearly'); 
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); 
+  const [selectedWeek, setSelectedWeek] = useState(1); 
   const [yearRange, setYearRange] = useState({
     from: new Date(new Date().getFullYear(), 0),
     to: new Date(new Date().getFullYear(), 11),
@@ -111,7 +111,7 @@ const AdminCustomerReports = () => {
         payload.start_date_str = format(monthRange.from, 'yyyy-MM-dd');
         payload.end_date_str = format(monthRange.to, 'yyyy-MM-dd');
       } else if (reportFilter === "weekly") {
-        const startOfWeek = startOfWeekFunc(weekDate, { weekStartsOn: 1 }); // Monday as start of the week
+        const startOfWeek = startOfWeekFunc(weekDate, { weekStartsOn: 1 }); 
         const endOfWeek = endOfWeekFunc(weekDate, { weekStartsOn: 1 });
         payload.start_date_str = format(startOfWeek, 'yyyy-MM-dd');
         payload.end_date_str = format(endOfWeek, 'yyyy-MM-dd');
@@ -138,9 +138,7 @@ const AdminCustomerReports = () => {
       );
     }
 
-
   };
-
 
   const fetchTopProducts = async (admin_id) => {
     try {
@@ -175,7 +173,7 @@ const AdminCustomerReports = () => {
       if (res.data.status_code === 200 && res.data.order_status_summary) {
         const data = res.data.order_status_summary;
         const transformed = Object.entries(data).map(([status, value]) => ({
-          name: status.charAt(0).toUpperCase() + status.slice(1), // Capitalize first letter
+          name: status.charAt(0).toUpperCase() + status.slice(1),
           value: value
         }));
         setOrderStatusData(transformed);
@@ -186,7 +184,7 @@ const AdminCustomerReports = () => {
   };
 
   const handleFilterClick = () => {
-    fetchMonthlyRevenue(adminId); // Trigger fetching with the updated filter data
+    fetchMonthlyRevenue(adminId);
   };
 
   return (
@@ -283,7 +281,7 @@ const AdminCustomerReports = () => {
                   tickFormatter={(value) => {
                     try {
                       if (reportFilter === 'yearly') {
-                        return value; // e.g., 2021, 2022, 2023
+                        return value; // 
                       }
 
                       if (reportFilter === 'monthly') {

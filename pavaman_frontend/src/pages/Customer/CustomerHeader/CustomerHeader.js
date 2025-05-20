@@ -31,7 +31,6 @@ const CustomerHeader = (onSearch) => {
   const [showPopup, setShowPopup] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search...");
-  // const [hovered, setHovered] = useState(false);
   const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const customerId = localStorage.getItem("customer_id");
@@ -86,7 +85,7 @@ const CustomerHeader = (onSearch) => {
       });
 
       const data = await response.json();
-      console.log("Cart API response:", data); // For debugging
+      console.log("Cart API response:", data); 
 
       if (data.status_code === 200) {
         const items = data.cart_items || [];
@@ -96,8 +95,6 @@ const CustomerHeader = (onSearch) => {
       console.error("Error fetching cart count:", error);
     }
   };
-
-
 
   const displayPopup = (text, type = "success") => {
     setPopupMessage({ text, type });
@@ -171,7 +168,7 @@ const CustomerHeader = (onSearch) => {
   };
 
   const handleProductClick = (categoryName, subCategoryName, productId) => {
-    setIsCollapsed(true); // Hide sidebar
+    setIsCollapsed(true);
     navigate(`/product-details/${categoryName}/${subCategoryName}/${productId}`);
   };
 
@@ -337,45 +334,6 @@ const CustomerHeader = (onSearch) => {
           </div>
           </div>
         </div>
-
-        {/* <div className="customer-search-bar">
-      <input
-        type="text"
-        placeholder={searchPlaceholder}
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-      />
-      <FaSearch className="customer-search-icon" onClick={handleSearch} />
-    </div> */}
-        {/* 
-<div className="customer-search-bar" >
-  <input
-    type="text"
-    placeholder={searchPlaceholder}
-    value={searchInput}
-    onChange={(e) => setSearchInput(e.target.value)}
-    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-  />
-
-  {searchInput ? (
-    <IoMdClose
-    className="customer-search-icon"
-
-      onClick={() => {
-        setSearchInput("");
-        window.dispatchEvent(new CustomEvent("customerCategorySearch", { detail: "" }));
-      }}
-   
-    />
-  ) : (
-    <FaSearch
-      onClick={handleSearch}
-      className="customer-search-icon"
-     
-    />
-  )}
-</div> */}
         {(
           location.pathname.includes("/categories/view-sub-categories") ||
           location.pathname.includes("/categories/") ||
@@ -420,19 +378,6 @@ const CustomerHeader = (onSearch) => {
             <FiHome className="nav-icon" />
             <span>Home</span>
           </div>
-
-          {/* <div className="nav-item" onClick={() => navigate("/orders")}> */}
-          {/* <div
-            className="nav-item"
-            onClick={() => {
-              handleHeaderOrders()
-            }
-            }
-          >
-            <TbShoppingBagEdit className="nav-icon" />
-            <span>Order</span>
-          </div> */}
-
           <div
             className="nav-item user-icon"
             onMouseEnter={() => window.innerWidth > 768 && setIsUserDropdownOpen(true)}
@@ -447,8 +392,6 @@ const CustomerHeader = (onSearch) => {
                   {shouldShowLoginSignup ? (
                     <>
                       <li onClick={() => navigate("/customer-login")}><FaSignInAlt /> Login /  SignUp</li>
-                      {/* <li onClick={() => navigate("/customer-register")}><FaUser /> Sign Up</li> */}
-
                     </>
                   ) : (
                     <>
@@ -483,24 +426,12 @@ const CustomerHeader = (onSearch) => {
             <FiPhone className="nav-icon" />
             <span>Contact</span>
           </div>
-          {/* <div
-                 onMouseEnter={() => setHovered(true)}
-                 onMouseLeave={() => setHovered(false)}>
-
-          <div className="nav-item" 
-     
-           >
+         
+         <div className="nav-item" onClick={() => navigate("/b2b")}>
             <LuBriefcaseBusiness className="nav-icon" />
             <span>B2B</span>
           </div>
-          {hovered && (
-            <div>
-              <p>Want to customize your drones</p>
-              <p>Reach out to us</p>
-              <button  onClick={() => navigate("/CustomizePage")}>Reachout</button>
-            </div>
-          )}
-        </div> */}
+        
         </div>
       </header>
       <div className="mobile-header-section">

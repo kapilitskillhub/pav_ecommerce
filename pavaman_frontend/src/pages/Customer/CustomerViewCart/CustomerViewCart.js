@@ -108,7 +108,6 @@ const searchCart = async (query) => {
         const data = await response.json();
 
         if (data.status_code === 200) {
-            // Normalize cart items to ensure price and discount values are always present
           const normalizedItems = data.cart_items.map((item) => {
     const discountPercent = item.discount
         ? parseFloat(item.discount.replace('%', '')) || 0
@@ -122,8 +121,6 @@ const searchCart = async (query) => {
     };
 });
             setCartItems(normalizedItems);
-
-            // Calculate total price
             setTotalPrice(
                 normalizedItems.reduce(
                     (acc, item) => acc + (item.final_price * item.quantity),
@@ -168,8 +165,6 @@ const searchCart = async (query) => {
                 const updatedCart = cartItems.filter(item => item.product_id !== product_id);
                 setTotalPrice(calculateTotalPrice(updatedCart));
                 setCartItems(updatedCart);
-
-                // Recalculate total price from updated cart
                 const newTotal = updatedCart.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
                 setTotalPrice(newTotal);
 
@@ -364,9 +359,6 @@ const searchCart = async (query) => {
             return updatedCart;
         });
     };
-
-   
-
     
     return (
         <div className="cart-container container">
@@ -434,7 +426,6 @@ const searchCart = async (query) => {
                                     {item.price_per_item !== item.final_price && (
                                         <p className="original-price">₹ {item.price_per_item ? item.price_per_item.toFixed(2) : "0.00"}
  (incl. GST)
-
                                             <span className="discount-tag">
 
                                                 {item.discount && parseFloat(item.discount) > 0 && `${item.discount} off`}
@@ -447,8 +438,6 @@ const searchCart = async (query) => {
 
                                     <p className="subtotal"><b>Subtotal: ₹ </b>{item.final_price && item.quantity ? (item.final_price * item.quantity).toFixed(2) : "0.00"}
  </p>
-
-
                                 </div>
 
                             </div>
@@ -467,8 +456,6 @@ const searchCart = async (query) => {
                 )}
 
                 <div className="cart-price-section">
-
-                    {/* ✅ Price Details Section - Show only if no product is selected */}
                     {selectedProducts.length === 0 && (
                         <div className="cart-side-section">
                             <div>
@@ -494,8 +481,6 @@ const searchCart = async (query) => {
                             </div>
                         </div>
                     )}
-
-                    {/* ✅ Total Payable Section - Show only if one or more products are selected */}
                     {selectedProducts.length > 0 && (
                         <div className="cart-side-section">
                             <div>

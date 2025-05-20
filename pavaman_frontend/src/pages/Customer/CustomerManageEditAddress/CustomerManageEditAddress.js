@@ -9,14 +9,12 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
     const [showPopup, setShowPopup] = useState(false);
     const [loading, setLoading] = useState(false);
     const customer_id = localStorage.getItem("customer_id");
-    // const [saveMode, setSaveMode] = useState("default"); // "default" or "add-new"
-
     const wrapperRef = useRef(null);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (wrapperRef.current && !event.target.closest(".edit-address")) {
-                onEditCompleted(""); // close the form
+                onEditCompleted("");
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -131,7 +129,6 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                 )}
 
                 <form onSubmit={handleSubmit} className="form-grid">
-                    {/* First Name & Last Name */}
                     <div className="form-row">
                         <div className="input-group">
                             <input className="input-text-field"  type="text" name="first_name" value={formData.first_name || ""} onChange={handleChange} required />
@@ -143,22 +140,18 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                         </div>
                     </div>
 
-                    {/* Mobile Number & Alternate Mobile */}
                     <div className="form-row">
                         <div className="input-group">
-                            {/* <input className="input-text-field" name="mobile_number" value={formData.mobile_number || ""} onChange={handleChange} required /> */}
                             <label>Mobile Number <span className="required-star">*</span></label>
                             <PhoneInput
                                 country={"in"}
                                 value={formData.mobile_number}
                                 onChange={(value) => handlePhoneChange(value, "mobile_number")}
                                 inputProps={{ name: "mobile_number", required: true }}
-                                // placeholder="Mobile Number"
                                 required
                             />
                         </div>
                         <div className="input-group">
-                            {/* <input className="input-text-field" type="text" name="alternate_mobile" value={formData.alternate_mobile || ""} onChange={handleChange} /> */}
                             <label>Alternate Mobile (Optional)</label>
                             <PhoneInput
                                 country={"in"}
@@ -169,7 +162,6 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                         </div>
                     </div>
 
-                    {/* Pincode & State */}
                     <div className="form-row">
                         <div className="input-group">
                             <input className="input-text-field" type="text" name="pincode" value={formData.pincode || ""} onChange={handleChange} required />
@@ -186,8 +178,7 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                             <label>Mandal <span className="required-star">*</span></label>
                         </div>
                     </div>
-                  
-                    {/* Street */}
+                
                     <div className="form-row">
                         <div className="input-group" style={{ width: "100%" }}>
                             <input className="input-text-field" type="text" name="street" value={formData.street || ""} onChange={handleChange} required />
@@ -195,7 +186,6 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                         </div>
                     </div>
 
-                    {/* District & Landmark */}
                     <div className="form-row">
                         <div className="input-group">
                             <input className="input-text-field" type="text" name="district" value={formData.district || ""} onChange={handleChange} required />
@@ -206,8 +196,6 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                             <label>Landmark (Optional)</label>
                         </div>
                     </div>
-
-                    {/* Address Type */}
                     <div className="form-row address-type-container" style={{ flexDirection: "column" }}>
                         <label className="Address-type">Address Type:</label>
                         <div className="address-type-options">
@@ -221,8 +209,6 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Save and Cancel */}
                     <div className="cart-actions">
                         <button className="cart-place-order" type="submit">SAVE</button>
                         <button className="cart-delete-selected" type="button" onClick={() => onEditCompleted("")}>CANCEL</button>

@@ -7,7 +7,6 @@
     position: absolute;
     margin-top: 36px;
 }
-
 .form-title {
     color: #4F4892;
     font-family: Inter;
@@ -17,7 +16,6 @@
     line-height: normal;
     margin-top: 38px;
 }
-
 .form-group {
     color: #000;
     font-family: Inter;
@@ -27,10 +25,8 @@
     line-height: normal;
     display: flex;
     flex-direction: column;
-    /* margin-left: 91px; */
     align-items: baseline;
 }
-
 .category-name-input {
     border-radius: 20px;
     border: 1px solid #D9D9D9;
@@ -39,7 +35,6 @@
     margin-top: 14px;
 
 }
-
 .category-name-input {
     color: #000;
     font-family: Inter;
@@ -49,12 +44,9 @@
     line-height: normal;
     text-transform: capitalize;
 }
-
 .upload-file {
     margin-top: 114px;
 }
-
-
 .upload-label {
     color: #000;
     font-family: Inter;
@@ -63,7 +55,6 @@
     font-weight: 400;
     line-height: normal;
 }
-
 .upload-box {
     margin-top: 16px;
     text-align: center;
@@ -74,14 +65,12 @@
     border-radius: 19px;
     border: 1px dashed #A3A3A3;
 }
-
 .upload-icon {
     margin-top: 38px;
     width: 127px;
     height: 127px;
 
 }
-
 .upload-text {
     font-size: 14px;
     color: #888;
@@ -128,7 +117,6 @@
 
 .form-actions{
     margin-top: 50px;
-    /* margin-left: 91px; */
     display: flex;
     flex-direction: row;
     gap: 90px;
@@ -180,8 +168,6 @@
     font-weight: 400;
     line-height: normal;
 }
-
-
 .success-message-container{
     float: right;
     display: flex
@@ -194,13 +180,11 @@
     margin-right: 85px;
     align-items: anchor-center;
   }
-  
   .success-image{
     margin-left: 93px;
     width: 42.058px;
     height: 44.222px;
   }
-  
   .sucess-message-text{
     color: #000;
   font-family: Inter;
