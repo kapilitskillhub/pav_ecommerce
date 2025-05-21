@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import random
@@ -1023,7 +1024,7 @@ def upload_products_excel(request):
                                 "Please ensure the image is selected in the upload form and the file name matches exactly.",
                                 "products": product_responses,
                     }, status=400)
-                s3_key = f"static/images/products/{product_name.replace(' ', '_')}/{sku_number}_{img_name}"
+                s3_key = f"static/images/products/{product_name.replace(' ', '')}/{sku_number}{img_name}"
                 try:
                     s3.upload_fileobj(
                         img_file,
@@ -1110,6 +1111,7 @@ def upload_products_excel(request):
         "products": product_responses,
         "admin_id":str(admin_id),
     }, status=200)
+
 
 @csrf_exempt
 def add_product_specifications(request):

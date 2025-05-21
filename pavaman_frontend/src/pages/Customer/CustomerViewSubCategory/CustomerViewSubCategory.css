@@ -4,13 +4,11 @@
     float: right;
     width: 250px;
 }
-
 .price-range-label {
     font-weight: bold;
     text-align: center;
     color: #4450A2;
 }
-
 .filter-button {
     border: none;
     width: 80px;
@@ -23,8 +21,6 @@
     color: #fff;
     margin: 5px
 }
-
-
 .filer-range-slider {
     height: '6px';
     width: '100%';
@@ -33,15 +29,10 @@
     margin: '20px 0';
     border: '2px solid grey';
 }
-
 .slider-btn{
-    /* display: flex; */
     gap: 5px;
-        align-items: center;
+    align-items: center;
 }
-
-
-
 .breadcrumb {
     display: flex;
     flex-wrap: wrap;
@@ -69,27 +60,21 @@
     color: #4450A2;
     text-decoration: underline;
   }
-  
-  
   .breadcrumb-separator {
     margin: 0 5px;
     color: #4450A2;
   }
-
-  
   .customer-page-layout {
     display: flex;
     gap: 20px;
     margin-top: 20px;
 }
-
-
 .sidebar-filter-heading{
   font-size: 20px;
   color: #4450A2;
   font-weight: 600;
 }
-/* Sidebar filter styling */
+
 .sidebar-filter {
     width: 200px;
     padding: 20px;
@@ -98,21 +83,11 @@
     background-color: #f9f9f9;
     height: 400px;
 }
-
-/* Main content beside sidebar */
 .sub-main-content {
     flex: 1;
     flex-grow: 1;
-    /* padding: 20px; */
     overflow-y: auto;
 }
-
-
-/* .sidebar-filter-values{
-  margin-top: 20px;
-} */
-
-
 @media (max-width: 600px) {
     .breadcrumb {
       flex-direction: column;

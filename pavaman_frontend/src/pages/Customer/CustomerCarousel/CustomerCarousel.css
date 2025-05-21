@@ -24,7 +24,6 @@
   .slick-arrow.slick-next::before {
     color: #4450a2;
   }
-
   @media (max-width: 1024px) {
     .carousel-img {
       height: 230px;
@@ -42,7 +41,6 @@
       height: 200px;
     }
   }
-
   @media (max-width: 425px) {
     .slick-prev {
       left: 3px !important;

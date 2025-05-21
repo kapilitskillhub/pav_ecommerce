@@ -39,14 +39,8 @@ const PavamanFooter = () => {
             <h4>Services</h4>
             <ul className='service-options'>
               <li><span onClick={() => navigate('/contact')}>Contact Us</span></li>
-              <li><a href="#">Pavaman B2B</a></li>
-            </ul>
-          </div>
-          <div className="footer-column">
-            <h4>Policies</h4>
-            <ul className='my-account-contact'>
-              <li><span onClick={() => navigate('/contact')}>Return</span></li>
-              <li><span onClick={() => navigate('/contact')}>Order Cancellation</span></li>
+             <li><span onClick={() => navigate('/b2b')}>Pavaman B2B</span></li>
+               <li><span onClick={() => navigate('/policies')}>Policies</span></li>
             </ul>
           </div>
         </div>

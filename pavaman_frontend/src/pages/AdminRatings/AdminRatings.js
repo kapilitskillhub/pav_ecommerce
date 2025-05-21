@@ -139,15 +139,11 @@ const navigateToAverageRatings = () => {
                     <td className="order-table-data">{item.created_at}</td>
                     <td className="order-table-data">{item.customer_name}</td>
                     <td className="order-table-data text-style">{item.customer_email}</td>
-
-
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-
-          {/* Pagination */}
           <div className="pagination-container">
             <button
               onClick={prevPage}
@@ -166,7 +162,6 @@ const navigateToAverageRatings = () => {
                 {page}
               </button>
             ))}
-
             <button
               onClick={nextPage}
               disabled={currentPage === totalPages}

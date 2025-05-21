@@ -1,5 +1,6 @@
-import React from 'react';
+import { useState, useEffect } from "react";
 import './B2B.css';
+import { FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
 
 const B2B = () => {
   return (
@@ -10,9 +11,21 @@ const B2B = () => {
         just for your business, please contact us directly.
       </p>
       <div className="b2b-contact-box">
-        <h2>Business Contact Number</h2>
-        <p className="b2b-phone">📞 +1-800-123-4567</p>
-        <p>Or email us at <a href="mailto:b2b@pavaman.com">b2b@pavaman.com</a></p>
+        <h2>Business Contact</h2>
+
+        {/* Phone Line */}
+        <div className="b2b-contact-line">
+          <FaPhoneAlt className="contact-icon phone-icon" />&nbsp;
+          <span className="b2b-contact-text">+1-800-123-4567</span>
+        </div>
+
+        {/* Email Line */}
+        <div className="b2b-contact-line">
+          <FaEnvelope className="contact-icon email-icon" />&nbsp;&nbsp;
+          <span className="b2b-contact-text">
+            Email us at <a href="mailto:b2b@pavaman.com">b2b@pavaman.com</a>
+          </span>
+        </div>
       </div>
     </div>
   );

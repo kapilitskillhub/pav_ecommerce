@@ -345,6 +345,8 @@ const CustomerHeader = (onSearch) => {
           location.pathname.includes("/address") ||
           location.pathname.includes("/checkout-page") ||
           location.pathname.includes("/contact") ||
+          location.pathname.includes("/b2b") ||
+          location.pathname.includes("/policies") ||
           location.pathname.includes("/product-details") ||
           location.pathname === "/"
         ) && (

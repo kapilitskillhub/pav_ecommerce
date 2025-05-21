@@ -26,7 +26,16 @@ const CustomerViewProducts = () => {
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
 
-    const [values, setValues] = useState([0, 10000]); // For slider component
+    const [values, setValues] = useState([0, 10000]);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [showFilters, setShowFilters] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
 
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
@@ -43,20 +52,18 @@ const CustomerViewProducts = () => {
 
     useEffect(() => {
         if (categoryName) {
-            fetchProducts(categoryName); // Fetch initial products
+            fetchProducts(categoryName);
         }
 
         const handleSearch = (e) => {
             const query = e.detail;
             console.log("🔍 Product search triggered with query:", query);
             if (!query) {
-                fetchProducts(categoryName);  // Fetch all products if no search query
+                fetchProducts(categoryName);
             } else {
-                searchProducts(query);  // Trigger product search with query
+                searchProducts(query);
             }
         };
-
-
         window.addEventListener("customerCategorySearch", handleSearch);
         return () => window.removeEventListener("customerCategorySearch", handleSearch);
     }, [categoryName]);
@@ -85,8 +92,6 @@ const CustomerViewProducts = () => {
             if (data.status_code === 200) {
                 setAllProducts(data.products);
                 setProducts(data.products);
-
-                // Set price range from API
                 const minFromAPI = data.product_min_price || 0;
                 const maxFromAPI = data.product_max_price || 10000;
 
@@ -139,9 +144,6 @@ const CustomerViewProducts = () => {
             setLoading(false);
         }
     };
-
-
-
     const handleViewProductDetails = (product) => {
         if (!category_id || !sub_category_id) {
             console.error("Missing category_id or sub_category_id");
@@ -208,21 +210,19 @@ const CustomerViewProducts = () => {
             sub_category_name: subCategoryName,
             customer_id: customer_id
         };
-
-        // Include price range and sorting order if present
         if (hasMin && hasMax && hasSort) {
             requestBody = {
                 ...requestBody,
-                min_price: values[0],  // Use the min value from the slider
-                max_price: values[1],  // Use the max value from the slider
+                min_price: values[0],
+                max_price: values[1],
                 sort_by: sortOrder
             };
         } else if (hasMin && hasMax) {
             requestBody = {
                 ...requestBody,
-                min_price: values[0],  // Use the min value from the slider
-                max_price: values[1],  // Use the max value from the slider
-                sort_by: 'low_to_high' // Default sorting when no sort is selected
+                min_price: values[0],
+                max_price: values[1],
+                sort_by: 'low_to_high'
             };
         } else if (hasSort) {
             requestBody = {
@@ -253,8 +253,6 @@ const CustomerViewProducts = () => {
             setLoading(false);
         }
     };
-
-
     return (
         <div className="customer-dashboard container">
             < CarouselLanding />
@@ -285,11 +283,9 @@ const CustomerViewProducts = () => {
                         {subCategoryName}
                     </span>
                     <span className="breadcrumb-separator"> &gt; </span>
-
                     <span className="breadcrumb-current">Products</span>
                 </div>
             )}
-
             {!loading && !error && (
                 <div className="customer-products">
                     <div className="customer-products-heading">{subCategoryName} - Products</div>
@@ -302,75 +298,76 @@ const CustomerViewProducts = () => {
                             />
                         )}
                     </div>
-                    <div className="product-filter-dashboard">
-                        <div className="header-filter">
-                            {/* Price Range Filter */}
-                            <div className="filter-sort-section">
-                                <div className="filter-heading-products">Filters</div>
+                  <div className="product-filter-dashboard">
+  {isMobile && (
+    <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
+      {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
+    </div>
+  )}
 
-                                <div className="price-slider-container">
-                                    <label className="price-range-label">
-                                        Price Range
-                                        <div> ₹{values[0]} - ₹{values[1]}</div>
-                                    </label>
-                                    <div className="slider-btn">
-                                        <Range
-                                            className="price-slider-range"
-                                            values={values}
-                                            step={100}
-                                            min={minPrice}
-                                            max={maxPrice}
-                                            onChange={(newValues) => {
-                                                setValues(newValues);
-                                            }}
-                                            renderTrack={({ props, children }) => (
-                                                <div
-                                                    {...props}
-                                                    style={{
-                                                        ...props.style,
-                                                        width: '100%',
-                                                        background: 'white',
-                                                        borderRadius: '4px',
-                                                        margin: '20px 0',
-                                                        border: '0.5px solid grey',
-                                                    }}
-                                                >
-                                                    {children}
-                                                </div>
-                                            )}
-                                            renderThumb={({ props }) => (
-                                                <div
-                                                    {...props}
-                                                    style={{
-                                                        ...props.style,
-                                                        height: '15px',
-                                                        width: '15px',
-                                                        backgroundColor: '#4450A2',
-                                                        borderRadius: '50%',
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                        <button className="filter-button" onClick={fetchFilteredAndSortedProducts}>
-                                            Filter
-                                        </button>
-                                    </div>
-                                </div>
+  {(!isMobile || showFilters) && (
+    <div className="header-filter">
+      <div className="filter-sort-section">
+        <div className="filter-heading-products">Filters</div>
 
-                                {/* Sorting Dropdown */}
-                                <div className="sorting-section">
-                                    <label>Sort by:   </label>
-                                    <select onChange={(e) => setSortOrder(e.target.value)} value={sortOrder}>
-                                        {/* <option value=""> Select</option> */}
-                                        <option value="low_to_high"> Price : Low to High</option>
-                                        <option value="high_to_low"> Price : High to Low</option>
-                                        <option value="latest"> Latest</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+        <div className="price-slider-container">
+          <label className="price-range-label">
+            Price Range
+            <div> ₹{values[0]} - ₹{values[1]}</div>
+          </label>
+          <div className="slider-btn">
+            <Range
+              className="price-slider-range"
+              values={values}
+              step={100}
+              min={minPrice}
+              max={maxPrice}
+              onChange={(newValues) => setValues(newValues)}
+              renderTrack={({ props, children }) => (
+                <div
+                  {...props}
+                  style={{
+                    ...props.style,
+                    width: '100%',
+                    background: 'white',
+                    borderRadius: '4px',
+                    margin: '20px 0',
+                    border: '0.5px solid grey',
+                  }}
+                >
+                  {children}
+                </div>
+              )}
+              renderThumb={({ props }) => (
+                <div
+                  {...props}
+                  style={{
+                    ...props.style,
+                    height: '15px',
+                    width: '15px',
+                    backgroundColor: '#4450A2',
+                    borderRadius: '50%',
+                  }}
+                />
+              )}
+            />
+            <button className="filter-button" onClick={fetchFilteredAndSortedProducts}>
+              Filter
+            </button>
+          </div>
+        </div>
 
-
+        <div className="sorting-section">
+          <label>Sort by: </label>
+          <select onChange={(e) => setSortOrder(e.target.value)} value={sortOrder}>
+            <option value="low_to_high"> Price : Low to High</option>
+            <option value="high_to_low"> Price : High to Low</option>
+            <option value="latest"> Latest</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  )}
                         <div className="customer-products-section">
 
                             {products.length > 0 ? (
@@ -391,7 +388,6 @@ const CustomerViewProducts = () => {
 
                                             alt={product.product_name}
                                             className="customer-product-image"
-                                        // onError={(e) => (e.target.src = defaultImage)}
                                         />
                                         <div className="customer-product-name">{product.product_name}</div>
                                         <div className="customer-discount-section-price">₹{product.final_price}.00 (incl. GST)</div>
@@ -405,23 +401,10 @@ const CustomerViewProducts = () => {
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    // No discount, but keep space for layout consistency
+
                                                     <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>
                                                 )}
                                             </div>
-
-                                            {/* {product.price !== product.final_price && (
-
-                                                <div className="customer-discount-section-original-price">
-                                                    ₹{product.price}.00 (incl. GST)
-                                                    <div className="discount-tag">
-
-                                                {product.discount && parseFloat(product.discount) > 0 && `${product.discount} off`}
-
-                                            </div>
-                                                </div>
-                                            )} */}
-
                                             <div className="add-cart-section">
                                                 <span
                                                     className={`availability ${product.availability === "Out of Stock"
@@ -442,7 +425,7 @@ const CustomerViewProducts = () => {
                                                     <BiSolidCartAdd
                                                         className="add-to-cart-button"
                                                         onClick={(e) => {
-                                                            e.stopPropagation(); // Prevents navigation when clicking on the cart icon
+                                                            e.stopPropagation();
                                                             handleAddCart(product.product_id);
                                                         }}
                                                     />

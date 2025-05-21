@@ -11,7 +11,7 @@ const Report = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const reportsPerPage = 10;
+  const reportsPerPage = 15;
 
   useEffect(() => {
     const fetchReports = async () => {

@@ -13,7 +13,8 @@
   font-size: 2.4rem;
   margin-bottom: 25px;
   color: #4450A2;
-  text-align: start;
+  border-bottom: 2px solid #a9a6a6;
+  text-align: center;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -30,7 +31,7 @@
 }
 .contact-icon {
   color: #007bff;
-  font-size: 2.2rem;
+  font-size: 1.2m;
   margin-top: 3px;
   flex-shrink: 0;
 }
@@ -76,8 +77,8 @@
   color: #003366;
   line-height: 1.5;
   margin-bottom: 25px;
-  text-align: center;
-  font-style: italic;
+  text-align: justify;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 @media (max-width: 768px) {
@@ -100,7 +101,7 @@
 }
 @media (max-width: 480px) {
   .contact-container {
-    margin: 20px 10px;
+    margin: 20px 20px;
     padding: 20px 15px;
     border-width: 2px;
   }
