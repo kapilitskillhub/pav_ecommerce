@@ -15,12 +15,14 @@ const CustomerProfileOptions = () => {
     if (customerId) {
       setIsLoggedIn(true);
       axios
-        .get(`http://127.0.0.1:8000/get-customer-profile/${customerId}/`)
+        .post("http://127.0.0.1:8000/get-customer-profile",{customer_id: customerId,})
         .then((response) => {
-          const data = response.data;
-          if (data.first_name && data.last_name) {
-            setCustomerName(`${data.first_name} ${data.last_name}`);
-            localStorage.setItem("customer_name", `${data.first_name} ${data.last_name}`);
+         const data = response.data;
+          const profile = data.profile;
+          if (profile?.first_name && profile?.last_name) {
+            const fullName = `${profile.first_name} ${profile.last_name}`;
+            setCustomerName(fullName);
+            localStorage.setItem("customer_name", fullName);
           }
         })
         .catch((error) => {
