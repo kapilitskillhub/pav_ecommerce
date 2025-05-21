@@ -74,6 +74,7 @@ const generateInvoicePDF = async (customerId, order) => {
                 y += 5;
             });
         });
+
         y += 5;
         doc.setFont('helvetica', 'bold');
         doc.text(`Invoice No: ${invoice.invoice_number}`, 14, y);
@@ -82,6 +83,7 @@ const generateInvoicePDF = async (customerId, order) => {
         y += 5;
         doc.text(`Order ID: ${invoice.order_id}`, 14, y);
         doc.text(`Order Date: ${invoice.order_date}`, 105, y);
+
         autoTable(doc, {
             startY: y + 10,
             head: [[
@@ -126,10 +128,9 @@ const generateInvoicePDF = async (customerId, order) => {
                 }
             }
         });
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const marginRight = 14;
-        const totalY = doc.lastAutoTable.finalY + 10;
 
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const totalY = doc.lastAutoTable.finalY + 10;
 
         doc.setFont('helvetica', 'bold');
         doc.text(`Grand Total  ${invoice.grand_total}`, 150, totalY);
@@ -140,13 +141,19 @@ const generateInvoicePDF = async (customerId, order) => {
 
         doc.setFont('helvetica', 'italic');
         doc.text('Authorized Signatory', 150, totalY + 35);
+
         const footerY = totalY + 40;
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
         doc.text('*Keep this invoice and manufacturer box for warranty purposes.', 14, footerY);
         doc.text('The goods sold are intended for end-user consumption and not for re-sale.', 14, footerY + 5);
         doc.text('For support, contact us at: support@yourstore.com', 14, footerY + 10);
-        doc.save(`Invoice_${invoice.invoice_number}.pdf`);
+
+        if (mode === 'view') {
+            doc.output('dataurlnewwindow'); 
+        } else {
+            doc.save(`Invoice_${invoice.invoice_number}.pdf`);
+        }
 
     } catch (error) {
         console.error("PDF generation error:", error);
