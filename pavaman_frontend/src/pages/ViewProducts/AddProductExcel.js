@@ -55,6 +55,7 @@ const AddProductExcel = () => {
       });
       setMessage(response.data.message || "Upload success!");
       setMessageType("success");
+
       setTimeout(() => {
         navigate("/view-products", {
           state: {
@@ -64,21 +65,36 @@ const AddProductExcel = () => {
           }
         });
       }, 3000);
-    } catch (error) {
-      const data = error.response?.data;
-      if (data) {
-        if (data.error && data.products) {
-          setMessage(`${data.error} Uploaded products count: ${data.products.length}`);
-          setUploadedProducts(data.products);
-        } else if (data.error) {
-          setMessage(data.error);
-        } else {
-          setMessage("Upload failed.");
-        }
-      } else {
-        setMessage("Upload failed.");
-      }
+    } 
+  
+catch (error) {
+  const data = error.response?.data;
+  if (data) {
+    if (data.error && data.products) {
+      setMessage(`${data.error} Uploaded products count: ${data.products.length}`);
+      setUploadedProducts(data.products);
+      setMessageType("error");
+    } else if (data.error) {
+      setMessage(data.error);
+      setMessageType("error");
+    } else {
+      setMessage("Upload failed.");
+      setMessageType("error");
     }
+  } else {
+    setMessage("Upload failed.");
+    setMessageType("error");
+  }
+
+  // Reset file inputs so re-uploads can work
+  setExcelFile(null);
+  setImages([]);
+  setMaterials([]);
+
+  // Optional: Clear actual input fields if needed
+  const fileInputs = document.querySelectorAll("input[type='file']");
+  fileInputs.forEach(input => input.value = '');
+}
   };
 
   useEffect(() => {
@@ -94,7 +110,7 @@ const AddProductExcel = () => {
   return (
     <div className="excel-upload-box">
       <h2 className="excel-upload-heading">Upload Product Excel</h2>
-      
+
       {message && (
         <p className={`excel-upload-message ${messageType === 'error' ? 'error' : 'success'}`}>
           {message}

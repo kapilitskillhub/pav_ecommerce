@@ -15,9 +15,9 @@ const Contact = () => {
         <div className="contact-item">
           <FaMapMarkerAlt className="contact-icon address" />
           <div>
-            <span className="strong-text-address">Address:</span><br />
-            Kapil Kavuri Hub, 2nd Floor, Financial District,<br />
-            Nanakramguda, Hyderabad, Telangana, INDIA – 500 032
+            <span className="strong-text">Address:</span><br />
+           <p>Kapil Kavuri Hub, 2nd Floor, Financial District,<br />
+            Nanakramguda, Hyderabad, Telangana, INDIA – 500 032</p> 
           </div>
         </div>
 
