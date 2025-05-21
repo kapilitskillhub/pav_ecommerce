@@ -3,7 +3,6 @@
   max-width: 600px;
   margin: 40px auto;
   padding: 30px 25px;
-  border: 3px solid #4450A2;
   border-radius: 12px;
   background: linear-gradient(135deg, #e0f0ff 0%, #c2e0ff 100%);;
   box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
@@ -64,11 +63,11 @@
 }
 .phone-icon{
   color: #746e6e;
-  font-size: 25px;
+  font-size: 20px;
 }
 .email-icon{
   color: rgb(203 110 110);
-   font-size: 30px;
+   font-size: 20px;
 }
 @media (max-width: 768px) {
   .b2b-container {
