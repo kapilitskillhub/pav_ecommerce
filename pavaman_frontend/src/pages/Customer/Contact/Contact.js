@@ -15,9 +15,9 @@ const Contact = () => {
         <div className="contact-item">
           <FaMapMarkerAlt className="contact-icon address" />
           <div>
-            <span className="strong-text-address">Address:</span><br />
-            Kapil Kavuri Hub, 2nd Floor, Financial District,<br />
-            Nanakramguda, Hyderabad, Telangana, INDIA – 500 032
+            <span className="strong-text">Address:</span><br />
+           <p>Kapil Kavuri Hub, 2nd Floor, Financial District,<br />
+            Nanakramguda, Hyderabad, Telangana, INDIA – 500 032</p> 
           </div>
         </div>
 
@@ -31,8 +31,8 @@ const Contact = () => {
         </div>
 
         <div className="contact-item">
-          <FaEnvelope className="contact-icon email" />
-          <div>
+          
+       <FaEnvelope className="contact-icon email" />   <div>
             <span className="strong-text">Email:</span><br />
             <a href="mailto:pavaman@gmail.com" className="email-link">pavaman@gmail.com</a>
           </div>

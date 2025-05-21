@@ -139,40 +139,32 @@ const AdminInventoryProducts = () => {
             </table>
           </div>
           <div className="pagination-container">
-            <span>Page {currentPage} of {totalPages}</span>
-            <button className="previous-button" onClick={prevPage} disabled={currentPage === 1}>PREVIOUS</button>
+            <button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className="pagination-button"
+            >
+              Previous
+            </button>
 
-            {currentPage > 3 && (
-              <>
-                <button onClick={() => paginate(1)}>1</button>
-                <span>...</span>
-              </>
-            )}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => paginate(page)}
+                className={`pagination-button ${page === currentPage ? "active-page" : ""
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(page =>
-                page === currentPage ||
-                page === currentPage - 1 ||
-                page === currentPage + 1
-              )
-              .map(page => (
-                <button
-                  key={page}
-                  onClick={() => paginate(page)}
-                  className={page === currentPage ? "active-page" : ""}
-                >
-                  {page}
-                </button>
-              ))}
-
-            {currentPage < totalPages - 2 && (
-              <>
-                <span>...</span>
-                <button onClick={() => paginate(totalPages)}>{totalPages}</button>
-              </>
-            )}
-
-            <button className="next-button" onClick={nextPage} disabled={currentPage === totalPages}>NEXT</button>
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              className="pagination-button"
+            >
+              Next
+            </button>
           </div>
         </>
       )}

@@ -15,7 +15,6 @@ const AdminRatings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
-
   const adminId = sessionStorage.getItem("admin_id");
   const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
   const [showPopup, setShowPopup] = useState(false);
@@ -146,15 +145,11 @@ const navigateToAverageRatings = () => {
                     <td className="order-table-data">{item.created_at}</td>
                     <td className="order-table-data">{item.customer_name}</td>
                     <td className="order-table-data text-style">{item.customer_email}</td>
-
-
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-
-          {/* Pagination */}
           <div className="pagination-container">
             <button
               onClick={prevPage}
@@ -173,7 +168,6 @@ const navigateToAverageRatings = () => {
                 {page}
               </button>
             ))}
-
             <button
               onClick={nextPage}
               disabled={currentPage === totalPages}

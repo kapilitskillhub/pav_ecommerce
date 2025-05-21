@@ -67,8 +67,18 @@
 }
 
 .excel-upload-message {
+  padding: 10px;
   margin-top: 20px;
-  font-weight: 500;
-  color: #e11d48;
-  text-align: center;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.excel-upload-message.success {
+   background-color: #d4edda;
+    color: #155724;
+}
+
+.excel-upload-message.error {
+  background-color: #f8d7da;
+    color: #721c24;
 }

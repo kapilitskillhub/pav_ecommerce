@@ -3,13 +3,12 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import './AdminCustomerReports.css';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { FcSalesPerformance } from "react-icons/fc";
 import { PiHandCoinsBold } from "react-icons/pi";
 import { GiCoins } from "react-icons/gi";
 import { BsCoin } from "react-icons/bs";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format, parseISO, startOfWeek as startOfWeekFunc, endOfWeek as endOfWeekFunc } from 'date-fns';
+import { format, startOfWeek as startOfWeekFunc, endOfWeek as endOfWeekFunc } from 'date-fns';
 import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
 

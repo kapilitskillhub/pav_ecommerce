@@ -12,9 +12,6 @@
   transition: transform 0.3s ease;
 }
 
-.b2b-container:hover {
-  transform: translateY(-5px);
-}
 .b2b-container h1 {
   font-size: 2.4rem;
   margin-bottom: 15px;
@@ -37,15 +34,13 @@
   transition: box-shadow 0.3s ease;
 }
 
-.b2b-contact-box:hover {
-  box-shadow: 0 8px 20px rgba(0, 115, 230, 0.35);
-}
 
 .b2b-contact-box h2 {
   font-size: 1.8rem;
   color: #4450A2;
   margin-bottom: 15px;
   letter-spacing: 0.05em;
+  
 }
 
 .b2b-phone {
@@ -67,7 +62,14 @@
 .b2b-contact-box a:hover {
   border-color: #0056b3;
 }
-
+.phone-icon{
+  color: #746e6e;
+  font-size: 25px;
+}
+.email-icon{
+  color: rgb(203 110 110);
+   font-size: 30px;
+}
 @media (max-width: 768px) {
   .b2b-container {
     max-width: 90%;
@@ -85,11 +87,17 @@
   .b2b-phone {
     font-size: 1.3rem;
   }
+  .email-icon{
+   font-size: 20px;
+}
+.phone-icon{
+  font-size: 18px;
+}
 }
 
 @media (max-width: 480px) {
   .b2b-container {
-    margin: 20px 10px;
+    margin: 20px 20px;
     padding: 20px 15px;
     border-width: 2px;
   }

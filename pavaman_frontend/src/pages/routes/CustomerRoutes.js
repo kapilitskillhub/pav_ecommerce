@@ -27,6 +27,7 @@ import AllProducts from "../Customer/CustomerAllCategories/Products";
 import Contact from "../Customer/Contact/Contact";
 import B2B from '../Customer/B2B/B2B';
 import CustomerProfileOptions from "../../pages/Customer/CustomerHeader/CustomerProfileOptions";
+import Policies from '../Customer/CustomerFooter/TempPolicies';
 
 
 const CLIENT_ID = "698181623361-025dk4qeov6gk2er133mlcrnjka59fq6.apps.googleusercontent.com";
@@ -62,6 +63,7 @@ const CustomerRoutes = () => {
           <Route path="/contact" element={<Contact/>} />
           <Route path="/b2b" element={<B2B />} />
           <Route path="/profile-options" element={<CustomerProfileOptions/>} />
+          <Route path="/policies" element={<Policies />} />
 
           
          
