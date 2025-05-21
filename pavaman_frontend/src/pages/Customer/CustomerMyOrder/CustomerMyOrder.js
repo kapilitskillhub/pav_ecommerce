@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './CustomerMyOrder.css';
 import { FaCircleArrowRight } from "react-icons/fa6";
 import PopupMessage from "../../../components/Popup/Popup";
-
+import API_BASE_URL from "../../../config";
 const CustomerMyOrders = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
@@ -55,7 +55,7 @@ const ordersPerPage = 10;
     if (!customerId) return;
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/customer-my-order', {
+      const response = await fetch(`${API_BASE_URL}/customer-my-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -72,7 +72,7 @@ const ordersPerPage = 10;
             flatProducts.push({ ...product, order });
           });
         });
-        const ratingResponse = await fetch('http://127.0.0.1:8000/view-rating', {
+        const ratingResponse = await fetch(`${API_BASE_URL}/view-rating`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ customer_id: customerId }),
@@ -151,7 +151,7 @@ const ordersPerPage = 10;
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/filter-my-order", {
+      const response = await fetch(`${API_BASE_URL}/filter-my-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
@@ -168,7 +168,7 @@ const ordersPerPage = 10;
         });
 
         // Fetch ratings
-        const ratingResponse = await fetch('http://127.0.0.1:8000/view-rating', {
+        const ratingResponse = await fetch(`${API_BASE_URL}/view-rating`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ customer_id: customerId }),
@@ -246,7 +246,7 @@ const ordersPerPage = 10;
 
   const handleSubmitReview = async (product) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/submit-feedback-rating", {
+      const response = await fetch(`${API_BASE_URL}/submit-feedback-rating`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -293,7 +293,7 @@ const ordersPerPage = 10;
 
   const handleEditReview = async (product) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/edit-feedback-rating", {
+      const response = await fetch(`${API_BASE_URL}/edit-feedback-rating`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -339,7 +339,7 @@ const ordersPerPage = 10;
   
   const searchOrdersByProduct = async (term) => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/customer-my-order', {
+    const response = await fetch(`${API_BASE_URL}/customer-my-order`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -358,7 +358,7 @@ const ordersPerPage = 10;
           flatProducts.push({ ...product, order });
         });
       });
-      const ratingResponse = await fetch('http://127.0.0.1:8000/view-rating', {
+      const ratingResponse = await fetch(`${API_BASE_URL}/view-rating`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ customer_id: customerId }),

@@ -5,7 +5,7 @@ import "../CustomerViewCategory/CustomerViewCategory.css";
 import { BiSolidCartAdd } from "react-icons/bi";
 import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
-
+import API_BASE_URL from "../../../config";
 
 const FilteredProducts = () => {
     const location = useLocation();
@@ -62,7 +62,7 @@ const FilteredProducts = () => {
             return;
         }
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-cart-product", {
+            const response = await fetch(`${API_BASE_URL}/add-cart-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id, quantity: 1 }),

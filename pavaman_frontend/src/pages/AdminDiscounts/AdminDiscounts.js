@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminDiscounts.css';
 import { useNavigate } from 'react-router-dom';
-import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 import PopupMessage from "../../components/Popup/Popup";
-
 const AdminDiscountProducts = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -33,7 +32,7 @@ const AdminDiscountProducts = () => {
 
   const fetchDiscountProducts = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/product-discount-inventory-view', {
+      const response = await axios.post(`${API_BASE_URL}/product-discount-inventory-view`, {
         admin_id: adminId,
         action: "discount"
       });
@@ -55,7 +54,7 @@ const AdminDiscountProducts = () => {
   const downloadExcel = async () => {
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/download-discount-products-excel',
+        `${API_BASE_URL}/download-discount-products-excel`,
         { admin_id: adminId },
         { responseType: 'blob' }
       );

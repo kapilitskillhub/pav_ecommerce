@@ -4,7 +4,7 @@ import CustomerManageEditAddress from "../CustomerManageEditAddress/CustomerMana
 import { BsThreeDotsVertical } from "react-icons/bs";
 import "../CustomerManageAddress/CustomerManageAddress.css";
 import PopupMessage from "../../../components/Popup/Popup";
-
+import API_BASE_URL from "../../../config";
 const ManageCustomerAddress = ({ refresh }) => {
     const [addresses, setAddresses] = useState([]);
     const [selectedMenu, setSelectedMenu] = useState(null);
@@ -27,7 +27,7 @@ const ManageCustomerAddress = ({ refresh }) => {
     const fetchAddresses = async () => {
         if (!customerId) return;
         try {
-            const response = await fetch("http://127.0.0.1:8000/view-customer-address", {
+            const response = await fetch(`${API_BASE_URL}/view-customer-address`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id: customerId }),
@@ -66,7 +66,7 @@ const ManageCustomerAddress = ({ refresh }) => {
     const confirmDeleteAddress = async (addressId) => {
         setDeletingAddress(null);
         try {
-            const response = await fetch("http://127.0.0.1:8000/delete-customer-address", {
+            const response = await fetch(`${API_BASE_URL}/delete-customer-address`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ address_id: addressId, customer_id: customerId }),

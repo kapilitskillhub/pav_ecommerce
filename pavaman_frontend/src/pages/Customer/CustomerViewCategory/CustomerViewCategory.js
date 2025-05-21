@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import defaultImage from "../../../assets/images/product.png"
 import ViewDiscountedProducts from "../CustomerDiscountProducts/CustomerDiscountProducts";
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
-
+import API_BASE_URL from "../../../config";
 const ViewCategoriesAndDiscountedProducts = () => {
     const navigate = useNavigate();
 
@@ -35,7 +35,7 @@ const ViewCategoriesAndDiscountedProducts = () => {
       
     const fetchData = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/", {
+            const response = await fetch(`${API_BASE_URL}/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const ViewCategoriesAndDiscountedProducts = () => {
     const searchCategories = async (query) => {
         setLoading(true);
         try {
-          const response = await fetch("http://127.0.0.1:8000/customer-search-categories", {
+          const response = await fetch(`${API_BASE_URL}/customer-search-categories`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

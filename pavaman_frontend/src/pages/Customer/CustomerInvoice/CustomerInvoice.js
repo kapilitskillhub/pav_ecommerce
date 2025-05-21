@@ -2,10 +2,10 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import signatureImg from '../../../assets/images/aviation-logo.png';
-
+import API_BASE_URL from "../../../config";
 const generateInvoicePDF = async (customerId, order) => {
     try {
-        const response = await fetch('http://127.0.0.1:8000/generate-invoice-for-customer', {
+        const response = await fetch(`${API_BASE_URL}/generate-invoice-for-customer`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

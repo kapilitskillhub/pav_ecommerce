@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./ViewMoreProductDetails.css"; // Import CSS for styling
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { FaAngleLeft } from "react-icons/fa6";
 import { FaAngleRight } from "react-icons/fa";
 import { FaRupeeSign } from "react-icons/fa";
-import {  FaTimes } from "react-icons/fa";
-import { FaCircleCheck } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 import PopupMessage from "../../components/Popup/Popup";
 
 const ViewProductDetails = () => {
@@ -52,7 +49,7 @@ const displayPopup = (text, type = "success") => {
 
   const fetchProductDetails = async () => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/view-product-details", {
+      const response = await axios.post(`${API_BASE_URL}/view-product-details`, {
         admin_id,
         category_id,
         sub_category_id,
@@ -63,7 +60,7 @@ const displayPopup = (text, type = "success") => {
         setProductDetails(response.data);
         const images = response.data.product_details.product_images;
         if (images?.length > 0) {
-          setMainImage(`http://127.0.0.1:8000/${images[0]}`);
+          setMainImage(`${API_BASE_URL}/${images[0]}`);
         }
       } else {
         setError(response.data.error || "Failed to fetch product details.");
@@ -140,7 +137,7 @@ const displayPopup = (text, type = "success") => {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/add-product-specifications", {
+      const response = await axios.post(`${API_BASE_URL}/add-product-specifications`, {
         admin_id,
         category_id,
         sub_category_id,
@@ -166,7 +163,7 @@ const displayPopup = (text, type = "success") => {
   };
   const handleSubmitEditedSpecifications = async () => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/edit-product-specifications", {
+      const response = await axios.post(`${API_BASE_URL}/edit-product-specifications`, {
         admin_id,
         category_id,
         sub_category_id,

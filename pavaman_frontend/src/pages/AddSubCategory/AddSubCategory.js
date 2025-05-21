@@ -6,7 +6,7 @@ import SuccessIcon from "../../assets/images/succes-icon.png";
 import SuccessMessageImage from "../../assets/images/success-message.svg";
 import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
-
+import API_BASE_URL from "../../config";
 const AddSubCategory = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -83,7 +83,7 @@ const AddSubCategory = () => {
     formData.append("sub_category_image", subCategoryImage);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/add-subcategory", {
+      const response = await fetch(`${API_BASE_URL}/add-subcategory`, {
         method: "POST",
         body: formData,
         headers: {

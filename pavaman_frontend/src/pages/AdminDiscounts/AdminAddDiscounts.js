@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "./AdminAddDiscount.css";
-
+import API_BASE_URL from "../../config";
 const AdminAddDiscount = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -22,7 +22,7 @@ const AdminAddDiscount = () => {
     if (!adminId) return navigate("/admin-login");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/view-categories", {
+      const response = await fetch(`${API_BASE_URL}/view-categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ admin_id: adminId }),
@@ -41,7 +41,7 @@ const AdminAddDiscount = () => {
     if (!adminId || !selectedCategoryId) return;
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/view-subcategories", {
+      const response = await fetch(`${API_BASE_URL}/view-subcategories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,7 +108,7 @@ const AdminAddDiscount = () => {
     };
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/apply-discount-subcategory', payload);
+      const response = await axios.post(`${API_BASE_URL}/apply-discount-subcategory`, payload);
       if (response.data.status_code === 200) {
         setSuccess('Discount applied successfully!');
         setTimeout(() => navigate('/discounts'), 2000);

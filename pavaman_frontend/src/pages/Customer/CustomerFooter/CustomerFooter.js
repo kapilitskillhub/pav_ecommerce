@@ -1,4 +1,3 @@
-import React from 'react';
 import "../CustomerFooter/CustomerFooter.css";
 import logo from '../../../assets/images/logo.png';
 import { useNavigate } from 'react-router-dom';

@@ -6,6 +6,7 @@ import SuccessIcon from "../../assets/images/succes-icon.png";
 import SuccessMessageImage from "../../assets/images/success-message.svg";
 import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 const AddCategory = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
@@ -78,7 +79,7 @@ const AddCategory = () => {
     formData.append("category_image", image);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/add-category", {
+      const response = await fetch(`${API_BASE_URL}/add-category`, {
         method: "POST",
         body: formData,
         headers: {

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../AddCategory/AddCategory.css";
-
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
-import SuccessMessageImage from "../../assets/images/success-message.svg";
 import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
-
+import API_BASE_URL from "../../config";
 const EditCategory = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -94,7 +92,7 @@ const EditCategory = () => {
     if (image) formData.append("category_image", image);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/edit-category", {
+      const response = await fetch(`${API_BASE_URL}/edit-category`, {
         method: "POST",
         body: formData,
       });

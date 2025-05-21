@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import API_BASE_URL from "../../config";
 import "./AdminRatings.css";
 import axios from 'axios';
 import PopupMessage from "../../components/Popup/Popup";
 import { useNavigate } from 'react-router-dom';
-
-
-
 const AdminRatings = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const navigate = useNavigate();
@@ -15,7 +12,6 @@ const AdminRatings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
-
   const adminId = sessionStorage.getItem("admin_id");
   const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
   const [showPopup, setShowPopup] = useState(false);
@@ -33,7 +29,7 @@ const AdminRatings = () => {
       setLoading(true);
       setError('');
       try {
-        const response = await fetch('http://127.0.0.1:8000/retrieve-feedback', {
+        const response = await fetch(`${API_BASE_URL}/retrieve-feedback`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -80,7 +76,7 @@ const AdminRatings = () => {
 const downloadExcel = async () => {
   try {
     const response = await axios.post(
-      'http://127.0.0.1:8000/download-feedback-excel',
+      `${API_BASE_URL}/download-feedback-excel`,
       { admin_id: adminId },
       { responseType: 'blob' }
     );
@@ -100,9 +96,6 @@ const downloadExcel = async () => {
 const navigateToAverageRatings = () => {
   navigate("/average-ratings");
 };
-
-
-
   return (
     <div className="report-wrapper">
       <div className="discount-header">

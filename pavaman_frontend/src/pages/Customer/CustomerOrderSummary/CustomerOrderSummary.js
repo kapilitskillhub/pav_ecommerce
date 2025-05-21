@@ -3,7 +3,7 @@ import RazorpayPayment from "../CustomerPayment/CustomerPayment"
 import "./CustomerOrderSummary.css";
 import defaultImage from "../../../assets/images/product.png";
 import PopupMessage from "../../../components/Popup/Popup";
-
+import API_BASE_URL from "../../../config";
 const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = () => { } }) => {
     const [orders, setOrders] = useState(orderSummary?.orders || []);
     const [showPayment, setShowPayment] = useState(false);
@@ -36,7 +36,7 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/products/cancel-multiple-orders", {
+            const response = await fetch(`${API_BASE_URL}/products/cancel-multiple-orders`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id: customerId, orders: ordersToCancel }),

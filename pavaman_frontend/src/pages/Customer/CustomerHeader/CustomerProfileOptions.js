@@ -4,6 +4,7 @@ import "./CustomerProfileOptions.css";
 import { IoIosArrowForward } from "react-icons/io";
 import { FiLogOut } from "react-icons/fi";
 import axios from "axios";
+import API_BASE_URL from "../../../config";
 
 const CustomerProfileOptions = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const CustomerProfileOptions = () => {
     if (customerId) {
       setIsLoggedIn(true);
       axios
-        .post("http://127.0.0.1:8000/get-customer-profile",{customer_id: customerId,})
+        .post(`${API_BASE_URL}/get-customer-profile`, {customer_id: customerId,})
         .then((response) => {
          const data = response.data;
           const profile = data.profile;

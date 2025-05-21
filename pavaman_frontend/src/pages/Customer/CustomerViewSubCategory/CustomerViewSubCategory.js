@@ -6,7 +6,7 @@ import defaultImage from "../../../assets/images/default.png"
 import ViewDiscountedProducts from "../CustomerDiscountProducts/CustomerDiscountProducts";
 import { Range } from 'react-range';
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
-
+import API_BASE_URL from "../../../config";
 const ViewSubCategoriesAndDiscountedProducts = () => {
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
@@ -56,7 +56,7 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
 
     const fetchSubCategories = async (categoryName) => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/categories/view-sub-categories/", {
+            const response = await fetch(`${API_BASE_URL}/categories/view-sub-categories/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -97,7 +97,7 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
             };
             console.log("📨 Subcategory search payload:", payload);
 
-            const response = await fetch("http://127.0.0.1:8000/customer-search-subcategories", {
+            const response = await fetch(`${API_BASE_URL}/customer-search-subcategories`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -135,7 +135,7 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
         setMaxPrice(max);
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/filter-product-price-each-category", {
+            const response = await fetch(`${API_BASE_URL}/filter-product-price-each-category`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

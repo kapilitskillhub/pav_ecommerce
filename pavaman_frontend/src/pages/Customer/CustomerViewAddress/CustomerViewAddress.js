@@ -3,7 +3,7 @@ import EditAddress from "../CustomerEditAddress/CustomerEditAddress";
 import "../CustomerViewAddress/CustomerViewAddress.css";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import PopupMessage from "../../../components/Popup/Popup";
-
+import API_BASE_URL from "../../../config";
 const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen, onDeliverHere, onAddressSelect, onAddAddressClick }) => {
     const [addresses, setAddresses] = useState([]);
     const [editingAddress, setEditingAddress] = useState(null);
@@ -27,7 +27,7 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen, onDeliverHer
 
     const fetchAddresses = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/view-customer-address", {
+            const response = await fetch(`${API_BASE_URL}/view-customer-address`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id: customerId }),
@@ -75,7 +75,7 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen, onDeliverHer
     const confirmDelete = async () => {
         setShowConfirmPopup(false);
         try {
-            const response = await fetch("http://127.0.0.1:8000/delete-customer-address", {
+            const response = await fetch(`${API_BASE_URL}/delete-customer-address`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ address_id: addressToDelete, customer_id: customerId }),
@@ -111,7 +111,7 @@ const ViewCustomerAddress = ({ refresh, setOrderSummary, isAddOpen, onDeliverHer
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/products/order-multiple-products-summary", {
+            const response = await fetch(`${API_BASE_URL}/products/order-multiple-products-summary`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

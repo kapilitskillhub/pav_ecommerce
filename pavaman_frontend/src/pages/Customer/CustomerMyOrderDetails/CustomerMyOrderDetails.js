@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './CustomerMyOrderDetails.css';
 import { useLocation } from 'react-router-dom';
 import { FaCircleArrowRight } from "react-icons/fa6";
 import { MdCloudDownload } from "react-icons/md";
 import generateInvoicePDF from '../CustomerInvoice/CustomerInvoice';
+import API_BASE_URL from "../../../config";
 const CustomerMyOrderDetails = () => {
   const [orderDetails, setOrderDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,7 @@ const CustomerMyOrderDetails = () => {
       if (!customerId) return;
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/customer-my-order', {
+        const response = await fetch(`${API_BASE_URL}/customer-my-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ customer_id: customerId , action:"view"}),

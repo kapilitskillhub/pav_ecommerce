@@ -4,13 +4,10 @@ import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai"; // Import React 
 import defaultImage from "../../../assets/images/product.png";
 import "./CustomerViewProductDetails.css";
 import { MdCloudDownload } from "react-icons/md";
-import { RiCustomerService2Line } from "react-icons/ri";
-import { TbTruckDelivery } from "react-icons/tb";
-import { PiShieldCheckBold } from "react-icons/pi";
-import { FaRupeeSign } from "react-icons/fa";
 import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
 import { PiShareFatFill } from "react-icons/pi";
+import API_BASE_URL from "../../../config";
 
 const CustomerViewProductDetails = () => {
     const location = useLocation();
@@ -55,7 +52,7 @@ const CustomerViewProductDetails = () => {
         setError("");
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/products/${product_name}/`, {
+            const response = await fetch(`${API_BASE_URL}/products/${product_name}/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -115,7 +112,7 @@ const CustomerViewProductDetails = () => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-cart-product", {
+            const response = await fetch(`${API_BASE_URL}/add-cart-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -161,7 +158,7 @@ const CustomerViewProductDetails = () => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/products/order-multiple-products", { // Updated API endpoint
+            const response = await fetch(`${API_BASE_URL}/products/order-multiple-products`, { // Updated API endpoint
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -192,7 +189,7 @@ const CustomerViewProductDetails = () => {
 
     const handleDownloadMaterialFile = async (productId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/download-material/${productId}/`);
+            const response = await fetch(`${API_BASE_URL}/download-material/${productId}/`);
 
             if (!response.ok) {
                 throw new Error("Failed to download file.");

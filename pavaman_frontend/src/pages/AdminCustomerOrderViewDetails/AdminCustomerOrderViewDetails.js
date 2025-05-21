@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from 'axios';
 import "./AdminCustomerOrderViewDetails.css";
 import PopupMessage from "../../components/Popup/Popup";
-
+import API_BASE_URL from "../../config";
 const PaidOrderDetails = () => {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
@@ -22,7 +22,7 @@ const PaidOrderDetails = () => {
       try {
         const adminId = sessionStorage.getItem("admin_id");
         const response = await axios.post(
-          "http://127.0.0.1:8000/get-payment-details-by-order",
+          `${API_BASE_URL}/get-payment-details-by-order`,
           {
             razorpay_order_id: orderId,
             admin_id: adminId
@@ -62,7 +62,7 @@ const PaidOrderDetails = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/order-or-delivery-status",
+        `${API_BASE_URL}/order-or-delivery-status`,
         {
           admin_id,
           customer_id,
@@ -98,7 +98,7 @@ const PaidOrderDetails = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/order-or-delivery-status",
+        `${API_BASE_URL}/order-or-delivery-status`,
         {
           admin_id,
           customer_id,

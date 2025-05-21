@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./CustomerVerifyEmail.css";
-
+import API_BASE_URL from "../../../config";
 const VerifyEmail = () => {
     const { verification_link } = useParams();
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ const VerifyEmail = () => {
         const verifyEmail = async () => {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:8000/verify-email/${verification_link}/`
+                    `${API_BASE_URL}/verify-email/${verification_link}/`
                 );
                 if (response.data.message) {
                     setModalData({

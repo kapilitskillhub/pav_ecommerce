@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import "../ViewCategories/ViewCategories.css";
 import AddIcon from "../../assets/images/addicon.svg";
 import { FaEdit, FaTrash, FaTimes } from "react-icons/fa";
-import { FaCircleCheck } from "react-icons/fa6";
 import PopupMessage from "../../components/Popup/Popup";
 import "react-toastify/dist/ReactToastify.css";
-
+import API_BASE_URL from "../../config";
 const ViewSubcategories = ({ subcategories, setSubcategories }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,7 +68,7 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/view-subcategories", {
+      const response = await fetch(`${API_BASE_URL}/view-subcategories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ admin_id: adminId, category_id: categoryId }),
@@ -118,7 +117,7 @@ const ViewSubcategories = ({ subcategories, setSubcategories }) => {
     }
   
     try {
-      const response = await fetch("http://127.0.0.1:8000/delete-subcategory", {
+      const response = await fetch(`${API_BASE_URL}/delete-subcategory`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

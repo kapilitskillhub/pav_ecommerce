@@ -5,8 +5,7 @@ import { Link } from "react-router-dom";
 import "./AdminCustomerOrders.css"
 import { FaEye } from "react-icons/fa";
 import generateInvoicePDF from '../Customer/CustomerInvoice/CustomerInvoice';
-
-
+import API_BASE_URL from "../../config";
 const Report = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +23,7 @@ const Report = () => {
         }
 
         const response = await axios.post(
-          "http://127.0.0.1:8000/get-payment-details-by-order",
+          `${API_BASE_URL}/get-payment-details-by-order`,
           { admin_id: adminId }
         );
 

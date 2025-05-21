@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PopupMessage from "../../components/Popup/Popup";
-import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 
 const AddSpecification = () => {
   const location = useLocation();
@@ -54,7 +54,7 @@ const AddSpecification = () => {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/add-product-specifications", {
+      const response = await axios.post(`${API_BASE_URL}/add-product-specifications`, {
         admin_id,
         category_id,
         sub_category_id,

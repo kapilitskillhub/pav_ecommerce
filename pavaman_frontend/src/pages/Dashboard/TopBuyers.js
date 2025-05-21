@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import API_BASE_URL from "../../config";
 const TopBuyersPage = () => {
   const [buyers, setBuyers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,7 +9,7 @@ const TopBuyersPage = () => {
 
   useEffect(() => {
     axios
-      .post("http://127.0.0.1:8000/top-buyers-report", { admin_id })
+      .post(`${API_BASE_URL}/top-buyers-report`, { admin_id })
       .then((res) => {
         setBuyers(res.data.buyers || []);
         setLoading(false);

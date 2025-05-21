@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-
+import API_BASE_URL from "../../config";
 const BottomProductsPage = () => {
   const [bottomProducts, setBottomProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,7 +9,7 @@ const BottomProductsPage = () => {
 
   useEffect(() => {
     axios
-      .post("http://127.0.0.1:8000/not-selling-products", { admin_id })
+      .post(`${API_BASE_URL}/not-selling-products`, { admin_id })
       .then((res) => {
         setBottomProducts(res.data.not_selling_products || []);
         setLoading(false);

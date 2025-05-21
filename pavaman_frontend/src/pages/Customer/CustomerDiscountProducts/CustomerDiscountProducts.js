@@ -5,11 +5,10 @@ import { BiSolidCartAdd } from "react-icons/bi";
 import defaultImage from "../../../assets/images/product.png";
 import { AiOutlineCheckCircle, AiOutlineExclamationCircle } from "react-icons/ai";
 import { Link } from "react-router-dom";
-
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import API_BASE_URL from "../../../config";
 import PopupMessage from "../../../components/Popup/Popup";
 
 const ViewDiscountedProducts = () => {
@@ -38,7 +37,7 @@ const ViewDiscountedProducts = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/", {
+            const response = await fetch(`${API_BASE_URL}/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id: localStorage.getItem("customer_id") || null }),
@@ -79,7 +78,7 @@ const ViewDiscountedProducts = () => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-cart-product", {
+            const response = await fetch(`${API_BASE_URL}/add-cart-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

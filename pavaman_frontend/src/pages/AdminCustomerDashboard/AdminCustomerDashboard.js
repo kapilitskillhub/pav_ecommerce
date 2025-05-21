@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./AdminCustomerDashboard.css";
 import { FaUserCheck, FaUserTimes, FaUsers } from "react-icons/fa";
-
+import API_BASE_URL from "../../config";
 const Customer = () => {
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +27,7 @@ const Customer = () => {
                 }
 
                 const requestBody = { admin_id: adminId };
-                const response = await axios.post("http://127.0.0.1:8000/get-customer-by-admin/", requestBody);
+                const response = await axios.post(`${API_BASE_URL}/get-customer-by-admin/`, requestBody);
 
                 if (response.data.status === "success" && Array.isArray(response.data.customers)) {
                     const sortedCustomers = response.data.customers.sort((a, b) => a.id - b.id);
@@ -53,7 +53,7 @@ const Customer = () => {
     const toggleStatus = async (customerId, currentStatus) => {
         try {
             const newStatus = currentStatus === 1 ? 0 : 1;
-            const response = await axios.post("http://127.0.0.1:8000/update-customer-status/", {
+            const response = await axios.post(`${API_BASE_URL}/update-customer-status/`, {
                 customer_id: customerId,
                 account_status: newStatus,
             });

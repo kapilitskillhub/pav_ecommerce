@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import './AdminCustomerReports.css';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { FcSalesPerformance } from "react-icons/fc";
+import API_BASE_URL from "../../config";
 import { PiHandCoinsBold } from "react-icons/pi";
 import { GiCoins } from "react-icons/gi";
 import { BsCoin } from "react-icons/bs";
@@ -84,7 +84,7 @@ const AdminCustomerReports = () => {
 
   const fetchSalesSummary = async (admin_id) => {
     try {
-      const res = await axios.post('http://127.0.0.1:8000/report-sales-summary', { admin_id });
+      const res = await axios.post(`${API_BASE_URL}/report-sales-summary`, { admin_id });
       if (res.data.status_code === 200) {
         setSummary({
           today: res.data.today_sales_amount,
@@ -117,7 +117,7 @@ const AdminCustomerReports = () => {
         payload.end_date_str = format(endOfWeek, 'yyyy-MM-dd');
       }
 
-      const res = await axios.post('http://127.0.0.1:8000/report-monthly-revenue-by-year', payload);
+      const res = await axios.post(`${API_BASE_URL}/report-monthly-revenue-by-year`, payload);
 
       if (res.data.status_code === 200) {
         if (reportFilter === 'monthly') {
@@ -142,7 +142,7 @@ const AdminCustomerReports = () => {
 
   const fetchTopProducts = async (admin_id) => {
     try {
-      const res = await axios.post('http://127.0.0.1:8000/top-five-selling-products', { admin_id });
+      const res = await axios.post(`${API_BASE_URL}/top-five-selling-products`, { admin_id });
       if (res.data.status_code === 200) {
         setTopProducts(res.data.top_5_products);
       }
@@ -156,7 +156,7 @@ const AdminCustomerReports = () => {
 
   const fetchBottomProducts = async (admin_id) => {
     try {
-      const res = await axios.post('http://127.0.0.1:8000/not-selling-products', { admin_id });
+      const res = await axios.post(`${API_BASE_URL}/not-selling-products`, { admin_id });
       if (res.data.status_code === 200) {
         setBottomProducts(res.data.not_selling_products.slice(0, 5));
       }
@@ -169,7 +169,7 @@ const AdminCustomerReports = () => {
 
   const fetchOrderStatusSummary = async (admin_id) => {
     try {
-      const res = await axios.post('http://127.0.0.1:8000/order-status-summary', { admin_id });
+      const res = await axios.post(`${API_BASE_URL}/order-status-summary`, { admin_id });
       if (res.data.status_code === 200 && res.data.order_status_summary) {
         const data = res.data.order_status_summary;
         const transformed = Object.entries(data).map(([status, value]) => ({

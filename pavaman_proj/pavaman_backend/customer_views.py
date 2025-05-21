@@ -159,7 +159,7 @@ def verify_email(request, verification_link):
 def send_verification_email(email, first_name, verification_link):
     subject = "[Pavaman] Please Verify Your Email ✨"
 
-    frontend_url = "http://localhost:3000"
+    frontend_url =  settings.FRONTEND_URL
     full_link = f"{frontend_url}/verify-email/{verification_link}"
     logo_url = f"{settings.AWS_S3_BUCKET_URL}/static/images/aviation-logo.png"
 

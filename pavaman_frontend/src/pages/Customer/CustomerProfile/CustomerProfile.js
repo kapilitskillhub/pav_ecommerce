@@ -5,7 +5,7 @@ import CustomerIcon from "../../../assets/images/contact-icon.avif";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTimes } from "react-icons/fa";
 import PhoneInput from "react-phone-input-2";
-
+import API_BASE_URL from "../../../config";
 const CustomerProfile = ({ refresh }) => {
     const navigate = useNavigate();
     const [customer, setCustomer] = useState(null);
@@ -29,7 +29,7 @@ const CustomerProfile = ({ refresh }) => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/get-customer-profile", {
+            const response = await fetch(`${API_BASE_URL}/get-customer-profile`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id: customerId }),
@@ -100,7 +100,7 @@ const CustomerProfile = ({ refresh }) => {
     };
 
     const sendPreviousEmailOtp = async () => {
-        const response = await fetch("http://127.0.0.1:8000/edit-profile-email", {
+        const response = await fetch(`${API_BASE_URL}/edit-profile-email`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -118,7 +118,7 @@ const CustomerProfile = ({ refresh }) => {
     };
 
     const verifyPreviousEmailOtp = async () => {
-        const response = await fetch("http://127.0.0.1:8000/edit-profile-email", {
+        const response = await fetch(`${API_BASE_URL}/edit-profile-email`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -148,7 +148,7 @@ const CustomerProfile = ({ refresh }) => {
             triggerPopup("Please enter new email first", "error");
             return;
         }
-        const response = await fetch("http://127.0.0.1:8000/edit-profile-email", {
+        const response = await fetch(`${API_BASE_URL}/edit-profile-email`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -167,7 +167,7 @@ const CustomerProfile = ({ refresh }) => {
     };
 
     const verifyNewEmailOtpAndUpdate = async () => {
-        const response = await fetch("http://127.0.0.1:8000/edit-profile-email", {
+        const response = await fetch(`${API_BASE_URL}/edit-profile-email`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -188,7 +188,7 @@ const CustomerProfile = ({ refresh }) => {
     };
 
     const sendMobileOtp = async () => {
-        const response = await fetch("http://127.0.0.1:8000/edit-profile-mobile", {
+        const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -207,7 +207,7 @@ const CustomerProfile = ({ refresh }) => {
     };
 
     const verifyMobileOtp = async () => {
-        const response = await fetch("http://127.0.0.1:8000/edit-profile-mobile", {
+        const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -233,7 +233,7 @@ const CustomerProfile = ({ refresh }) => {
     };    
 
     const sendNewMobileOtp = async () => {
-        const response = await fetch("http://127.0.0.1:8000/edit-profile-mobile", {
+        const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -253,7 +253,7 @@ const CustomerProfile = ({ refresh }) => {
     };
 
     const verifyNewMobileOtp = async () => {
-        const response = await fetch("http://127.0.0.1:8000/edit-profile-mobile", {
+        const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -277,7 +277,7 @@ const CustomerProfile = ({ refresh }) => {
 
     const updateName = async () => {
         try {
-            const response = await fetch("http://127.0.0.1:8000/edit-customer-profile", {
+            const response = await fetch(`${API_BASE_URL}/edit-customer-profile`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

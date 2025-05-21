@@ -6,7 +6,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
-
+import API_BASE_URL from "../../../config";
 const CustomerViewCart = () => {
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
@@ -63,7 +63,7 @@ const CustomerViewCart = () => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/view-cart-products", {
+            const response = await fetch(`${API_BASE_URL}/view-cart-products`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id }),
@@ -99,7 +99,7 @@ const searchCart = async (query) => {
     }
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/customer-cart-view-search", {
+        const response = await fetch(`${API_BASE_URL}/customer-cart-view-search`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ customer_id, product_name: query }),
@@ -153,7 +153,7 @@ const searchCart = async (query) => {
 
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/delete-cart-product", {
+            const response = await fetch(`${API_BASE_URL}/delete-cart-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id }),
@@ -251,7 +251,7 @@ const searchCart = async (query) => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/delete-selected-products-cart", {
+            const response = await fetch(`${API_BASE_URL}/delete-selected-products-cart`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_ids: selectedProducts }),
@@ -318,7 +318,7 @@ const searchCart = async (query) => {
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/products/order-multiple-products", {
+            const response = await fetch(`${API_BASE_URL}/products/order-multiple-products`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(orderData),

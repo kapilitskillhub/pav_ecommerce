@@ -6,7 +6,7 @@ import SearchIcon from "../../assets/images/search.svg";
 import RefreshIcon from "../../assets/images/search.svg"; 
 import { IoPerson } from "react-icons/io5";
 import { RiRefreshLine } from "react-icons/ri";
-import { LuRefreshCw } from "react-icons/lu";
+import API_BASE_URL from "../../config";
 import "../Header/Header.css";
 
 const Header = ({ setIsAuthenticated, setCategories, setSubcategories, setProducts }) => {
@@ -58,13 +58,13 @@ const handleSearch = async (event) => {
     let requestBody = {};
 
     if (location.pathname.includes("/view-categories")) {
-        apiUrl = "http://127.0.0.1:8000/search-categories";
+        apiUrl = `${API_BASE_URL}/search-categories`;
         requestBody = {
             admin_id: sessionStorage.getItem("admin_id"),
             category_name: searchQuery,
         };
     } else if (location.pathname.includes("/view-subcategories")) {
-        apiUrl = "http://127.0.0.1:8000/search-subcategories";
+        apiUrl = `${API_BASE_URL}/search-subcategories`;
         const categoryData = JSON.parse(sessionStorage.getItem("categoryData") || "{}");
         requestBody = {
             admin_id: sessionStorage.getItem("admin_id"),
@@ -72,7 +72,7 @@ const handleSearch = async (event) => {
             sub_category_name: searchQuery,
         };
     } else if (location.pathname.includes("/view-products")) {
-        apiUrl = "http://127.0.0.1:8000/search-products";
+        apiUrl = `${API_BASE_URL}/search-products`;
         const categoryData = JSON.parse(sessionStorage.getItem("categoryData") || "{}");
         const subCategoryData = JSON.parse(sessionStorage.getItem("subCategoryData") || "{}");
         requestBody = {
@@ -124,7 +124,7 @@ const handleRefresh = () => {
     const fetchCategories = async () => {
         setErrorMessage("");
         try {
-            const response = await axios.post("http://127.0.0.1:8000/view-categories", {
+            const response = await axios.post(`${API_BASE_URL}/view-categories`, {
                 admin_id: sessionStorage.getItem("admin_id"),
             }, { withCredentials: true });
             setCategories(response.data.categories || []);
@@ -136,7 +136,7 @@ const handleRefresh = () => {
     const fetchSubcategories = async () => {
         setErrorMessage("");
         try {
-            const response = await axios.post("http://127.0.0.1:8000/view-subcategories", {
+            const response = await axios.post(`${API_BASE_URL}/view-subcategories`, {
                 admin_id: sessionStorage.getItem("admin_id"),
                 category_id: JSON.parse(sessionStorage.getItem("categoryData") || "{}").category_id,
             }, { withCredentials: true });
@@ -149,7 +149,7 @@ const handleRefresh = () => {
     const fetchProducts = async () => {
         setErrorMessage("");
         try {
-            const response = await axios.post("http://127.0.0.1:8000/view-products", {
+            const response = await axios.post(`${API_BASE_URL}/view-products`, {
                 admin_id: sessionStorage.getItem("admin_id"),
                 category_id: JSON.parse(sessionStorage.getItem("categoryData") || "{}").category_id,
                 sub_category_id: JSON.parse(sessionStorage.getItem("subCategoryData") || "{}").sub_category_id,

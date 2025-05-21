@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { Range } from 'react-range';
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
 import "./CustomerViewProducts.css";
-
+import API_BASE_URL from "../../../config";
 const CustomerViewProducts = () => {
     const { categoryName, subCategoryName } = useParams();
     const [allProducts, setAllProducts] = useState([]); // Store original data
@@ -67,7 +67,7 @@ const CustomerViewProducts = () => {
         setError("");
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/sort-products-inside-subcategory", {
+            const response = await fetch(`${API_BASE_URL}/sort-products-inside-subcategory`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -108,7 +108,7 @@ const CustomerViewProducts = () => {
         setLoading(true);
         try {
             const payload = {
-                product_name: query?.trim(), // ✅ Trim whitespace
+                product_name: query?.trim(),
                 category_id: category_id || localStorage.getItem("category_id"),
                 sub_category_id: sub_category_id || localStorage.getItem("sub_category_id"),
                 customer_id: localStorage.getItem("customer_id") || null,
@@ -116,7 +116,7 @@ const CustomerViewProducts = () => {
 
             console.log("📨 Product search payload:", payload);
 
-            const response = await fetch("http://127.0.0.1:8000/customer-search-products", {
+            const response = await fetch(`${API_BASE_URL}/customer-search-products`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -175,7 +175,7 @@ const CustomerViewProducts = () => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-cart-product", {
+            const response = await fetch(`${API_BASE_URL}/add-cart-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id, quantity: 1 }),
@@ -232,7 +232,7 @@ const CustomerViewProducts = () => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/filter-and-sort-products', {
+            const response = await fetch(`${API_BASE_URL}/filter-and-sort-products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

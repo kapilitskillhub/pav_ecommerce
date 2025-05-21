@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "./CustomerManageAddAddress.css";
 import PhoneInput from "react-phone-input-2";
 import PopupMessage from "../../../components/Popup/Popup";
-
+import API_BASE_URL from "../../../config";
 const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => {
     const [formData, setFormData] = useState({
         first_name: "",
@@ -121,7 +121,7 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-customer-address", {
+            const response = await fetch(`${API_BASE_URL}/add-customer-address`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id,...formData, mobile_number: `+${formData.mobile_number}`, alternate_mobile: formData.alternate_mobile ? `+${formData.alternate_mobile}` : "" }),

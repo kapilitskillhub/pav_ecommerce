@@ -2,27 +2,22 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminInventory.css';
 import { useNavigate } from 'react-router-dom';
-import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 import PopupMessage from "../../components/Popup/Popup";
-
 const AdminInventoryProducts = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [file, setFile] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
   const adminId = sessionStorage.getItem("admin_id");
   const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
   const [showPopup, setShowPopup] = useState(false);
-
   const displayPopup = (text, type = "success") => {
     setPopupMessage({ text, type });
     setShowPopup(true);
-
     setTimeout(() => {
       setShowPopup(false);
     }, 10000);
@@ -33,7 +28,7 @@ const AdminInventoryProducts = () => {
 
   const fetchDiscountProducts = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/product-discount-inventory-view', {
+      const response = await axios.post(`${API_BASE_URL}/product-discount-inventory-view`, {
         admin_id: adminId,
         action: "inventory"
       });
@@ -55,7 +50,7 @@ const AdminInventoryProducts = () => {
   const downloadExcel = async () => {
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/download-inventory-products-excel',
+        `${API_BASE_URL}/download-inventory-products-excel`,
         { admin_id: adminId },
         { responseType: 'blob' }
       );

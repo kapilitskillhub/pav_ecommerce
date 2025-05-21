@@ -5,7 +5,7 @@ import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
 import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
-
+import API_BASE_URL from "../../config";
 const AddProduct = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -105,7 +105,7 @@ const AddProduct = () => {
         });
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-product", {
+            const response = await fetch(`${API_BASE_URL}/add-product`, {
                 method: "POST",
                 body: formDataToSend,
             });
