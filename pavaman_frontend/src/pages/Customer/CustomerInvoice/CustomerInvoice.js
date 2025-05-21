@@ -3,7 +3,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import signatureImg from '../../../assets/images/aviation-logo.png';
 import API_BASE_URL from "../../../config";
-const generateInvoicePDF = async (customerId, order) => {
+const generateInvoicePDF = async (customerId, order, mode = 'download') => {
     try {
         const response = await fetch(`${API_BASE_URL}/generate-invoice-for-customer`, {
             method: 'POST',
