@@ -20,6 +20,17 @@ const MobileHeader = ({ handleLogout, cartCount }) => {
   const [searchInput, setSearchInput] = useState("");
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search...");
 
+  const [showProfileOptions, setShowProfileOptions] = useState(false);
+
+const handleUserIconClick = () => {
+  if (location.pathname === "/profile-options") {
+    navigate(-1); // Go back if already on profile page
+  } else {
+    navigate("/profile-options");
+  }
+};
+
+
   const toggleSearch = () => {
     setShowSearch(!showSearch);
   };
@@ -80,8 +91,8 @@ const MobileHeader = ({ handleLogout, cartCount }) => {
 
           <div
             className="user-icon-wrapper"
-            onClick={() => navigate("/profile-options")}
-          >
+            onClick={handleUserIconClick}>
+          
             <IoMdPerson size={24} />
           </div>
         </div>

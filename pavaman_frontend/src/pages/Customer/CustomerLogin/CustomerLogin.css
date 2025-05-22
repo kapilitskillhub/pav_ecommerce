@@ -195,6 +195,7 @@
 .forgot-password{
     color: red;
     margin: 20px 20px 20px 0px;
+    cursor: pointer
 }
 .phone-input-otp{
     margin-bottom: 20px;
@@ -371,9 +372,7 @@
     background: #646363;
     color: white;
     border-bottom: 3px solid #646363;
-
     height: 44px;
-    
 }
 .verifyOTP{
     flex: 1;
@@ -388,16 +387,13 @@
     transition: all 0.3s ease-in-out;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
-  
 }
-
 .verifyOTP_buttons{
 
     display: flex;
     gap: 10px;
     flex-direction: column;
 }
-
 .forget_buttons{
     display: flex;
     gap: 10px;
@@ -407,7 +403,6 @@
     display: flex;
     gap: 10px;   
 }
-
 .sendotp {
     background: #4450A2;
     color: white;
@@ -681,9 +676,7 @@
     }
     .sendotp,.cancel{
         height: 60px;
-        
     }
-
     .password-tool-tip{
         width: 100%;
   }

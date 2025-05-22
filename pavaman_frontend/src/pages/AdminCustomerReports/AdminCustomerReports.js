@@ -255,7 +255,18 @@ const AdminCustomerReports = () => {
 
           <div className="bar-chart">
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={Object.entries(monthlyRevenue).map(([key, value]) => ({ name: key, revenue: value }))}>
+              <BarChart
+                data={
+                  (() => {
+                    const chartData = Object.entries(monthlyRevenue).map(([key, value]) => ({ name: key, revenue: value }));
+                    if (chartData.length === 1) {
+                      // Add dummy point to prevent stretching
+                      chartData.push({ name: " ", revenue: 0 });
+                    }
+                    return chartData;
+                  })()
+                }
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="name"
@@ -289,12 +300,13 @@ const AdminCustomerReports = () => {
                 />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="revenue" fill="#8884d8" />
+                <Bar dataKey="revenue" fill="#8884d8" barSize={40} maxBarSize={40} />
+
               </BarChart>
             </ResponsiveContainer>
+
           </div>
         </div>
-
         <div className="pie-chart-box">
           <h3 >Order Status</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -317,7 +329,6 @@ const AdminCustomerReports = () => {
           </ResponsiveContainer>
         </div>
       </div>
-
       <div className="product-boxes">
         <div className="top-products">
           <h3>Top 5 Products</h3>
@@ -335,7 +346,6 @@ const AdminCustomerReports = () => {
                   <td>{p.total_sold}</td>
                 </tr>
               ))}
-
             </tbody>
           </table>
         </div>
@@ -364,5 +374,4 @@ const AdminCustomerReports = () => {
     </div>
   );
 };
-
 export default AdminCustomerReports;

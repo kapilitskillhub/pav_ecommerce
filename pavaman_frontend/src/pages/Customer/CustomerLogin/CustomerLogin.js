@@ -529,7 +529,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-
                         <div className="reset_buttons">
                             <button className="reset_password" onClick={handleResetPassword}>Reset Password</button>
                             <button className="reset-cancel" onClick={() => setShowResetPasswordPopup(false)}>Cancel</button>

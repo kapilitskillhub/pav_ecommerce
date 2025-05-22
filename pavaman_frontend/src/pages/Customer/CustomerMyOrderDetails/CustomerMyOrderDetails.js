@@ -141,7 +141,7 @@ const CustomerMyOrderDetails = () => {
             {!orderHasMultipleProducts && (
               <div className="invoice-button-wrapper">
                 <button className="invoice-button" onClick={handleGetInvoice}>
-                  Get Invoice<MdCloudDownload className="invoice-icon" />
+                  Get Invoice&nbsp; &nbsp;<MdCloudDownload className="invoice-icon" />
                 </button>
               </div>
             )}

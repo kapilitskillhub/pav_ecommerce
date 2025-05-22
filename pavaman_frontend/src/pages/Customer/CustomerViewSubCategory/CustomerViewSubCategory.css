@@ -86,7 +86,7 @@
 .sub-main-content {
     flex: 1;
     flex-grow: 1;
-    overflow-y: auto;
+    /* overflow-y: auto; */
 }
 @media (max-width: 600px) {
     .breadcrumb {

@@ -1,9 +1,12 @@
 .order-box {
   width: 700px;
   margin: auto;
+  border-radius: 20px;
   padding: 20px;
   background-color: #dbe0f9;
   text-align: start;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 .main-heading {
   font-size: 22px;
