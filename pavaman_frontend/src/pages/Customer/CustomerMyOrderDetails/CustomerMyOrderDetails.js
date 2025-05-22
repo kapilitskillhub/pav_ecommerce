@@ -136,7 +136,7 @@ const CustomerMyOrderDetails = () => {
 )}
 
  <p><strong>Delivery Fee:</strong>    +    ₹{selectedProduct.delivery_charge}</p>
-  <p><strong>Price:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity + selectedProduct.delivery_charge).toFixed(2)}</p>
+  <p><strong>Total Price:</strong> ₹{(selectedProduct.final_price * selectedProduct.quantity + selectedProduct.delivery_charge).toFixed(2)}</p>
   
             {!orderHasMultipleProducts && (
               <div className="invoice-button-wrapper">
@@ -231,7 +231,7 @@ const CustomerMyOrderDetails = () => {
 <p><strong>Platform Fee:</strong> ₹0.00</p>
 
 
-    <p><strong>Total Amount:</strong> ₹{
+    <p><strong>Grand Total:</strong> ₹{
       order.order_products.reduce((acc, prod) => acc + (parseFloat(prod.final_price) * prod.quantity + prod.delivery_charge), 0).toFixed(2)
     }</p>
           <p><strong>Payment Date:</strong> {order.payment_date}</p>
