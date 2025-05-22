@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import Side from "./SideComponent";
@@ -6,6 +6,7 @@ import "./Products.css";
 import { BiSolidCartAdd } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import PopupMessage from "../../../components/Popup/Popup";
+import API_BASE_URL from "../../../config";
 
 const AllProducts = () => {
     const location = useLocation();
@@ -24,7 +25,7 @@ const AllProducts = () => {
     const fetchProductsBySubcategory = async (categoryName, subCategoryName) => {
         try {
             const productRes = await axios.post(
-                `http://127.0.0.1:8000/categories/${categoryName}/${subCategoryName}/`,
+                `${API_BASE_URL}/categories/${categoryName}/${subCategoryName}/`,
                 {
                     customer_id,
                 }
@@ -118,16 +119,13 @@ const AllProducts = () => {
             navigate("/customer-login");
             return;
         }
-
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-cart-product", {
+            const response = await fetch(`{API_BASE_URL}/add-cart-product`,{
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id, quantity: 1 }),
             });
-
             const data = await response.json();
-
             if (data.status_code === 200) {
                 displayPopup("Product added to cart successfully!", "success");
                 window.dispatchEvent(new Event("cartUpdated"));
@@ -138,17 +136,14 @@ const AllProducts = () => {
             displayPopup("An unexpected error occurred while adding to cart.", "error");
         }
     };
-
     if (loading) return <div>Loading...</div>;
     if (error && products.length === 0) return <div>{error}</div>;
-
     return (
         <div className="all-products-container">
             <Side
                 categories={selectedCategory ? [selectedCategory] : []}
                 handleSubcategoryClick={handleSubcategoryClick}
             />
-
             <div className="all-products-section">
                 <div className="all-products-list">
                     {filteredProducts.length > 0 ? (
@@ -220,10 +215,8 @@ const AllProducts = () => {
                     )}
                 </div>
             </div>
-
             {showPopup && <PopupMessage text={popupMessage.text} type={popupMessage.type} />}
         </div>
     );
 };
-
 export default AllProducts;

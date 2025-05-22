@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PopupMessage from "../../components/Popup/Popup";
-import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 
 const EditSpecification = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const EditSpecification = () => {
     };
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/edit-product-specifications", requestData);
+      const response = await axios.post(`${API_BASE_URL}/edit-product-specifications`, requestData);
       if (response.data.status_code === 200) {
         displayPopup("Specifications updated successfully!","success");
         setTimeout(() => {

@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import './B2B.css';
 import { FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
 

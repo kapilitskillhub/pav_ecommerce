@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminDiscounts.css';
 import { useNavigate } from 'react-router-dom';
-import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 import PopupMessage from "../../components/Popup/Popup";
-
 const AdminDiscountProducts = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -33,7 +32,7 @@ const AdminDiscountProducts = () => {
 
   const fetchDiscountProducts = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/product-discount-inventory-view', {
+      const response = await axios.post(`${API_BASE_URL}/product-discount-inventory-view`, {
         admin_id: adminId,
         action: "discount"
       });
@@ -55,7 +54,7 @@ const AdminDiscountProducts = () => {
   const downloadExcel = async () => {
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/download-discount-products-excel',
+        `${API_BASE_URL}/download-discount-products-excel`,
         { admin_id: adminId },
         { responseType: 'blob' }
       );
@@ -76,16 +75,13 @@ const AdminDiscountProducts = () => {
 
     navigate("/add-discount")
   };
-
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
   const totalPages = Math.ceil(products.length / itemsPerPage);
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-
   return (
     <div className="recent-orders">
       <div className="discount-header">
@@ -96,7 +92,6 @@ const AdminDiscountProducts = () => {
           <button onClick={downloadExcel}>Download Excel</button>
         </div>
       </div>
-
      <div className="admin-popup">
         <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
       </div>
@@ -126,7 +121,6 @@ const AdminDiscountProducts = () => {
                     <td>{indexOfFirstProduct + index + 1}</td>
                     <td>{product.category}</td>
                     <td>{product.sub_category}</td>
-
                     <td>
                       <img src={product.product_images[0]} alt={product.product_name} width="50" height="50" />
                     </td>
@@ -140,8 +134,6 @@ const AdminDiscountProducts = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Pagination */}
           <div className="pagination-container">
             <button
               onClick={prevPage}
@@ -150,7 +142,6 @@ const AdminDiscountProducts = () => {
             >
               Previous
             </button>
-
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
@@ -161,7 +152,6 @@ const AdminDiscountProducts = () => {
                 {page}
               </button>
             ))}
-
             <button
               onClick={nextPage}
               disabled={currentPage === totalPages}
@@ -175,5 +165,4 @@ const AdminDiscountProducts = () => {
     </div>
   );
 };
-
 export default AdminDiscountProducts;

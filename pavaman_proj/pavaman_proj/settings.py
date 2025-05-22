@@ -104,14 +104,9 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-
-
 import os 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -190,10 +185,13 @@ RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET")
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
-
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 
 AWS_S3_BUCKET_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
+FRONTEND_URL = "http://localhost:3000"
+import os
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+RAZORPAY_CALLBACK_URL = os.getenv("RAZORPAY_CALLBACK_URL", "http://127.0.0.1:8000/razorpay-callback")

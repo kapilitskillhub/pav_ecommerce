@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import AddCustomerAddress from "../CustomerAddAddress/CustomerAddAddress";
 import ViewCustomerAddress from "../CustomerViewAddress/CustomerViewAddress";
 import EditAddress from "../CustomerEditAddress/CustomerEditAddress";
@@ -6,7 +6,6 @@ import OrderSummary from "../CustomerOrderSummary/CustomerOrderSummary";
 import RazorpayPayment from "../CustomerPayment/CustomerPayment";
 import Popup from "../../../components/Popup/Popup";
 import PopupMessage from "../../../components/Popup/Popup";
-
 const CustomerCheckoutPage = () => {
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);

@@ -1,6 +1,4 @@
-import React from "react";
 import "./SideComponent.css";
-
 const Side = ({ categories, handleSubcategoryClick }) => {
   return (
     <div className="all-sidebar">

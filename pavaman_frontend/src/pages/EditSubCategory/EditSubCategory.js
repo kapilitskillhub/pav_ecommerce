@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
 import "../EditSubCategory/EditSubCategory.css";
 import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
-
+import API_BASE_URL from "../../config";
 const EditSubcategory = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,7 +60,7 @@ const EditSubcategory = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/edit-subcategory", {
+      const response = await fetch(`${API_BASE_URL}/edit-subcategory`, {
         method: "POST",
         body: formData,
       });

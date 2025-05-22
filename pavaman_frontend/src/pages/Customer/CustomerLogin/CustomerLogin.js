@@ -7,11 +7,10 @@ import "../CustomerLogin/CustomerLogin.css";
 import Logo from "../../../assets/images/aviation-logo.png";
 import LogInImage from "../../../assets/images/signinpage-image.png";
 import { FaEye, FaEyeSlash, FaInfoCircle } from "react-icons/fa";
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import PhoneInput from "react-phone-input-2";
 import { useLocation } from "react-router-dom";
 import PopupMessage from "../../../components/Popup/Popup";
-
+import API_BASE_URL from "../../../config";
 
 const CustomerLogin = ({ setCustomerAuthenticated }) => {
     const [email, setEmail] = useState("");
@@ -47,7 +46,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
             return;
         }
         try {
-            const response = await axios.post("http://127.0.0.1:8000/customer-login", { email, password });
+            const response = await axios.post(`${API_BASE_URL}/customer-login`, { email, password });
 
             if (response.data.status_code === 200) {
                 showPopup("Login successful!", "success");
@@ -80,7 +79,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         }
 
         try {
-            const res = await axios.post("http://127.0.0.1:8000/google-login",
+            const res = await axios.post(`${API_BASE_URL}/google-login`,
                 { token: response.credential },
                 { headers: { "Content-Type": "application/json" } }
             );
@@ -128,7 +127,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         try {
             setShowResendLink(false); 
 
-            const response = await axios.post("http://127.0.0.1:8000/resend-verification-email", { email});
+            const response = await axios.post(`${API_BASE_URL}/resend-verification-email`, { email});
 
             if (response.data.message) {
                 showPopup("Verification email resent successfully.", "success");
@@ -160,10 +159,10 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         }
 
 
-        console.log("Submitting Data:", { customer_id: googleUserId, mobile_no: mobileNumber }); // Debug log
+        console.log("Submitting Data:", { customer_id: googleUserId, mobile_no: mobileNumber }); 
 
         try {
-            const response = await axios.post("http://127.0.0.1:8000/google-submit-mobile", {
+            const response = await axios.post(`${API_BASE_URL}/google-submit-mobile`, {
                 customer_id: googleUserId,
                 mobile_no: formattedNumber,
             });
@@ -203,7 +202,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         }
 
         try {
-            const response = await axios.post("http://127.0.0.1:8000/otp-generate", {
+            const response = await axios.post(`${API_BASE_URL}/otp-generate`, {
                 identifier: forgotPasswordIdentifier,
             });
 
@@ -277,7 +276,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         }
 
         try {
-            const response = await axios.post("http://127.0.0.1:8000/verify-otp", {
+            const response = await axios.post(`${API_BASE_URL}/verify-otp`, {
                 identifier: forgotPasswordIdentifier,
                 otp: enteredOTP,
                 reset_link: resetLink,
@@ -301,7 +300,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         }
 
         try {
-            const response = await axios.post("http://127.0.0.1:8000/set-new-password", {
+            const response = await axios.post(`${API_BASE_URL}/set-new-password`, {
                 identifier: forgotPasswordIdentifier,
                 new_password: newPassword,
                 confirm_password: confirmPassword,

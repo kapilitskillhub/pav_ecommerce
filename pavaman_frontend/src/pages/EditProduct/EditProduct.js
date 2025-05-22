@@ -6,7 +6,7 @@ import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
 import SuccessIcon from "../../assets/images/succes-icon.png";
 import PopupMessage from "../../components/Popup/Popup";
 import { Link } from "react-router-dom";
-
+import API_BASE_URL from "../../config";
 const EditProduct = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -108,7 +108,7 @@ console.log(`${name} updated. Selected ${files.length} file(s).`);
     });
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/edit-product", formDataToSend);
+      const response = await axios.post(`${API_BASE_URL}/edit-product`, formDataToSend);
       if (response.data.status_code === 200) {
         displayPopup("Product  updated successfully!", "success");
         setTimeout(() => {

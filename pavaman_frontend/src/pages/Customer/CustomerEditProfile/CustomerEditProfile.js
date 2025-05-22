@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./CustomerEditProfile.css";
 import PopupMessage from "../../../components/Popup/Popup";
 import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css';
+import API_BASE_URL from "../../../config";
 const CustomerEditProfile = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -48,7 +49,7 @@ const CustomerEditProfile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://127.0.0.1:8000/edit-customer-profile", {
+             const response = await fetch(`${API_BASE_URL}/edit-customer-profile`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

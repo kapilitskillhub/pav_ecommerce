@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "../ViewCategories/ViewCategories.css";
 import AddIcon from "../../assets/images/addicon.svg";
 import { FaEdit, FaTrash, FaTimes } from "react-icons/fa";
-import { FaCircleCheck } from "react-icons/fa6";
+import API_BASE_URL from "../../config";
 import { Link } from "react-router-dom";
 import PopupMessage from "../../components/Popup/Popup";
 
@@ -50,7 +50,7 @@ const ViewCategories = ({ categories, setCategories }) => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/view-categories", {
+      const response = await fetch(`${API_BASE_URL}/view-categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ admin_id: adminId }),
@@ -94,7 +94,7 @@ const ViewCategories = ({ categories, setCategories }) => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/delete-category", {
+      const response = await fetch(`${API_BASE_URL}/delete-category`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ category_id: Number(categoryToDelete), admin_id: adminId }),

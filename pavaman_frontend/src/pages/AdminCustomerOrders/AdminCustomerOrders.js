@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./AdminCustomerOrders.css";
 import { Link } from "react-router-dom";
 import "./AdminCustomerOrders.css"
 import { FaEye } from "react-icons/fa";
 import generateInvoicePDF from '../Customer/CustomerInvoice/CustomerInvoice';
-
-
+import API_BASE_URL from "../../config";
 const Report = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,12 +21,10 @@ const Report = () => {
           setError("Admin session expired. Please log in again.");
           return;
         }
-
         const response = await axios.post(
-          "http://127.0.0.1:8000/get-payment-details-by-order",
+          `${API_BASE_URL}/get-payment-details-by-order`,
           { admin_id: adminId }
         );
-
         if (
           response.data.status_code === 200 &&
           Array.isArray(response.data.payments)
@@ -43,7 +40,6 @@ const Report = () => {
         setLoading(false);
       }
     };
-
     fetchReports();
   }, []);
   const indexOfLastReport = currentPage * reportsPerPage;
@@ -61,7 +57,6 @@ const Report = () => {
       <h2 className="report-title">Ordered Payment Reports</h2>
       {loading && <p className="loading-text">Loading reports...</p>}
       {error && <p className="error-text">{error}</p>}
-
       {!loading && !error && (
         <>
           <div className="report-table-container">
@@ -127,7 +122,6 @@ const Report = () => {
                   );
                 })}
               </tbody>
-
             </table>
           </div>
           <div className="pagination-container">
@@ -138,7 +132,6 @@ const Report = () => {
             >
               Previous
             </button>
-
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
@@ -149,7 +142,6 @@ const Report = () => {
                 {page}
               </button>
             ))}
-
             <button
               onClick={nextPage}
               disabled={currentPage === totalPages}

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./CustomerManageEditAddress.css";
 import PopupMessage from "../../../components/Popup/Popup";
 import PhoneInput from "react-phone-input-2";
-
+import API_BASE_URL from "../../../config";
 const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
     const [formData, setFormData] = useState({});
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
@@ -92,7 +92,7 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://127.0.0.1:8000/edit-customer-address", {
+            const response = await fetch(`${API_BASE_URL}/edit-customer-address`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id,...formData, mobile_number: `+${formData.mobile_number}`, alternate_mobile: formData.alternate_mobile ? `+${formData.alternate_mobile}` : "" })

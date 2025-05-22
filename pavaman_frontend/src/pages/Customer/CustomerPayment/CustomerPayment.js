@@ -1,7 +1,7 @@
-import React, { useEffect,useState } from "react";
+import{ useEffect,useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PopupMessage from "../../../components/Popup/Popup";
-
+import API_BASE_URL from "../../../config";
 const RazorpayPayment = ({ orderSummary }) => {
     const navigate = useNavigate();
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
@@ -38,7 +38,7 @@ const RazorpayPayment = ({ orderSummary }) => {
         }));
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/create-razorpay-order", {
+            const response = await fetch(`${API_BASE_URL}/create-razorpay-order`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id: customerId, order_products: orderProducts }),
@@ -56,7 +56,7 @@ const RazorpayPayment = ({ orderSummary }) => {
                 description: `Payment for Order(s): ${orderProducts.map(o => o.order_id).join(", ")}`,
                 order_id: orderData.razorpay_order_id,
                 handler: async (paymentResponse) => {
-                    const verifyResponse = await fetch("http://127.0.0.1:8000/razorpay-callback", {
+                    const verifyResponse = await fetch(`${API_BASE_URL}/razorpay-callback`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -95,7 +95,6 @@ const RazorpayPayment = ({ orderSummary }) => {
             displayPopup("Error: " + error.message,"error");
         }
     };
-
     return (
         <div className="popup-cart">
         {showPopup && (
@@ -108,5 +107,4 @@ const RazorpayPayment = ({ orderSummary }) => {
          </div>
     );
 };
-
 export default RazorpayPayment;

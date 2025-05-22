@@ -1,5 +1,5 @@
-
-import React, { useState, useEffect, useRef } from "react";
+import API_BASE_URL from "../../../config";
+import { useState, useEffect, useRef } from "react";
 import "../CustomerAddAddress/CustomerAddAddress.css";
 import PopupMessage from "../../../components/Popup/Popup";
 import PhoneInput from "react-phone-input-2";
@@ -50,7 +50,7 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                     const result = await response.json();
 
                     if (result[0].Status === "Success") {
-                        const postOffice = result[0].PostOffice[0];
+                        const postOffice = result[0].PostOffice?.[0];
                         setFormData(prev => ({
                             ...prev,
                             district: postOffice.District,
@@ -85,7 +85,7 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-customer-address", {
+            const response = await fetch(`${API_BASE_URL}/add-customer-address`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, ...formData, mobile_number: `+${formData.mobile_number}`, alternate_mobile: formData.alternate_mobile ? `+${formData.alternate_mobile}` : "" }),
@@ -234,7 +234,6 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
         </div>
     );
 };
-
 export default AddCustomerAddress;
 
 

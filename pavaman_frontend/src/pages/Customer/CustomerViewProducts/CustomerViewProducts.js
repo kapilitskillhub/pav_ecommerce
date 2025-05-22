@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import defaultImage from "../../../assets/images/default.png";
 import { BiSolidCartAdd } from "react-icons/bi";
 import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
 import { Range } from 'react-range';
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
 import "./CustomerViewProducts.css";
-
+import API_BASE_URL from "../../../config";
 const CustomerViewProducts = () => {
     const { categoryName, subCategoryName } = useParams();
-    const [allProducts, setAllProducts] = useState([]); // Store original data
-    const [products, setProducts] = useState([]); // Display filtered/sorted products
+    const [allProducts, setAllProducts] = useState([]);
+    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [sortOrder, setSortOrder] = useState(""); // Sorting state
+    const [sortOrder, setSortOrder] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
     const category_id = location.state?.category_id || localStorage.getItem("category_id");
@@ -74,7 +73,7 @@ const CustomerViewProducts = () => {
         setError("");
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/sort-products-inside-subcategory", {
+            const response = await fetch(`${API_BASE_URL}/sort-products-inside-subcategory`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -121,7 +120,7 @@ const CustomerViewProducts = () => {
 
             console.log("📨 Product search payload:", payload);
 
-            const response = await fetch("http://127.0.0.1:8000/customer-search-products", {
+            const response = await fetch(`${API_BASE_URL}/customer-search-products`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -177,7 +176,7 @@ const CustomerViewProducts = () => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/add-cart-product", {
+            const response = await fetch(`${API_BASE_URL}/add-cart-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id, quantity: 1 }),
@@ -232,7 +231,7 @@ const CustomerViewProducts = () => {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/filter-and-sort-products', {
+            const response = await fetch(`${API_BASE_URL}/filter-and-sort-products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -298,76 +297,76 @@ const CustomerViewProducts = () => {
                             />
                         )}
                     </div>
-                  <div className="product-filter-dashboard">
-  {isMobile && (
-    <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
-      {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
-    </div>
-  )}
+                    <div className="product-filter-dashboard">
+                        {isMobile && (
+                            <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
+                                {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
+                            </div>
+                        )}
 
-  {(!isMobile || showFilters) && (
-    <div className="header-filter">
-      <div className="filter-sort-section">
-        <div className="filter-heading-products">Filters</div>
+                        {(!isMobile || showFilters) && (
+                            <div className="header-filter">
+                                <div className="filter-sort-section">
+                                    <div className="filter-heading-products">Filters</div>
 
-        <div className="price-slider-container">
-          <label className="price-range-label">
-            Price Range
-            <div> ₹{values[0]} - ₹{values[1]}</div>
-          </label>
-          <div className="slider-btn">
-            <Range
-              className="price-slider-range"
-              values={values}
-              step={100}
-              min={minPrice}
-              max={maxPrice}
-              onChange={(newValues) => setValues(newValues)}
-              renderTrack={({ props, children }) => (
-                <div
-                  {...props}
-                  style={{
-                    ...props.style,
-                    width: '100%',
-                    background: 'white',
-                    borderRadius: '4px',
-                    margin: '20px 0',
-                    border: '0.5px solid grey',
-                  }}
-                >
-                  {children}
-                </div>
-              )}
-              renderThumb={({ props }) => (
-                <div
-                  {...props}
-                  style={{
-                    ...props.style,
-                    height: '15px',
-                    width: '15px',
-                    backgroundColor: '#4450A2',
-                    borderRadius: '50%',
-                  }}
-                />
-              )}
-            />
-            <button className="filter-button" onClick={fetchFilteredAndSortedProducts}>
-              Filter
-            </button>
-          </div>
-        </div>
+                                    <div className="price-slider-container">
+                                        <label className="price-range-label">
+                                            Price Range
+                                            <div> ₹{values[0]} - ₹{values[1]}</div>
+                                        </label>
+                                        <div className="slider-btn">
+                                            <Range
+                                                className="price-slider-range"
+                                                values={values}
+                                                step={100}
+                                                min={minPrice}
+                                                max={maxPrice}
+                                                onChange={(newValues) => setValues(newValues)}
+                                                renderTrack={({ props, children }) => (
+                                                    <div
+                                                        {...props}
+                                                        style={{
+                                                            ...props.style,
+                                                            width: '100%',
+                                                            background: 'white',
+                                                            borderRadius: '4px',
+                                                            margin: '20px 0',
+                                                            border: '0.5px solid grey',
+                                                        }}
+                                                    >
+                                                        {children}
+                                                    </div>
+                                                )}
+                                                renderThumb={({ props }) => (
+                                                    <div
+                                                        {...props}
+                                                        style={{
+                                                            ...props.style,
+                                                            height: '15px',
+                                                            width: '15px',
+                                                            backgroundColor: '#4450A2',
+                                                            borderRadius: '50%',
+                                                        }}
+                                                    />
+                                                )}
+                                            />
+                                            <button className="filter-button" onClick={fetchFilteredAndSortedProducts}>
+                                                Filter
+                                            </button>
+                                        </div>
+                                    </div>
 
-        <div className="sorting-section">
-          <label>Sort by: </label>
-          <select onChange={(e) => setSortOrder(e.target.value)} value={sortOrder}>
-            <option value="low_to_high"> Price : Low to High</option>
-            <option value="high_to_low"> Price : High to Low</option>
-            <option value="latest"> Latest</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  )}
+                                    <div className="sorting-section">
+                                        <label>Sort by: </label>
+                                        <select onChange={(e) => setSortOrder(e.target.value)} value={sortOrder}>
+                                            <option value="low_to_high"> Price : Low to High</option>
+                                            <option value="high_to_low"> Price : High to Low</option>
+                                            <option value="latest"> Latest</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="customer-products-section">
 
                             {products.length > 0 ? (

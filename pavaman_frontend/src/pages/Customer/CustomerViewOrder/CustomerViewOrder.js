@@ -1,9 +1,8 @@
 
-import React, { useState, useEffect } from "react";
+import{ useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PopupMessage from "../../../components/Popup/Popup";
 import "../CustomerViewOrder/CustomerViewOrder.css";
-
 const CustomerViewOrder = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [popupType, setPopupType] = useState("success");

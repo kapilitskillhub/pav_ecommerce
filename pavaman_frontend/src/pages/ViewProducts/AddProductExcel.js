@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AddProductsExcel.css';
 import { useLocation, useNavigate } from 'react-router-dom';
+import API_BASE_URL from "../../config";
 
 const AddProductExcel = () => {
   const location = useLocation();
@@ -50,7 +51,7 @@ const AddProductExcel = () => {
     materials.forEach(file => formData.append('materials[]', file));
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/upload-products-excel', formData, {
+      const response = await axios.post(`${API_BASE_URL}/upload-products-excel`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setMessage(response.data.message || "Upload success!");
@@ -85,13 +86,9 @@ catch (error) {
     setMessage("Upload failed.");
     setMessageType("error");
   }
-
-  // Reset file inputs so re-uploads can work
   setExcelFile(null);
   setImages([]);
   setMaterials([]);
-
-  // Optional: Clear actual input fields if needed
   const fileInputs = document.querySelectorAll("input[type='file']");
   fileInputs.forEach(input => input.value = '');
 }

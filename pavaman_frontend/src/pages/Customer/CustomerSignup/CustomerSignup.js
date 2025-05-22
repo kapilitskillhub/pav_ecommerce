@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "../CustomerSignup/CustomerSignup.css";
 import Logo from "../../../assets/images/aviation-logo.png";
 import LogInImage from "../../../assets/images/signinpage-image.png";
@@ -7,7 +7,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { useNavigate } from "react-router-dom";
 import PopupMessage from "../../../components/Popup/Popup";
-
+import API_BASE_URL from "../../../config";
 const CustomerSignup = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -69,7 +69,7 @@ const CustomerSignup = () => {
         }
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/customer-register", {
+            const response = await fetch(`${API_BASE_URL}/customer-register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

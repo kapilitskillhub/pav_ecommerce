@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-
+import API_BASE_URL from "../../config";
 const BottomProductsPage = () => {
   const [bottomProducts, setBottomProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const admin_id = sessionStorage.getItem("admin_id");
-
   useEffect(() => {
     axios
-      .post("http://127.0.0.1:8000/not-selling-products", { admin_id })
+      .post(`${API_BASE_URL}/not-selling-products`, { admin_id })
       .then((res) => {
         setBottomProducts(res.data.not_selling_products || []);
         setLoading(false);
@@ -20,14 +18,11 @@ const BottomProductsPage = () => {
         setLoading(false);
       });
   }, []);
-
   return (
     <div className="report-wrapper">
       <h2 className="report-title">Bottom Products (Not Selling)</h2>
-
       {loading && <p className="loading-text">Loading products...</p>}
       {error && <p className="error-text">{error}</p>}
-
       {!loading && !error && (
         <div className="report-table-container">
           <table className="report-table">

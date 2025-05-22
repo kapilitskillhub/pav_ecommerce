@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaSearch, FaMapMarkerAlt, FaShoppingCart, FaUser, FaClipboardList, FaSignOutAlt, FaSignInAlt, } from "react-icons/fa";
 import { IoMdPerson } from "react-icons/io";
-import { TbShoppingBagEdit } from "react-icons/tb";
-import { FiMenu, FiChevronRight, FiHome, FiPhone } from "react-icons/fi";
+import { FiChevronRight, FiHome, FiPhone } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../CustomerHeader/CustomerHeader.css";
 import Logo from "../../../assets/images/logo.png";
-import PopupMessage from "../../../components/Popup/Popup";
-import { Link } from "react-router-dom";
 import { BiCategory } from "react-icons/bi";
 import MobileHeader from "./MobileHeader";
 import { IoMdClose } from "react-icons/io"
 import { LuBriefcaseBusiness } from "react-icons/lu";
+import API_BASE_URL from "../../../config";
 
 const CustomerHeader = (onSearch) => {
   const navigate = useNavigate();
@@ -78,7 +76,7 @@ const CustomerHeader = (onSearch) => {
     if (!customer_id) return;
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/view-cart-products", {
+      const response = await fetch(`${API_BASE_URL}/view-cart-products`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ customer_id }),
@@ -107,7 +105,7 @@ const CustomerHeader = (onSearch) => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/", {
+      const response = await fetch(`${API_BASE_URL}/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
@@ -127,7 +125,7 @@ const CustomerHeader = (onSearch) => {
     if (subcategories[categoryName]) return;
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/categories/view-sub-categories/", {
+      const response = await fetch(`${API_BASE_URL}/categories/view-sub-categories/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -150,7 +148,7 @@ const CustomerHeader = (onSearch) => {
     setProducts((prev) => ({ ...prev, [subCatId]: "loading" }));
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/categories/${categoryName}/${subCatName}/`,
+        `${API_BASE_URL}/categories/${categoryName}/${subCatName}/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -194,7 +192,7 @@ const CustomerHeader = (onSearch) => {
   const fetchCustomerProfile = async () => {
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/get-customer-profile", {
+      const response = await fetch(`${API_BASE_URL}/get-customer-profile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ customer_id: customerId }),
@@ -215,25 +213,20 @@ const CustomerHeader = (onSearch) => {
       setLoading(false);
     }
   };
-
   return (
     <>
-
       <header className="customer-header">
-        
         <div className="customer-logo">
           <img src={Logo} alt="Logo" />
         </div>
         <div className="header-left">
         <div
-        
           className={`sidebar-header ${searchInput === "" ? "shift-left" : ""}`}
           onMouseEnter={() => setIsCollapsed(false)}
           onMouseLeave={() => setIsCollapsed(true)}
         >
           <button className="menu-btn"><BiCategory size={24} /></button>
           <p className="menu-name">Categories</p>
-
           <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
             <ul className="category-list">
               {categories.map((cat) => (
@@ -257,7 +250,6 @@ const CustomerHeader = (onSearch) => {
                   >
                     {cat.category_name} <FiChevronRight />
                   </button>
-
                   {hoveredCategory === cat.category_name &&
                     subcategories[cat.category_name] && (
                       <ul className="subcategory-list">
@@ -311,7 +303,6 @@ const CustomerHeader = (onSearch) => {
                                         localStorage.setItem("sub_category_id", sub.sub_category_id);
                                         localStorage.setItem("product_id", prod.product_id);
                                         localStorage.setItem("product_name", prod.product_name);
-
                                         setIsCollapsed(true);
                                         handleProductClick(cat.category_name, sub.sub_category_name, prod.product_id);
                                       }}
@@ -404,9 +395,6 @@ const CustomerHeader = (onSearch) => {
                           )}
                         </div>
                       </li>
-
-
-
                       <li onClick={() => navigate("/profile")}><FaUser /> My Profile</li>
                       <li onClick={() => navigate("/my-orders")}><FaClipboardList /> My Orders</li>
                       <li onClick={() => navigate("/address")}><FaMapMarkerAlt /> Address</li>
@@ -440,7 +428,6 @@ const CustomerHeader = (onSearch) => {
 
         <MobileHeader cartCount={cartCount} />
       </div>
-
     </>
   );
 };

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import defaultImage from "../../../assets/images/product.png";
 import "./AllCategories.css";
 import { useNavigate } from "react-router-dom";
-
+import API_BASE_URL from "../../../config";
 const AllCategories = () => {
   const [categoriesWithSubcategories, setCategoriesWithSubcategories] = useState([]);
   const [filteredSubcategories, setFilteredSubcategories] = useState(null);
@@ -11,14 +11,12 @@ const AllCategories = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const customerId = localStorage.getItem("customer_id") || null;
-
   useEffect(() => {
     const fetchCategoriesAndSubcategories = async () => {
       try {
-        const categoryRes = await axios.post("http://127.0.0.1:8000/get-all-category-subcategory", {
+        const categoryRes = await axios.post(`{API_BASE_URL}/get-all-category-subcategory`,{
           customer_id: customerId,
         });
-
         if (categoryRes.data.status_code === 200) {
           setCategoriesWithSubcategories(categoryRes.data.categories);
         } else {
@@ -31,7 +29,6 @@ const AllCategories = () => {
         setLoading(false);
       }
     };
-
     fetchCategoriesAndSubcategories();
   }, [customerId]);
   useEffect(() => {
@@ -41,17 +38,14 @@ const AllCategories = () => {
         setFilteredSubcategories(null);
         return;
       }
-
       try {
         const results = [];
-
         for (const category of categoriesWithSubcategories) {
-          const response = await axios.post("http://127.0.0.1:8000/customer-search-subcategories", {
+          const response = await axios.post(`API_BASE_URL}/customer-search-subcategories`,{
             customer_id: customerId,
             category_id: category.category_id,
             sub_category_name: searchValue,
           });
-
           if (
             response.data.status_code === 200 &&
             response.data.categories &&
@@ -63,19 +57,17 @@ const AllCategories = () => {
               sub_categoryies: response.data.categories.map((sub) => ({
                 id: sub.sub_category_id,
                 sub_category_name: sub.sub_category_name,
-                sub_category_image: `http://127.0.0.1:8000${sub.sub_category_image}`,
+                sub_category_image: `${API_BASE_URL}${sub.sub_category_image}`,
               })),
             });
           }
         }
-
         setFilteredSubcategories(results);
       } catch (error) {
         console.error("Search error:", error);
         setFilteredSubcategories([]);
       }
     };
-
     window.addEventListener("customerCategorySearch", handleSearch);
     return () => window.removeEventListener("customerCategorySearch", handleSearch);
   }, [categoriesWithSubcategories, customerId]);
@@ -89,12 +81,9 @@ const AllCategories = () => {
       },
     });
   };
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
-
   const renderCategories = filteredSubcategories || categoriesWithSubcategories;
-
   return (
     <div className="all-categories-section">
       {renderCategories.length > 0 ? (

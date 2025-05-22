@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../config";
 const LowStockProductsPage = () => {
   const [lowStock, setLowStock] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -8,7 +9,7 @@ const LowStockProductsPage = () => {
 
   useEffect(() => {
     axios
-      .post("http://127.0.0.1:8000/report-inventory-summary", { admin_id })
+      .post(`${API_BASE_URL}/report-inventory-summary`, { admin_id })
       .then((res) => {
         setLowStock(res.data.low_stock_products || []);
         setLoading(false);

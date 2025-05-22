@@ -10,13 +10,11 @@
   text-transform: capitalize;
   box-sizing: border-box;
 }
-
 .all-sidebar ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-
 .all-subcategory-item {
   display: flex;
   align-items: center;
@@ -28,11 +26,9 @@
   border-radius: 4px;
   flex-wrap: wrap;
 }
-
 .all-subcategory-item:hover {
   background-color: #e9ecef;
 }
-
 .side-image {
   width: 40px;
   height: 40px;
@@ -40,7 +36,6 @@
   flex-shrink: 0;
   border-radius: 4px;
 }
-
 .side-text {
   font-size: 13px;
   color: #4450A2;
@@ -53,24 +48,20 @@
   max-width: 160px;
   display: block;
 }
-
 @media (max-width: 768px) {
   .all-sidebar {
     width: 180px;
   }
-
   .side-text {
     font-size: 9px;
     white-space: normal;
     max-width: none;
   }
 }
-
 @media (max-width: 480px) {
   .all-sidebar {
     width: 60px;
   }
-
   .side-text {
     display: block;
     font-size: 9px;
@@ -79,12 +70,10 @@
     word-break: break-word;
     max-width: 100%;
   }
-
   .side-image {
     width: 36px;
     height: 36px;
   }
-
   .all-subcategory-item {
     flex-direction: column;
     justify-content: center;

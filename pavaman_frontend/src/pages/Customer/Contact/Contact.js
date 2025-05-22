@@ -1,7 +1,5 @@
-import React from 'react';
 import './Contact.css';
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
-
 const Contact = () => {
   return (
     <div className="contact-container">

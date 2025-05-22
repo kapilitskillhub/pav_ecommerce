@@ -4,8 +4,7 @@ import axios from "axios";
 import "../ViewProducts/ViewProducts.css";
 import AddIcon from "../../assets/images/addicon.svg";
 import { FaEdit, FaTrash, FaRupeeSign, FaTimes } from "react-icons/fa";
-import { FaCircleCheck } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import API_BASE_URL from "../../config";
 import PopupMessage from "../../components/Popup/Popup";
 
 const ViewProducts = ({ products, setProducts }) => {
@@ -64,7 +63,7 @@ const ViewProducts = ({ products, setProducts }) => {
 
   const fetchProducts = async (adminId) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/view-products", {
+      const response = await axios.post(`${API_BASE_URL}/view-products`, {
         admin_id: adminId,
         category_id,
         sub_category_id,
@@ -117,7 +116,7 @@ const ViewProducts = ({ products, setProducts }) => {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/delete-product", {
+      const response = await axios.post(`${API_BASE_URL}/delete-product`, {
         admin_id: adminId,
         category_id,
         sub_category_id,

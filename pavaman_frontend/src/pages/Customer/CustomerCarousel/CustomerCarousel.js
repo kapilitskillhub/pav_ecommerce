@@ -1,4 +1,3 @@
-import React from "react";
 import Slider from "react-slick";
 import carouselImage from "../../../assets/images/carousel-banner.png";
 import "./CustomerCarousel.css";

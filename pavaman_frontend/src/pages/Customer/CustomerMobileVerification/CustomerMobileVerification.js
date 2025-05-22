@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import API_BASE_URL from "../../../config";
 const CustomerMobileVerification = () => {
     const [mobile, setMobile] = useState("");
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
@@ -23,7 +23,7 @@ const CustomerMobileVerification = () => {
         }
 
         try {
-            const response = await axios.post("http://127.0.0.1:8000/google-submit-mobile", {
+            const response = await axios.post(`${API_BASE_URL}/google-submit-mobile`, {
                 user_id: userId,
                 mobile_no: mobile,
             });
