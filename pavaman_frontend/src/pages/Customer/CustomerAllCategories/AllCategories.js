@@ -34,13 +34,9 @@ const AllCategories = () => {
 
     fetchCategoriesAndSubcategories();
   }, [customerId]);
-
-  // 🔍 Listen for search input
   useEffect(() => {
     const handleSearch = async (e) => {
       const searchValue = e.detail.trim();
-
-      // If empty, reset filtered data
       if (!searchValue) {
         setFilteredSubcategories(null);
         return;
@@ -118,7 +114,6 @@ const AllCategories = () => {
                       className="all-categories-image"
                       src={sub.sub_category_image || defaultImage}
                       alt={sub.sub_category_name}
-                      // onError={(e) => (e.target.src = defaultImage)}
                     />
                     <p className="all-categories-name">{sub.sub_category_name}</p>
                   </div>

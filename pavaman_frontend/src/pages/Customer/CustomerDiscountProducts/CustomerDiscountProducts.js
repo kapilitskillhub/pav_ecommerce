@@ -2,16 +2,11 @@ import React, { useEffect, useState, useRef } from "react";
 import "../CustomerDiscountProducts/CustomerDiscountProducts.css";
 import { useNavigate } from "react-router-dom";
 import { BiSolidCartAdd } from "react-icons/bi";
-import defaultImage from "../../../assets/images/product.png";
-import { AiOutlineCheckCircle, AiOutlineExclamationCircle } from "react-icons/ai";
 import { Link } from "react-router-dom";
-
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
 import PopupMessage from "../../../components/Popup/Popup";
-
 const ViewDiscountedProducts = () => {
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
@@ -21,12 +16,9 @@ const ViewDiscountedProducts = () => {
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
     const sliderRef = useRef(null);
-
     useEffect(() => {
         fetchData();
     }, []);
-
-
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
         setShowPopup(true);
@@ -35,7 +27,6 @@ const ViewDiscountedProducts = () => {
             setShowPopup(false);
         }, 10000);
     };
-
     const fetchData = async () => {
         try {
             const response = await fetch("http://127.0.0.1:8000/", {
@@ -44,9 +35,7 @@ const ViewDiscountedProducts = () => {
                 body: JSON.stringify({ customer_id: localStorage.getItem("customer_id") || null }),
 
             });
-
             const data = await response.json();
-
             if (data.status_code === 200) {
                 setDiscountedProducts(data.discounted_products);
             } else {
@@ -58,26 +47,21 @@ const ViewDiscountedProducts = () => {
             setLoading(false);
         }
     };
-
     const handleAddCart = async (product_id) => {
         const customer_id = localStorage.getItem("customer_id");
-
-
         if (!customer_id) {
-             displayPopup(
-                          <>
-                              Please <Link to="/customer-login" className="popup-link">log in</Link> to add products to cart.
-                          </>,
-                          "error"
-                      );
+            displayPopup(
+                <>
+                    Please <Link to="/customer-login" className="popup-link">log in</Link> to add products to cart.
+                </>,
+                "error"
+            );
             return;
         }
-
         if (!product_id) {
             displayPopup("Invalid product. Please try again.", "error");
             return;
         }
-
         try {
             const response = await fetch("http://127.0.0.1:8000/add-cart-product", {
                 method: "POST",
@@ -88,7 +72,6 @@ const ViewDiscountedProducts = () => {
                     quantity: 1,
                 }),
             });
-
             const data = await response.json();
 
             if (data.status_code === 200) {
@@ -101,9 +84,7 @@ const ViewDiscountedProducts = () => {
             displayPopup("An unexpected error occurred while adding to cart.", error, "error");
         }
     };
-
     const sliderSettings = {
-
         infinite: true,
         speed: 1000,
         slidesToShow: 4,
@@ -117,13 +98,11 @@ const ViewDiscountedProducts = () => {
             { breakpoint: 480, settings: { slidesToShow: 2 } },
         ],
     };
-
     const handleViewProductDetails = (product) => {
         if (!product.category_id || !product.sub_category_id) {
             displayPopup("Category or Subcategory ID is missing.", "error");
             return;
         }
-
         navigate(`/product-details/${product.category_name}/${product.sub_category_name}/${product.product_id}`, {
             state: {
                 category_name: product.category_name,
@@ -132,9 +111,6 @@ const ViewDiscountedProducts = () => {
             },
         });
     };
-
-
-
     return (
         <div className="customer-dashboard container discount-dashboard">
             {loading && <p>Loading...</p>}
@@ -145,12 +121,12 @@ const ViewDiscountedProducts = () => {
                     <div className="customer-products-heading">Discounted Products</div>
                     <div className="popup-discount">
                         {showPopup && (
-                        <PopupMessage
-                            message={popupMessage.text}  
-                            type={popupMessage.type}
-                            onClose={() => setShowPopup(false)}
-                        />
-                    )}
+                            <PopupMessage
+                                message={popupMessage.text}
+                                type={popupMessage.type}
+                                onClose={() => setShowPopup(false)}
+                            />
+                        )}
                     </div>
                     {discountedProducts.length > 0 ? (
                         <Slider {...sliderSettings}>
@@ -161,12 +137,12 @@ const ViewDiscountedProducts = () => {
                                     onClick={() => handleViewProductDetails(product)}
                                 >
 
-                                <div className="product-image-wrapper">
-                                    <img
-                                        src={product.product_image_url}
-                                        alt={product.product_name}
-                                        className="customer-discount-product-image"
-                                    />
+                                    <div className="product-image-wrapper">
+                                        <img
+                                            src={product.product_image_url}
+                                            alt={product.product_name}
+                                            className="customer-discount-product-image"
+                                        />
                                     </div>
                                     <div className="customer-product-name customer-discount-section-name">
                                         {product.product_name}
@@ -178,12 +154,9 @@ const ViewDiscountedProducts = () => {
                                         <div className="customer-discount-section-original-price">
                                             ₹{product.price}.00 (incl. GST)
                                             <div className="discount-tag">
-                                            {product.discount && `${product.discount} off`}
+                                                {product.discount && `${product.discount} off`}
+                                            </div>
                                         </div>
-                                        </div>
-
-                                        
-            
                                         <div className="add-cart-section">
                                             <span
                                                 className={`availability ${product.availability === "Out of Stock"
@@ -203,14 +176,12 @@ const ViewDiscountedProducts = () => {
                                                 <BiSolidCartAdd
                                                     className="add-to-cart-button"
                                                     onClick={(e) => {
-                                                        e.stopPropagation(); 
+                                                        e.stopPropagation();
                                                         handleAddCart(product.product_id);
                                                     }}
                                                 />
                                             )}
                                         </div>
-
-
                                     </div>
                                 </div>
                             ))}
@@ -221,6 +192,5 @@ const ViewDiscountedProducts = () => {
         </div>
     );
 };
-
 export default ViewDiscountedProducts;
 

@@ -5,7 +5,6 @@ import PhoneInput from "react-phone-input-2";
 
 const CartEditAddress = ({ address, onEditCompleted }) => {
     const wrapperRef = useRef(null);
-
     const [formData, setFormData] = useState({
         address_id: address.address_id,
         customer_id: localStorage.getItem("customer_id"),
@@ -24,7 +23,6 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
         district: address.district || "",
         mandal: address.mandal || ""
     });
-
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -32,7 +30,7 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
     useEffect(() => {
         function handleClickOutside(event) {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-                onEditCompleted(""); 
+                onEditCompleted("");
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -40,13 +38,11 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [onEditCompleted]);
-
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 10000);
     };
-
     const fetchLocationDetails = async (pincode) => {
         setLoading(true);
         try {
@@ -69,7 +65,6 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
         }
         setLoading(false);
     };
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -83,14 +78,13 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
     const handlePhoneChange = (value, name) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await fetch("http://127.0.0.1:8000/edit-customer-address", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ customer_id,...formData, mobile_number: `+${formData.mobile_number}`, alternate_mobile: formData.alternate_mobile ? `+${formData.alternate_mobile}` : "" })
+                body: JSON.stringify({ customer_id, ...formData, mobile_number: `+${formData.mobile_number}`, alternate_mobile: formData.alternate_mobile ? `+${formData.alternate_mobile}` : "" })
             });
 
             const data = await response.json();
@@ -107,7 +101,6 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
             console.error("Update error:", error);
         }
     };
-
     return (
         <div className="edit-address-overlay">
             <div className="edit-address" ref={wrapperRef}>
@@ -149,8 +142,8 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
 
                     <div className="form-row">
                         <div className="input-group">
-                       
-                        <label>Mobile Number <span className="required-star">*</span></label>
+
+                            <label>Mobile Number <span className="required-star">*</span></label>
                             <PhoneInput
                                 country={"in"}
                                 value={formData.mobile_number}
@@ -160,8 +153,8 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
                             />
                         </div>
                         <div className="input-group">
-                        <label>Alternate Mobile (Optional)</label>
-                        <PhoneInput
+                            <label>Alternate Mobile (Optional)</label>
+                            <PhoneInput
                                 country={"in"}
                                 value={formData.alternate_mobile}
                                 onChange={(value) => handlePhoneChange(value, "alternate_mobile")}
@@ -239,7 +232,6 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
                             <label>Landmark (Optional)</label>
                         </div>
                     </div>
-
                     <div className="form-row address-type-container" style={{ flexDirection: "column" }}>
                         <label className="Address-type">Address Type:</label>
                         <div className="address-type-options">
@@ -285,6 +277,5 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
         </div>
     );
 };
-
 export default CartEditAddress;
 

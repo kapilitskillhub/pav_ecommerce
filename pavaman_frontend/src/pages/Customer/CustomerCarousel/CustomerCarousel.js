@@ -29,7 +29,6 @@ const CarouselLanding = () => {
     autoplaySpeed: 5000,
     arrows: true,
   };
-
   return (
     <div className="carousel-wrapper container">
       <Slider {...settings}>
