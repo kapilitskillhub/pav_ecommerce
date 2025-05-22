@@ -6,7 +6,6 @@ const BottomProductsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const admin_id = sessionStorage.getItem("admin_id");
-
   useEffect(() => {
     axios
       .post(`${API_BASE_URL}/not-selling-products`, { admin_id })
@@ -19,14 +18,11 @@ const BottomProductsPage = () => {
         setLoading(false);
       });
   }, []);
-
   return (
     <div className="report-wrapper">
       <h2 className="report-title">Bottom Products (Not Selling)</h2>
-
       {loading && <p className="loading-text">Loading products...</p>}
       {error && <p className="error-text">{error}</p>}
-
       {!loading && !error && (
         <div className="report-table-container">
           <table className="report-table">

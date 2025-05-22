@@ -1,7 +1,6 @@
 .text-style{
     text-transform: none;
 }
-
 .ratings-image{
     width: 100px;
     height: 100px;
@@ -11,7 +10,6 @@
     display: flex;
     gap: 0.75rem;
   }
-  
   .rating-button {
     padding: 6px 12px;
     background-color: #4450A2;
@@ -19,7 +17,6 @@
     border: none;
     border-radius: 20px;
     cursor: pointer;
-    
   }
   .cart-place-order-average-btn {
     width: 196px;

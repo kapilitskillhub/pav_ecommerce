@@ -2,25 +2,21 @@
   padding: 20px;
   
 }
-
 .report-title {
   text-align: center;
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
 }
-
 .report-table-container {
   overflow-x: auto;
 }
-
 .report-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 15px;
   background-color: #fff;
 }
-
 .report-table th {
   background-color: #4450A2;
   color: white;
@@ -29,40 +25,32 @@
   text-align: left;
   border-bottom: 2px solid #ddd;
 }
-
 .report-table td {
   padding: 12px 10px;
   border-bottom: 1px solid #f0f0f0;
   color: #333;
   text-align: left;
 }
-
 .order-table-data{
   text-transform: capitalize;
 }
-
 .payment-mode{
   text-transform: capitalize;
 }
 .report-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
-
 .report-table tr:hover {
   background-color: #f1f1f1;
 }
-
 .view-link {
   color: #0066cc;
   text-decoration: none;
   font-weight: 500;
 }
-
 .view-link:hover {
   text-decoration: underline;
 }
-
-/* Pagination Styling */
 .pagination-container {
   margin-top: 20px;
   display: flex;
@@ -70,7 +58,6 @@
   gap: 6px;
   flex-wrap: wrap;
 }
-
 .pagination-button {
 padding: 6px 12px;
   font-size: 14px;
@@ -81,18 +68,15 @@ padding: 6px 12px;
   cursor: pointer;
   transition: 0.3s ease;
 }
-
 .pagination-button.active-page {
   background-color: #4450A2;
   color: white;
   border-color: #4450A2;
 }
-
 .pagination-button:hover:not(.active-page) {
   background-color: #e0e4f0;
   color: #4450A2;
 }
-
 .invoice-button-customer-order {
   background: none;
   border: none;
@@ -105,20 +89,16 @@ padding: 6px 12px;
   transform: scale(1.2);
   color: #b2c8e0;
 }
-
-
 .pagination-button:hover,
 .active-page {
   background-color: #6c74a4;
   color: white;
 }
-
 .loading-text,
 .error-text {
   text-align: center;
   font-weight: bold;
 }
-
 .error-text {
   color: red;
 }

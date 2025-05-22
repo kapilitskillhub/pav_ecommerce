@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import axios from "axios";
-import defaultImage from "../../../assets/images/product.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import Side from "./SideComponent";
 import "./Products.css";
@@ -31,10 +30,9 @@ const AllProducts = () => {
                     customer_id,
                 }
             );
-
             if (productRes.data.status_code === 200) {
                 setProducts(productRes.data.products);
-                setFilteredProducts(productRes.data.products); // Initialize filtered with full list
+                setFilteredProducts(productRes.data.products);
                 setError(null);
             } else {
                 setProducts([]);
@@ -46,7 +44,6 @@ const AllProducts = () => {
             setError("An error occurred while fetching products.");
         }
     };
-
     const handleSubcategoryClick = (categoryName, subCategoryName) => {
         setSelectedSubcategory(subCategoryName);
         fetchProductsBySubcategory(categoryName, subCategoryName);
@@ -71,14 +68,12 @@ const AllProducts = () => {
 
         fetchInitialData();
     }, [selectedCategory, selectedSubcategory]);
-
-    // 🔍 Listen to the custom search event
     useEffect(() => {
         const handleSearchEvent = (e) => {
             const searchQuery = e.detail.toLowerCase();
 
             if (searchQuery === "") {
-                setFilteredProducts(products); // Reset to full list
+                setFilteredProducts(products);
             } else {
                 const filtered = products.filter((product) =>
                     product.product_name.toLowerCase().includes(searchQuery)
@@ -107,7 +102,6 @@ const AllProducts = () => {
             },
         });
     };
-
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
         setShowPopup(true);
@@ -125,16 +119,13 @@ const AllProducts = () => {
             navigate("/customer-login");
             return;
         }
-
         try {
-            const response = await fetch("${API_BASE_URL}/add-cart-product", {
+            const response = await fetch(`{API_BASE_URL}/add-cart-product`,{
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id, quantity: 1 }),
             });
-
             const data = await response.json();
-
             if (data.status_code === 200) {
                 displayPopup("Product added to cart successfully!", "success");
                 window.dispatchEvent(new Event("cartUpdated"));
@@ -145,17 +136,14 @@ const AllProducts = () => {
             displayPopup("An unexpected error occurred while adding to cart.", "error");
         }
     };
-
     if (loading) return <div>Loading...</div>;
     if (error && products.length === 0) return <div>{error}</div>;
-
     return (
         <div className="all-products-container">
             <Side
                 categories={selectedCategory ? [selectedCategory] : []}
                 handleSubcategoryClick={handleSubcategoryClick}
             />
-
             <div className="all-products-section">
                 <div className="all-products-list">
                     {filteredProducts.length > 0 ? (
@@ -166,62 +154,60 @@ const AllProducts = () => {
                                 onClick={() => handleViewProductDetails(product)}
                             >
                                 <div>
-                                <img
-                                    className="all-product-image"
-                                    src={product.product_image_url}
-                                    alt={product.product_name}
-                                    // onError={(e) => (e.target.src = defaultImage)}
-                                />
+                                    <img
+                                        className="all-product-image"
+                                        src={product.product_image_url}
+                                        alt={product.product_name}
+                                    />
                                 </div>
                                 <p className="all-product-name">{product.product_name}</p>
-      {product.final_price === product.price ? (
-  <>
-    <p className="all-product-price">₹ {product.final_price}.00 (incl. GST)</p>
-    <div className="all-product-discount">
-      <span className="all-product-discount-price invisible-price">₹{product.price}.00 (incl. GST)</span>
-      <div className="all-discount-tag">
-        <span className="invisible-discount">--</span>
-      </div>
-    </div>
-  </>
-) : (
-  <>
-    <p className="all-product-price">₹ {product.final_price}.00 (incl. GST)</p>
-    <div className="all-product-discount">
-      <span className="all-product-discount-price">₹{product.price}.00 (incl. GST)</span>
-      <div className="all-discount-tag">
-        {product.discount ? `${product.discount} off` : <span className="invisible-discount">--</span>}
-      </div>
-    </div>
-  </>
-)}
+                                {product.final_price === product.price ? (
+                                    <>
+                                        <p className="all-product-price">₹ {product.final_price}.00 (incl. GST)</p>
+                                        <div className="all-product-discount">
+                                            <span className="all-product-discount-price invisible-price">₹{product.price}.00 (incl. GST)</span>
+                                            <div className="all-discount-tag">
+                                                <span className="invisible-discount">--</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="all-product-price">₹ {product.final_price}.00 (incl. GST)</p>
+                                        <div className="all-product-discount">
+                                            <span className="all-product-discount-price">₹{product.price}.00 (incl. GST)</span>
+                                            <div className="all-discount-tag">
+                                                {product.discount ? `${product.discount} off` : <span className="invisible-discount">--</span>}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                                 <p className="all-product-availability">
                                     <span
-                                        className={`availability ${
-                                            product.availability === "Out of Stock"
+                                        className={`availability ${product.availability === "Out of Stock"
                                                 ? "out-of-stock"
                                                 : product.availability === "Very Few Products Left"
-                                                ? "few-left"
-                                                : "in-stock"
-                                        }`}
+                                                    ? "few-left"
+                                                    : "in-stock"
+                                            }`}
                                     >
                                         {product.availability === "Out of Stock"
                                             ? "Out of Stock"
                                             : product.availability === "Very Few Products Left"
-                                            ? "Few Products Left"
-                                            : "In Stock"}
+                                                ? "Few Products Left"
+                                                : "In Stock"}
                                     </span>
                                 </p>
                                 {(product.availability === "Very Few Products Left" ||
                                     product.availability === "In Stock") && (
-                                    <BiSolidCartAdd
-                                        className="add-to-cart-button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleAddCart(product.product_id);
-                                        }}
-                                    />
-                                )}
+                                        <BiSolidCartAdd
+                                            className="add-to-cart-button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleAddCart(product.product_id);
+                                            }}
+                                        />
+                                    )}
                             </div>
                         ))
                     ) : (
@@ -229,10 +215,8 @@ const AllProducts = () => {
                     )}
                 </div>
             </div>
-
             {showPopup && <PopupMessage text={popupMessage.text} type={popupMessage.type} />}
         </div>
     );
 };
-
 export default AllProducts;

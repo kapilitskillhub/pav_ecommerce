@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import defaultImage from "../../../assets/images/product.png";
 import "../CustomerViewCategory/CustomerViewCategory.css";
 import { BiSolidCartAdd } from "react-icons/bi";
 import PopupMessage from "../../../components/Popup/Popup";
@@ -26,11 +25,9 @@ const FilteredProducts = () => {
             setShowPopup(false);
         }, 10000);
     };
-
     useEffect(() => {
         console.log("Received Filtered Products in Component:", filteredProducts);
     }, [filteredProducts]);
-
     const handleViewProductDetails = (product) => {
         if (!category_id || !sub_category_id) {
             console.error("Missing category_id or sub_category_id");
@@ -43,7 +40,6 @@ const FilteredProducts = () => {
             state: { category_id, sub_category_id },
         });
     };
-
     const handleAddCart = async (product_id) => {
         if (!customer_id) {
             displayPopup(
@@ -54,7 +50,6 @@ const FilteredProducts = () => {
             )
             return;
         }
-
         if (!product_id) {
             console.error("Product ID is missing.");
             displayPopup("Product ID not found. Cannot add to cart.", "error");
@@ -67,7 +62,6 @@ const FilteredProducts = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id, quantity: 1 }),
             });
-
             const data = await response.json();
 
             if (data.status_code === 200) {
@@ -79,7 +73,6 @@ const FilteredProducts = () => {
             displayPopup("An unexpected error occurred while adding to cart.", error, "error");
         }
     };
-
     return (
         <div className="customer-dashboard container">
             <div className="customer-products-heading">Filtered Products</div>
@@ -110,31 +103,28 @@ const FilteredProducts = () => {
                                 />
                                 <div className="customer-product-name">{product.product_name}</div>
                                 <div className="customer-discount-section-price ">₹{product.final_price}.00 (incl. GST)</div>
-
                                 <div >
                                     <div className="add-cart-section">
                                         <div className="customer-discount-section-original-price">₹{product.price}.00 (incl. GST)</div>
-
                                         <span
-                                                className={`availability ${product.availability === "Out of Stock"
-                                                    ? "out-of-stock"
-                                                    : product.availability === "Very Few Products Left"
-                                                        ? "few-left"
-                                                        : "in-stock"
-                                                    }`}
-                                            >
-                                                {product.availability === "Out of Stock"
-                                                    ? "Out of Stock"
-                                                    : product.availability === "Very Few Products Left"
-                                                        ? "Very Few Products Left"
-                                                        : "In Stock"}
-                                            </span>
-
-                                            {(product.availability === "Very Few Products Left" || product.availability === "In Stock") && (
+                                            className={`availability ${product.availability === "Out of Stock"
+                                                ? "out-of-stock"
+                                                : product.availability === "Very Few Products Left"
+                                                    ? "few-left"
+                                                    : "in-stock"
+                                                }`}
+                                        >
+                                            {product.availability === "Out of Stock"
+                                                ? "Out of Stock"
+                                                : product.availability === "Very Few Products Left"
+                                                    ? "Very Few Products Left"
+                                                    : "In Stock"}
+                                        </span>
+                                        {(product.availability === "Very Few Products Left" || product.availability === "In Stock") && (
                                             <BiSolidCartAdd
                                                 className="add-to-cart-button"
                                                 onClick={(e) => {
-                                                    e.stopPropagation(); 
+                                                    e.stopPropagation();
                                                     handleAddCart(product.product_id);
                                                 }}
                                             />
@@ -151,5 +141,4 @@ const FilteredProducts = () => {
         </div>
     );
 };
-
 export default FilteredProducts;

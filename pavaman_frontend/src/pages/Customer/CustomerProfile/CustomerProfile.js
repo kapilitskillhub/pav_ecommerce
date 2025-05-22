@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CustomerProfile.css";
 import CustomerIcon from "../../../assets/images/contact-icon.avif";
@@ -137,7 +137,7 @@ const CustomerProfile = ({ refresh }) => {
                 ...prevData,
                 email: "",
             }));
-            
+
         } else {
             triggerPopup(data.error, "error");
         }
@@ -222,15 +222,15 @@ const CustomerProfile = ({ refresh }) => {
             triggerPopup(data.message, "success");
             setOtp("");
             setOtpSent(false);
-            setNewMobileOtpSent(true); 
+            setNewMobileOtpSent(true);
             setTempData((prevData) => ({
                 ...prevData,
-                mobile_no: "", 
+                mobile_no: "",
             }));
         } else {
             triggerPopup(data.error, "error");
         }
-    };    
+    };
 
     const sendNewMobileOtp = async () => {
         const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
@@ -239,8 +239,8 @@ const CustomerProfile = ({ refresh }) => {
             body: JSON.stringify({
                 action: "send_new_otp",
                 customer_id: customerId,
-                mobile_no:"+" + tempData.mobile_no,
-               
+                mobile_no: "+" + tempData.mobile_no,
+
             }),
         });
         const data = await response.json();
@@ -344,90 +344,90 @@ const CustomerProfile = ({ refresh }) => {
                 </div>
             </div>
             {editField === "email" && (
-    <div className="edit-popup-box">
-        {step === 1 && (
-            <>
-                <h4>Verify Current Email</h4>
-                <input
-                    type="email"
-                    name="email"
-                    value={tempData.email}
-                    className="edit-input"
-                    disabled 
-                />
+                <div className="edit-popup-box">
+                    {step === 1 && (
+                        <>
+                            <h4>Verify Current Email</h4>
+                            <input
+                                type="email"
+                                name="email"
+                                value={tempData.email}
+                                className="edit-input"
+                                disabled
+                            />
 
-                {!otpSent ? (
-                    <button className="send-otp-btn" onClick={sendPreviousEmailOtp}>
-                        Send OTP to Current Email
-                    </button>
-                ) : (
-                    <>
-                        <input
-                            type="text"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                            placeholder="Enter OTP sent to Current Email"
-                            className="edit-input"
-                        />
-                        <button className="verify-otp-btn" onClick={verifyPreviousEmailOtp}>
-                            Verify OTP
-                        </button>
-                    </>
-                )}
-            </>
-        )}
+                            {!otpSent ? (
+                                <button className="send-otp-btn" onClick={sendPreviousEmailOtp}>
+                                    Send OTP to Current Email
+                                </button>
+                            ) : (
+                                <>
+                                    <input
+                                        type="text"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        placeholder="Enter OTP sent to Current Email"
+                                        className="edit-input"
+                                    />
+                                    <button className="verify-otp-btn" onClick={verifyPreviousEmailOtp}>
+                                        Verify OTP
+                                    </button>
+                                </>
+                            )}
+                        </>
+                    )}
 
-        {step === 2 && (
-            <>
-                <h4>Enter New Email and Verify</h4>
-                <input
-                    type="email"
-                    name="email"
-                    value={tempData.email}
-                    onChange={handleInputChange}
-                    placeholder="Enter New Email"
-                    className="edit-input"
-                />
+                    {step === 2 && (
+                        <>
+                            <h4>Enter New Email and Verify</h4>
+                            <input
+                                type="email"
+                                name="email"
+                                value={tempData.email}
+                                onChange={handleInputChange}
+                                placeholder="Enter New Email"
+                                className="edit-input"
+                            />
 
-                {!otpSent ? (
-                    <button className="send-otp-btn" onClick={sendNewEmailOtp}>
-                        Send OTP to New Email
-                    </button>
-                ) : (
-                    <>
-                        <input
-                            type="text"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                            placeholder="Enter OTP sent to New Email"
-                            className="edit-input"
-                        />
-                        <button className="verify-otp-btn" onClick={verifyNewEmailOtpAndUpdate}>
-                            Verify and Update Email
-                        </button>
-                    </>
-                )}
-            </>
-        )}
+                            {!otpSent ? (
+                                <button className="send-otp-btn" onClick={sendNewEmailOtp}>
+                                    Send OTP to New Email
+                                </button>
+                            ) : (
+                                <>
+                                    <input
+                                        type="text"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        placeholder="Enter OTP sent to New Email"
+                                        className="edit-input"
+                                    />
+                                    <button className="verify-otp-btn" onClick={verifyNewEmailOtpAndUpdate}>
+                                        Verify and Update Email
+                                    </button>
+                                </>
+                            )}
+                        </>
+                    )}
 
-        <FaTimes className="close-popup" onClick={() => setEditField(null)} />
-    </div>
-)}
+                    <FaTimes className="close-popup" onClick={() => setEditField(null)} />
+                </div>
+            )}
 
             {editField === "mobile_no" && (
                 <div className="edit-popup-box">
-                            <h4>Edit Profile</h4>
+                    <h4>Edit Profile</h4>
 
-                  <PhoneInput
-       country={"in"}
-       name="mobile_no"
-       value={tempData.mobile_no}
-       onChange={(value) => handlePhoneChange(value, "mobile_number")}
-       inputProps={{ name: "mobile_number", required: true }}
-       placeholder={newMobileOtpSent ? "Enter new mobile number" : "Current mobile number"}
-       required
-   
-/>
+                    <PhoneInput
+                        country={"in"}
+                        name="mobile_no"
+                        value={tempData.mobile_no}
+                        onChange={(value) => handlePhoneChange(value, "mobile_number")}
+                        inputProps={{ name: "mobile_number", required: true }}
+                        placeholder={newMobileOtpSent ? "Enter new mobile number" : "Current mobile number"}
+                        required
+
+                    />
                     {!otpSent && !newMobileOtpSent && (
                         <button className="send-otp-btn" onClick={sendMobileOtp}>
                             Send OTP
@@ -450,30 +450,30 @@ const CustomerProfile = ({ refresh }) => {
                         </>
                     )}
 
-                    {newMobileOtpSent &&  (
+                    {newMobileOtpSent && (
                         <>
                             <button className="send-otp-btn" onClick={sendNewMobileOtp}>
                                 Send OTP
                             </button>
-                            
-                            {showNewMobileOtpField &&  ( 
-                        <>
-                            
-                            <input
-                                type="text"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                placeholder="Enter OTP sent to New Mobile"
-                                className="edit-input"
-                            />
-                            <button className="verify-otp-btn" onClick={verifyNewMobileOtp}>
-                                Verify OTP
-                            </button>
-                            
+
+                            {showNewMobileOtpField && (
+                                <>
+
+                                    <input
+                                        type="text"
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        placeholder="Enter OTP sent to New Mobile"
+                                        className="edit-input"
+                                    />
+                                    <button className="verify-otp-btn" onClick={verifyNewMobileOtp}>
+                                        Verify OTP
+                                    </button>
+
+                                </>
+                            )}
                         </>
                     )}
-                  </>
-                  )}
                     <FaTimes className="close-popup" onClick={() => setEditField(null)} />
                 </div>
             )}

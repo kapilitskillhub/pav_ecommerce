@@ -1,4 +1,3 @@
-// InvoiceGenerator.js
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import signatureImg from '../../../assets/images/aviation-logo.png';

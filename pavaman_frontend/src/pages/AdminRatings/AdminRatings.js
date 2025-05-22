@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import{ useState, useEffect } from 'react';
 import API_BASE_URL from "../../config";
 import "./AdminRatings.css";
 import axios from 'axios';
@@ -15,11 +15,9 @@ const AdminRatings = () => {
   const adminId = sessionStorage.getItem("admin_id");
   const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
   const [showPopup, setShowPopup] = useState(false);
-
   const displayPopup = (text, type = "success") => {
     setPopupMessage({ text, type });
     setShowPopup(true);
-
     setTimeout(() => {
       setShowPopup(false);
     }, 10000);
@@ -36,9 +34,7 @@ const AdminRatings = () => {
           },
           body: JSON.stringify({ admin_id: adminId,action: "customer_rating" }),
         });
-
         const data = await response.json();
-
         if (response.ok) {
           const startIndex = (currentPage - 1) * itemsPerPage;
           const paginatedData = data.feedback.slice(startIndex, startIndex + itemsPerPage);
@@ -47,7 +43,6 @@ const AdminRatings = () => {
         } else {
           setError(data.error || 'An error occurred');
       displayPopup(data.error || 'An error occurred', "error");
-
         }
       } catch (err) {
         setError('Server error: ' + err.message);
@@ -57,7 +52,6 @@ const AdminRatings = () => {
         setLoading(false);
       }
     };
-
     fetchFeedback();
   }, [adminId, currentPage]);
 
@@ -72,7 +66,6 @@ const AdminRatings = () => {
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
 const downloadExcel = async () => {
   try {
     const response = await axios.post(
@@ -80,7 +73,6 @@ const downloadExcel = async () => {
       { admin_id: adminId },
       { responseType: 'blob' }
     );
-
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
@@ -90,7 +82,6 @@ const downloadExcel = async () => {
     link.remove();
   } catch (error) {
           displayPopup('Failed to download Excel.', "error");
-
   }
 };
 const navigateToAverageRatings = () => {
@@ -152,7 +143,6 @@ const navigateToAverageRatings = () => {
             >
               Previous
             </button>
-
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}

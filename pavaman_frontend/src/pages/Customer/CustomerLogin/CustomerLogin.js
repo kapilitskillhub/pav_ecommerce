@@ -7,7 +7,6 @@ import "../CustomerLogin/CustomerLogin.css";
 import Logo from "../../../assets/images/aviation-logo.png";
 import LogInImage from "../../../assets/images/signinpage-image.png";
 import { FaEye, FaEyeSlash, FaInfoCircle } from "react-icons/fa";
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import PhoneInput from "react-phone-input-2";
 import { useLocation } from "react-router-dom";
 import PopupMessage from "../../../components/Popup/Popup";
@@ -160,7 +159,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
         }
 
 
-        console.log("Submitting Data:", { customer_id: googleUserId, mobile_no: mobileNumber }); // Debug log
+        console.log("Submitting Data:", { customer_id: googleUserId, mobile_no: mobileNumber }); 
 
         try {
             const response = await axios.post(`${API_BASE_URL}/google-submit-mobile`, {
@@ -530,7 +529,6 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-
                         <div className="reset_buttons">
                             <button className="reset_password" onClick={handleResetPassword}>Reset Password</button>
                             <button className="reset-cancel" onClick={() => setShowResetPasswordPopup(false)}>Cancel</button>

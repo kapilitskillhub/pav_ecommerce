@@ -3,19 +3,16 @@
   padding: 40px 20px 10px;
   color: #fdf9f9;
 }
-
 .footer-top {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 30px;
 }
-
 .footer-logo-section {
   flex: 1 1 250px;
   max-width: 300px;
 }
-
 .footer-logo {
   height: 60px;
   margin-bottom: 10px;
@@ -39,12 +36,10 @@
   justify-content: space-around;
   cursor: pointer;
 }
-
 .footer-column {
   min-width: 150px;
   text-align: initial;
 }
-
 .footer-column h4 {
   font-size: 19px;
   margin-bottom: 10px;
@@ -53,22 +48,18 @@
   display: inline-block;
   padding-bottom: 5px;
 }
-
 .footer-column ul {
   list-style: none;
   padding: 0;
 }
-
 .footer-column li {
   margin: 6px 0;
 }
-
 .footer-column a {
   text-decoration: none;
   color: #f8f2f2;
   font-size: 14px;
 }
-
 .footer-column a:hover {
   text-decoration: underline;
   color: #ff6600;
@@ -78,7 +69,6 @@
   text-decoration: underline;
   color: #ff6600;
 }
-
 .service-options li:hover{
   text-decoration: underline;
   color: #ff6600;
@@ -91,16 +81,13 @@
   border-top: 1px solid #ccc;
   margin-top: 20px;
 }
-
 @media screen and (max-width: 768px) {
   .footer-top {
     flex-direction: column;
   }
-
   .footer-links {
     flex-direction: column;
   }
-
   .footer-column {
     margin-bottom: 20px;
   }

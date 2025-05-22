@@ -17,8 +17,8 @@ const AddProduct = () => {
         quantity: "",
         discount: "",
         description: "",
-        gst:"",
-        hsn_code:"",
+        gst: "",
+        hsn_code: "",
         category_id: category_id,
         sub_category_id: sub_category_id,
         product_images: [],
@@ -26,27 +26,27 @@ const AddProduct = () => {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-  const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
-  const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
+    const [showPopup, setShowPopup] = useState(false);
 
-  const displayPopup = (text, type = "success") => {
-    setPopupMessage({ text, type });
-    setShowPopup(true);
+    const displayPopup = (text, type = "success") => {
+        setPopupMessage({ text, type });
+        setShowPopup(true);
 
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 10000);
-  };
+        setTimeout(() => {
+            setShowPopup(false);
+        }, 10000);
+    };
 
- useEffect(() => {
-    const adminId = sessionStorage.getItem("admin_id");
+    useEffect(() => {
+        const adminId = sessionStorage.getItem("admin_id");
 
-    if (!adminId) {
-      displayPopup("Session expired. Please log in again.", "error");
-      sessionStorage.clear();
-      navigate("/admin-login");
-    }
-  }, [navigate]);
+        if (!adminId) {
+            displayPopup("Session expired. Please log in again.", "error");
+            sessionStorage.clear();
+            navigate("/admin-login");
+        }
+    }, [navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -56,7 +56,7 @@ const AddProduct = () => {
     const handleFileChange = (e) => {
         const { name, files } = e.target;
 
-        if (files.length === 0) return; 
+        if (files.length === 0) return;
 
         setFormData((prev) => {
             if (name === "product_images") {
@@ -82,16 +82,15 @@ const AddProduct = () => {
         setError(null);
         const admin_id = sessionStorage.getItem("admin_id");
 
-    if (!admin_id) {
-      displayPopup(
-        <>
-          Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
-        </>,
-        "error"
-      );
-      return;
-    }
-
+        if (!admin_id) {
+            displayPopup(
+                <>
+                    Admin session expired. Please <Link to="/admin-login" className="popup-link">log in</Link> again.
+                </>,
+                "error"
+            );
+            return;
+        }
         const formDataToSend = new FormData();
         formDataToSend.append("admin_id", admin_id);
         Object.keys(formData).forEach((key) => {
@@ -103,7 +102,6 @@ const AddProduct = () => {
                 formDataToSend.append(key, formData[key]);
             }
         });
-
         try {
             const response = await fetch(`${API_BASE_URL}/add-product`, {
                 method: "POST",
@@ -112,35 +110,32 @@ const AddProduct = () => {
             const data = await response.json();
 
             if (response.ok) {
-                navigate("/view-products", { 
-                    state: { 
-                      sub_category_id,
-                      sub_category_name, 
-                      category_id: category_id,
-                      category_name: category_name,
-                      successMessage: "Product added successfully!"
-                    } 
-                  });
-                  
+                navigate("/view-products", {
+                    state: {
+                        sub_category_id,
+                        sub_category_name,
+                        category_id: category_id,
+                        category_name: category_name,
+                        successMessage: "Product added successfully!"
+                    }
+                });
             } else {
                 setError(data.error || "Something went wrong");
                 displayPopup(data.error || "Failed to add product.", "error");
             }
         } catch (error) {
             setError("Network error, please try again");
-      displayPopup(error,"Something went wrong. Please try again.", "error");
-
+            displayPopup(error, "Something went wrong. Please try again.", "error");
         } finally {
             setLoading(false);
         }
     };
-
     return (
         <div className="add-product-container">
             <h2 className="form-title-product">Add Product</h2>
             <div className="admin-popup">
-        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
-      </div>
+                <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+            </div>
             {error && <p className="error-message">{error}</p>}
             <form onSubmit={handleSubmit} className="add-product-form">
                 <div>
@@ -166,19 +161,19 @@ const AddProduct = () => {
                     </div>
                     <div>
                         <label className="label">Price</label>
-                        <input type="text"  name="price" placeholder="Enter price" onChange={handleChange} required className="input-field" />
+                        <input type="text" name="price" placeholder="Enter price" onChange={handleChange} required className="input-field" />
                     </div>
                 </div>
                 <div className="input-row">
                     <div>
                         <label className="label">Quantity</label>
-                        <input type="text"  name="quantity" placeholder="Enter quantity" onChange={handleChange} required className="input-field" />
+                        <input type="text" name="quantity" placeholder="Enter quantity" onChange={handleChange} required className="input-field" />
                     </div>
                     <div>
                         <label className="label">Discount</label>
-                        <input type="text"  name="discount" placeholder="Enter discount" onChange={handleChange} className="input-field" />
+                        <input type="text" name="discount" placeholder="Enter discount" onChange={handleChange} className="input-field" />
                     </div>
-                    
+
                     <div>
                         <label className="label">GST</label>
                         <input type="text" name="gst" placeholder="Enter GST" onChange={handleChange} required className="input-field" />
@@ -216,7 +211,6 @@ const AddProduct = () => {
                         />
                     </div>
                 </div>
-
                 <div className="upload-file">
                     <label htmlFor="material_file" className="upload-label">
                         Upload Material File
@@ -244,7 +238,6 @@ const AddProduct = () => {
                         />
                     </div>
                 </div>
-
                 <div className="button-group">
                     <button type="button" className="admin-cancel-button" onClick={() => navigate(-1)}>Cancel</button>
                     <button type="submit" className="admin-submit-button" disabled={loading}>Submit</button>

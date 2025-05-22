@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import{ useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminInventory.css';
 import { useNavigate } from 'react-router-dom';
@@ -116,7 +116,6 @@ const AdminInventoryProducts = () => {
                     <td>{indexOfFirstProduct + index + 1}</td>
                     <td>{product.category}</td>
                     <td>{product.sub_category}</td>
-
                     <td>
                       <img src={product.product_images[0]} alt={product.product_name} width="50" height="50" />
                     </td>
@@ -141,7 +140,6 @@ const AdminInventoryProducts = () => {
             >
               Previous
             </button>
-
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
@@ -152,7 +150,6 @@ const AdminInventoryProducts = () => {
                 {page}
               </button>
             ))}
-
             <button
               onClick={nextPage}
               disabled={currentPage === totalPages}

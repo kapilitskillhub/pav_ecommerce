@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../../config";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import{ useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../AddCategory/AddCategory.css";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";

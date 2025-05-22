@@ -9,7 +9,6 @@ const CustomerEditProfile = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const customerData = location.state?.customer;
-
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
 
@@ -20,14 +19,12 @@ const CustomerEditProfile = () => {
             setShowPopup(false);
         }, 10000);
     };
-
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
         email: "",
         mobile_no: ""
     });
-
     useEffect(() => {
         if (customerData) {
             setFormData({
@@ -42,7 +39,6 @@ const CustomerEditProfile = () => {
     if (!customerData) {
         return <div className="edit-profile-container"><p>Loading customer data...</p></div>;
     }
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -50,8 +46,6 @@ const CustomerEditProfile = () => {
     const handlePhoneChange = (value) => {
         setFormData((prev) => ({ ...prev, mobile_no: "+" + value }));
     };
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -63,7 +57,6 @@ const CustomerEditProfile = () => {
                     ...formData
                 }),
             });
-
             const result = await response.json();
 
             if (response.ok) {
@@ -76,7 +69,6 @@ const CustomerEditProfile = () => {
             displayPopup("Error updating profile: " + error.message, "error");
         }
     };
-
     return (
         <div className="edit-profile-container">
             {showPopup && (
@@ -88,9 +80,7 @@ const CustomerEditProfile = () => {
                     />
                 </div>
             )}
-
             <h2>Edit Your Profile</h2>
-
             <form onSubmit={handleSubmit} className="edit-profile-form">
                 <div className="input-row">
                     <div className="input-single">
@@ -133,12 +123,12 @@ const CustomerEditProfile = () => {
                 <div className="input-single">
                     <h3 className="profile-edit-heading-first">Mobile Number</h3>
                     <PhoneInput
-                                country={"in"}
-                                value={formData.mobile_number}
-                                onChange={(value) => handlePhoneChange(value, "mobile_number")}
-                                inputProps={{ name: "mobile_number", required: true }}
-                                placeholder="Mobile Number"
-                                required
+                        country={"in"}
+                        value={formData.mobile_number}
+                        onChange={(value) => handlePhoneChange(value, "mobile_number")}
+                        inputProps={{ name: "mobile_number", required: true }}
+                        placeholder="Mobile Number"
+                        required
                     />
                 </div>
 

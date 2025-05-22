@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import API_BASE_URL from "../../config";
 import "./AdminRatings.css";
 import axios from 'axios';
@@ -88,7 +88,6 @@ const downloadExcel = async () => {
 
   }
 };
-  
   return (
     <div className="report-wrapper">
       <div className="discount-header">
@@ -127,7 +126,6 @@ const downloadExcel = async () => {
                     <td className="order-table-data">{item.SKU}</td>
                     <td className="order-table-data">{item.HSN}</td>
                     <td className="order-table-data">{item.average_rating}</td>
-
                   </tr>
                 ))}
               </tbody>
@@ -142,7 +140,6 @@ const downloadExcel = async () => {
             >
               Previous
             </button>
-
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
@@ -152,7 +149,6 @@ const downloadExcel = async () => {
                 {page}
               </button>
             ))}
-
             <button
               onClick={nextPage}
               disabled={currentPage === totalPages}

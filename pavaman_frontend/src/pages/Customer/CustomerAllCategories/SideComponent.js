@@ -1,6 +1,4 @@
-import React from "react";
 import "./SideComponent.css";
-
 const Side = ({ categories, handleSubcategoryClick }) => {
   return (
     <div className="all-sidebar">
@@ -20,7 +18,6 @@ const Side = ({ categories, handleSubcategoryClick }) => {
                 alt={sub.sub_category_name}
               />
               <div className="side-text">
-                {/* Replace underscore with space and apply capitalize */}
                 {sub.sub_category_name.replace(/_/g, " ")}
               </div>
             </li>

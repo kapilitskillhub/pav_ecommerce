@@ -1,6 +1,4 @@
-import React from 'react';
 import './TempPolicies.css';
-
 const Policies = () => {
   return (
     <div className="policies-container">
@@ -23,7 +21,6 @@ const Policies = () => {
           </li>
         </ul>
       </section>
-
       <section className="policy-section">
         <h2>Order Cancellation</h2>
         <ul>
@@ -35,5 +32,4 @@ const Policies = () => {
     </div>
   );
 };
-
 export default Policies;

@@ -8,7 +8,6 @@ const AddSpecification = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { admin_id, category_id, sub_category_id, product_id } = location.state || {};
-
   const [numSpecifications, setNumSpecifications] = useState(0);
   const [specifications, setSpecifications] = useState([]);
   const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
@@ -22,7 +21,6 @@ const AddSpecification = () => {
       setShowPopup(false);
     }, 10000);
   };
-
   const handleIncrement = () => {
     setNumSpecifications((prev) => prev + 1);
     setSpecifications([...specifications, { name: "", value: "" }]);
@@ -34,7 +32,6 @@ const AddSpecification = () => {
       setSpecifications(specifications.slice(0, -1)); 
     }
   };
-
   const handleSpecificationChange = (index, field, value) => {
     const updatedSpecs = [...specifications];
     updatedSpecs[index] = { ...updatedSpecs[index], [field]: value };
@@ -46,13 +43,10 @@ const AddSpecification = () => {
 
       return;
     }
-
     if (specifications.some((spec) => !spec.name.trim() || !spec.value.trim())) {
       displayPopup("Please fill in all specifications.", "error");
-
       return;
     }
-
     try {
       const response = await axios.post(`${API_BASE_URL}/add-product-specifications`, {
         admin_id,
@@ -62,7 +56,6 @@ const AddSpecification = () => {
         number_of_specifications: numSpecifications,
         specifications,
       });
-
       if (response.data.status_code === 200) {
       displayPopup("Specifications added successfully!", "success");
       setTimeout(() => {
@@ -77,7 +70,6 @@ const AddSpecification = () => {
 
     }
   };
-
   return (
     <div >
       <h2>Add Specifications</h2>
@@ -100,14 +92,12 @@ const AddSpecification = () => {
             placeholder={`Specification ${index + 1} Name`}
             value={spec.name}
             onChange={(e) => handleSpecificationChange(index, "name", e.target.value)}
-         
           />
           <input
             type="text"
             placeholder={`Value`}
             value={spec.value}
             onChange={(e) => handleSpecificationChange(index, "value", e.target.value)}
-        
           />
         </div>
       ))}
@@ -120,5 +110,4 @@ const AddSpecification = () => {
     </div>
   );
 };
-
 export default AddSpecification;

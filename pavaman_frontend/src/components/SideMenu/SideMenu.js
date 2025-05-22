@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../SideMenu/SideMenu.css";
 import { MdDashboard } from "react-icons/md";
@@ -21,7 +20,6 @@ const SideMenu = ({ setIsAuthenticated }) => {
         navigate("/admin-login");
     };
     return (
-
         <div className="sidemenu">
             <Link to='/dashboard' className="sidemenu-item">
                 <MdDashboard className="sidemenu-img" />
@@ -33,11 +31,8 @@ const SideMenu = ({ setIsAuthenticated }) => {
             </Link>
             <Link to="/reports" className="sidemenu-item">
                 <TbReportSearch className="sidemenu-img" />
-
                 <span className="sidemenu-label">Reports</span>
             </Link>
-
-
             <Link to="/customers" className="sidemenu-item ">
                 <IoMdPeople className="sidemenu-img" />
 
@@ -46,20 +41,16 @@ const SideMenu = ({ setIsAuthenticated }) => {
 
             <Link to="/discounts" className="sidemenu-item ">
                 <RiDiscountPercentLine className="sidemenu-img" />
-
                 <span className="sidemenu-label">Discounts</span>
             </Link>
             <Link to="/orders" className="sidemenu-item ">
-
                 <TbTruckDelivery className="sidemenu-img" />
                 <span className="sidemenu-label">Orders</span>
             </Link>
             <Link to="/ratings" className="sidemenu-item ">
-
                 <FaStar className="sidemenu-img" />
                 <span className="sidemenu-label">Ratings</span>
             </Link>
-            
             <Link to="/inventory" className="sidemenu-item ">
 
                 <MdOutlineInventory className="sidemenu-img" /> 

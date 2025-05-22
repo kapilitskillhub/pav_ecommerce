@@ -3,7 +3,6 @@
     align-items: flex-start;
 
     .header-filter {
-        /* flex: 0 0 250px; */
         display: block;
         width: 200px;
         background-color: #f9f9f9;
@@ -12,13 +11,14 @@
         margin-top: 40px;
 
 
-        .filter-heading-products{
+        .filter-heading-products {
             text-transform: uppercase;
             color: #4450a2;
             margin-top: 10px;
             font-size: 20px;
             font-weight: 600;
         }
+
         .filter-sort-section {
             display: flex;
             flex-direction: column;
@@ -26,6 +26,7 @@
 
             .price-slider-container {
                 width: 200px;
+
                 .price-range-label {
                     font-weight: 600;
                     display: block;
@@ -48,29 +49,23 @@
             }
 
             .sorting-section {
-                /* display: flex; */
-                /* flex-direction: column; */
-                /* gap: 8px; */
                 display: block;
                 margin-bottom: 20px;
                 border: none;
-                display: flex
-;
-    flex-direction: column;
-    width: 200px;
+                display: flex;
+                flex-direction: column;
+                width: 200px;
 
                 label {
                     font-weight: 500;
                 }
 
                 select {
-                    /* padding: 6px 8px; */
                     border: 1px solid #ccc;
-                    /* background-color: none; */
                     border-radius: 20px;
-        background-color: #f9f9f9;
-        width: 180px;
-        margin:  0 auto 20px ;
+                    background-color: #f9f9f9;
+                    width: 180px;
+                    margin: 0 auto 20px;
 
                 }
             }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import EditAddress from "../CustomerEditAddress/CustomerEditAddress";
 import "../CustomerViewAddress/CustomerViewAddress.css";
 import { BsThreeDotsVertical } from "react-icons/bs";

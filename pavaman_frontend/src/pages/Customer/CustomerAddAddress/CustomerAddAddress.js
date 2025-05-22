@@ -5,7 +5,6 @@ import PopupMessage from "../../../components/Popup/Popup";
 import PhoneInput from "react-phone-input-2";
 const AddCustomerAddress = ({ onAddressAdded }) => {
     const wrapperRef = useRef(null);
-
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
@@ -89,7 +88,7 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
             const response = await fetch(`${API_BASE_URL}/add-customer-address`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ customer_id,...formData, mobile_number: `+${formData.mobile_number}`, alternate_mobile: formData.alternate_mobile ? `+${formData.alternate_mobile}` : "" }),
+                body: JSON.stringify({ customer_id, ...formData, mobile_number: `+${formData.mobile_number}`, alternate_mobile: formData.alternate_mobile ? `+${formData.alternate_mobile}` : "" }),
             });
 
             const data = await response.json();
@@ -149,24 +148,24 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                         <div className="manage-input-group">
                             <label>Mobile Number<span className="required-star">*</span></label>
                             <PhoneInput
-                             type="text"
-                             inputProps={{ name: "mobile_number", required: true }}
-                             country={"in"}
-                             name="mobile_number" 
-                             value={formData.mobile_number} 
-                             onChange={(value) => handlePhoneChange(value, "mobile_number")}
-                             required pattern="\d{10}" />
+                                type="text"
+                                inputProps={{ name: "mobile_number", required: true }}
+                                country={"in"}
+                                name="mobile_number"
+                                value={formData.mobile_number}
+                                onChange={(value) => handlePhoneChange(value, "mobile_number")}
+                                required pattern="\d{10}" />
                         </div>
                         <div className="manage-input-group">
                             <label>Alternate Mobile</label>
                             <PhoneInput
-                             country={"in"}
-                             type="text" 
-                             name="alternate_mobile" 
-                             value={formData.alternate_mobile} 
-                             onChange={(value) => handlePhoneChange(value, "alternate_mobile")}
-                             inputProps={{ name: "alternate_mobile" }}
-                              />
+                                country={"in"}
+                                type="text"
+                                name="alternate_mobile"
+                                value={formData.alternate_mobile}
+                                onChange={(value) => handlePhoneChange(value, "alternate_mobile")}
+                                inputProps={{ name: "alternate_mobile" }}
+                            />
                         </div>
                     </div>
                     <div className="manage-form-row">
@@ -235,7 +234,6 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
         </div>
     );
 };
-
 export default AddCustomerAddress;
 
 

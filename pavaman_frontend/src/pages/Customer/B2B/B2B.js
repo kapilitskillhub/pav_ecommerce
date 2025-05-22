@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import './B2B.css';
 import { FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
 
@@ -12,14 +11,10 @@ const B2B = () => {
       </p>
       <div className="b2b-contact-box">
         <h2>Business Contact</h2>
-
-        {/* Phone Line */}
         <div className="b2b-contact-line">
           <FaPhoneAlt className="contact-icon phone-icon" />&nbsp;
           <span className="b2b-contact-text">+1-800-123-4567</span>
         </div>
-
-        {/* Email Line */}
         <div className="b2b-contact-line">
           <FaEnvelope className="contact-icon email-icon" />&nbsp;&nbsp;
           <span className="b2b-contact-text">

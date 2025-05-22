@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./CustomerManageEditAddress.css";
 import PopupMessage from "../../../components/Popup/Popup";
 import PhoneInput from "react-phone-input-2";

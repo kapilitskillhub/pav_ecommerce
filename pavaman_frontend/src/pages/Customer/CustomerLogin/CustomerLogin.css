@@ -8,24 +8,20 @@
     background: #F6F6F6;
     box-shadow: -6px 12px 52.1px 0px rgba(0, 0, 0, 0.25) inset;
 }
-
 .customer-login-logo {
     height: 100%;
     max-width: 330px;
     margin-top: 50px;
     margin-left: -24px;
 }
-
 .customer-login-form-section {
     width: 50%;
 }
-
 .customer-login-image-section {
     width: 50%;
     background: #C3DDF0;
     border-radius: 0 20px 20px 0;
 }
-
 .customer-login-image {
     margin-top: 50px;
     border-radius: 20px;
@@ -33,13 +29,11 @@
     height: 500px;
     max-width: 581px;
 }
-
 .customer-login-form-fields {
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
 }
-
 .customer-login-input-field {
     width: 80%;
     border-radius: 20px;
@@ -47,7 +41,6 @@
     height: 50px;
     padding: 10px;
 }
-
 .customer-login-text {
     font-size: 28px;
     font-weight: 600;
@@ -55,7 +48,6 @@
     margin-top: 30px;
     margin-bottom: 20px;
 }
-
 .customer-login-btn {
     border: none;
     width: 160px;
@@ -63,48 +55,39 @@
     border-radius: 20px;
     background: #4450A2;
 }
-
-
 .customer-login-form-section {
     text-align: left;
     padding-left: 65px;
 }
-
 .customer-login-btn-text {
     font-size: 20px;
     font-weight: 600;
     color: #fff;
     margin: auto
 }
-
 .customer-login-form-info {
     font-size: 16px;
     color: #785454;
     margin-top: 8px;
 }
-
 .email-label,
 .password-label {
     font-size: 26px;
     font-weight: 600;
     color: #4450A2;
 }
-
 .customer-login-image-text {
     margin-top: 110px;
     font-size: 32px;
     font-weight: 600;
 }
-
 .customer-login-image-text span {
     color: #EF7F1B;
 }
-
 .customer-login-password-input-wrapper {
     position: relative;
     width: 80%;
 }
-
 .customer-login-password-input {
     width: 100%;
     padding-right: 40px;
@@ -114,7 +97,6 @@
     padding-left: 10px;
     font-size: 16px;
 }
-
 .customer-login-password-toggle-btn {
     position: absolute;
     right: 15px;
@@ -124,12 +106,10 @@
     font-size: 20px;
     color: #555;
 }
-
 .customer-login-label{
     font-size: 20px;
     margin-bottom: 16px;
 }
-
 .customer-popup-message {
     padding: 12px 20px;
     border-radius: 5px;
@@ -138,18 +118,14 @@
     text-align: center;
     width: 50%;
   }
-  
   .customer-popup-message.success {
     background-color: #147238;
     color: white;
   }
-  
   .customer-popup-message.error {
     background-color: #f08269;
     color: white;
-    
   }
-
   .customer-login-divider {
     width: 90%;
     border: 0;
@@ -157,7 +133,6 @@
     background: #000;
     margin: 20px 0;
 }
-
 .customer-login-actions {
     display: flex;
     justify-content: space-around;
@@ -166,7 +141,6 @@
     width: 90%;
     margin-bottom: 20px;
 }
-
 .customer-register-btn {
     background: none;
     border: 1px solid #4450A2;
@@ -176,13 +150,10 @@
     border-radius: 20px;
     background: #fff;
 }
-
 .customer-register-btn p {
     margin: 0;
     color: #4450A2;
-
 }
-
 .resend-text{
     color: rgb(255, 102, 0);
     margin-top: 20px;
@@ -193,9 +164,7 @@
     color: rgb(8, 124, 18);
     text-decoration: underline;
     margin-bottom: 20px;
-
 }
-
 .mobile-popup {
     position: fixed;
     top: 0;
@@ -208,7 +177,6 @@
     justify-content: center;
     z-index: 1000;
 }
-
 .mobile-popup-content {
     background: white;
     padding: 20px;
@@ -217,21 +185,18 @@
     text-align: center;
     width: 90%;
     max-width: 400px;
-
 }
-
 .mobile-popup-content p {
     color: #4450A2;
     font-weight: 600;
     font-size: 20px;
     margin-bottom: 10px;
 }
-
 .forgot-password{
     color: red;
     margin: 20px 20px 20px 0px;
+    cursor: pointer
 }
-
 .phone-input-otp{
     margin-bottom: 20px;
     margin-left: 30px;
@@ -269,8 +234,6 @@
     left: 0;
     top: 0;
     border-right:1px solid #CACACA;
-
-    
 }
 .react-tel-input .flag-dropdown {
     border: none;
@@ -280,7 +243,6 @@
     display: flex;
     gap: 20px;
 }
-
 .forgot-phone-input-otp{
     margin: 20px auto;
 }
@@ -329,7 +291,6 @@
     animation: fadeIn 0.3s ease-in-out;
     position: relative;
 }
-
 .verify-popup-content{
     background: linear-gradient(to right,#b9caf7, #838486); 
     padding: 25px;
@@ -341,7 +302,6 @@
     animation: fadeIn 0.3s ease-in-out;
     position: relative;
 }
-
 .popup-content h3 {
     font-size: 22px;
     font-weight: bold;
@@ -365,20 +325,15 @@
     margin-bottom: 15px;
     border-radius: 20px;
 }
-
-
 .PhoneInput {
     width: 100%;
 }
-
 .popup-buttons {
     display: flex;
     justify-content: space-between;
     gap: 15px;
     margin-top: 15px; 
 }
-
-
 .sendotp,.cancel,.reset_password {
     flex: 1;
     padding: 12px 20px;
@@ -417,9 +372,7 @@
     background: #646363;
     color: white;
     border-bottom: 3px solid #646363;
-
     height: 44px;
-    
 }
 .verifyOTP{
     flex: 1;
@@ -434,16 +387,13 @@
     transition: all 0.3s ease-in-out;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
-  
 }
-
 .verifyOTP_buttons{
 
     display: flex;
     gap: 10px;
     flex-direction: column;
 }
-
 .forget_buttons{
     display: flex;
     gap: 10px;
@@ -453,7 +403,6 @@
     display: flex;
     gap: 10px;   
 }
-
 .sendotp {
     background: #4450A2;
     color: white;
@@ -559,21 +508,17 @@
     text-align: center;
     width: 350px;
   }
-  
-
-  .subtitle {
+    .subtitle {
     font-size: 14px;
     color: #535966;
     margin-bottom: 20px;
   }
-  
   .otp-container {
     display: flex;
     justify-content: center;
     gap: 5px;
     margin-bottom: 20px;
   }
- 
   .otp-input {
     width: 45px;
     height: 45px;
@@ -584,7 +529,6 @@
     outline: none;
     transition: border 0.2s;
   }
-  
   .button:hover {
     background-color: #3b35c4;
   }
@@ -608,9 +552,6 @@
   transform: translate(-50%, -50%);
   padding: 20px;
   border-radius: 10px;
-  
- 
-    
   }
 
   .password-tool-tip{
@@ -626,7 +567,6 @@
         z-index: 1;
         margin-bottom: 16px;
   }
-
   .password-tooltip-icon{
     color: #4450A2;
     margin-left: 5px;
@@ -635,10 +575,7 @@
   .password-tool-tip-list{
     list-style: disc;
     color: rgb(214, 97, 97);
-
   }
-
- 
   @media screen and (max-width : 1024px) {
     .customer-login-image{
         width: 400px;
@@ -648,7 +585,6 @@
         width: 70%;
     }
 }
-
 @media screen and (max-width : 768px) {
     .customer-login-container {
        flex-direction: column;
@@ -740,9 +676,7 @@
     }
     .sendotp,.cancel{
         height: 60px;
-        
     }
-
     .password-tool-tip{
         width: 100%;
   }

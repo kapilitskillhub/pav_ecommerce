@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import{ useEffect,useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PopupMessage from "../../../components/Popup/Popup";
 import API_BASE_URL from "../../../config";
@@ -95,7 +95,6 @@ const RazorpayPayment = ({ orderSummary }) => {
             displayPopup("Error: " + error.message,"error");
         }
     };
-
     return (
         <div className="popup-cart">
         {showPopup && (
@@ -108,5 +107,4 @@ const RazorpayPayment = ({ orderSummary }) => {
          </div>
     );
 };
-
 export default RazorpayPayment;

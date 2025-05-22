@@ -21,9 +21,7 @@
     align-items: center;
     justify-content: center;
     margin-left: 15px;
-   
 }
-
 .customer-discount-product-card {
     border: 2px solid #dadada; 
     border-radius: 12px;   
@@ -39,7 +37,6 @@
     height: 415px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); 
 }
-
 .customer-discount-product-card:hover {
     box-shadow: 0px 6px 18px rgba(0, 0, 0, 0); 
     transform: scale(1.03); 
@@ -53,7 +50,6 @@
     display: block;
     margin: 0 auto;
 }
-
 .customer-discount-product-name {
     font-size: 18px;
     font-weight: 500;
@@ -64,7 +60,6 @@
     display: block;
     margin: 16px auto;
 }
-
 .empty-space {
     height: 34px;
 }
@@ -76,19 +71,16 @@
     margin: 16px auto;
     text-align: center !important;
 }
-
 .customer-discount-section-price {
     font-size: 18px;
     margin: 16px auto;
     text-align: center !important;
 }
-
 .customer-discount-section-original-price {
     font-size: 14px;
     color: grey;
     text-decoration: line-through;
 }
-
 .add-cart-section {
     display: flex;
     flex-direction: column;
@@ -96,18 +88,15 @@
     justify-content: center;
     margin-top: 8px;
 }
-
 .add-to-cart-button {
     color: #485692;
     font-size: 30px;
     cursor: pointer;
     transition: background 0.3s;
 }
-
 .add-to-cart-button:hover {
     color: #022355;
 }
-
 .availability.few-left,.availability.in-stock,.availability.out-of-stock{
     font-size: 16px;
     font-weight: 600;
@@ -115,11 +104,9 @@
 .availability.few-left{
     color: rgb(128, 93, 4);
 }
-
 .availability.in-stock{
     color: green;
 }
-
 .availability.out-of-stock{
     color: red;
 }
@@ -136,12 +123,10 @@
     margin: 5px;
     font-weight: 600;
 }
-
 .popup-discount{
     width: 50%;
     margin: 10px auto;
 }
-
 .discount-tag {
     color: #fd933b;
     font-size: 15px;
@@ -150,7 +135,6 @@
     display: inline-block;
     margin-top: 5px;
 }
-
 @media (max-width: 1440px) {
     .customer-discount-products-section {
         grid-template-columns: repeat(5, 1fr);
@@ -183,10 +167,8 @@
     align-items: center;
     justify-content: center;
     margin-left: 15px;
-   
 }
 }
-
 @media (max-width: 480px) {
     .customer-discount-products-section {
         grid-template-columns: repeat(2, 1fr);
@@ -195,9 +177,7 @@
     .customer-discount-product-image,.product-image-wrapper {
         width: 147px;
         height: 150px;
-      
     }
-
     .customer-discount-section-price{
         font-size: 16px;
     }
@@ -225,44 +205,34 @@
     background: linear-gradient(135deg, #f9f9f9, #ffffff);
     border: 1px solid #e0e0e0;
     animation: fadeInUp 0.4s ease-out;
-              
 }
-
 .popup.success {
     background: linear-gradient(135deg, #d4edda, #e9f9e6);
     color: #155724;
     border: 2px solid #c3e6cb;
 }
-
 .popup.error {
     background: linear-gradient(to right, #f5d858, #fdb689);
     color: #614a03;
     border: 2px solid #ffeeba;
 }
-
-
 .popup-icon {
     width: 35px; 
     height: 35px;
 }
-
 @keyframes fadeInOut {
     0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
     10% { opacity: 1; transform: translateX(-50%) translateY(0); }
     90% { opacity: 1; }
     100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
 }
-
-
 @media (max-width: 768px) {
     .customer-dashboard .popup {
         padding: 10px 20px; 
         font-size: 12px; 
         width: 95%;
         transform: translate(-50%, 50%);
-    
     }
-
     .popup-icon {
         width: 30px; 
         height: 30px;
@@ -271,14 +241,12 @@
         height: 400px;
     }
 }
-
 @media (max-width: 480px) {
     .customer-dashboard .popup {
         padding: 7px 12px; 
         font-size: 10px; 
         width: 80%; 
         transform: translate(-50%, 50%);
-        
     }
 
     .popup-icon {
@@ -286,54 +254,43 @@
         height: 25px;
     }
 }
-
-
 @media (max-width: 380px) {
     .customer-discount-products-section {
         grid-template-columns: 1fr;
         padding: 0 10px;
     }
-
     .customer-discount-product-card {
         width: 100%;
         height: auto;
         padding: 10px 8px;
     }
-
     .product-image-wrapper {
         width: 100%;
         height: 140px;
         margin-left: 0;
     }
-
     .customer-discount-product-name {
         font-size: 16px;
         max-width: 100%;
     }
-
     .add-to-cart-button {
         font-size: 24px;
     }
-
     .availability.few-left,
     .availability.in-stock,
     .availability.out-of-stock {
         font-size: 14px;
     }
-
     .customer-discount-section-price {
         font-size: 15px;
     }
-
     .customer-discount-section-original-price {
         font-size: 13px;
     }
-
     .popup-discount {
         width: 100%;
         padding: 0 10px;
     }
-
     .customer-dashboard .popup {
         font-size: 10px;
         width: 90%;
