@@ -254,56 +254,56 @@ const AdminCustomerReports = () => {
           </div>
 
           <div className="bar-chart">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={
-                  (() => {
-                    const chartData = Object.entries(monthlyRevenue).map(([key, value]) => ({ name: key, revenue: value }));
-                    if (chartData.length === 1) {
-                      // Add dummy point to prevent stretching
-                      chartData.push({ name: " ", revenue: 0 });
-                    }
-                    return chartData;
-                  })()
-                }
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  tickFormatter={(value) => {
-                    try {
-                      if (reportFilter === 'yearly') {
-                        return value;
-                      }
+           <ResponsiveContainer width="100%" height={300}>
+  <BarChart
+    data={
+      (() => {
+        const chartData = Object.entries(monthlyRevenue).map(([key, value]) => ({ name: key, revenue: value }));
+        if (chartData.length === 1) {
+          // Add dummy point to prevent stretching
+          chartData.push({ name: " ", revenue: 0 });
+        }
+        return chartData;
+      })()
+    }
+  >
+    <CartesianGrid strokeDasharray="3 3" />
+    <XAxis
+      dataKey="name"
+      tickFormatter={(value) => {
+        try {
+          if (reportFilter === 'yearly') {
+            return value;
+          }
 
-                      if (reportFilter === 'monthly') {
-                        return format(new Date(reportYear, parseInt(value) - 1), 'MMM, yy');
-                      }
+          if (reportFilter === 'monthly') {
+            return format(new Date(reportYear, parseInt(value) - 1), 'MMM, yy');
+          }
 
-                      if (reportFilter === 'weekly') {
-                        const match = value.match(/\((\d{2} \w+ \d{4})\)/);
-                        if (match) {
-                          const dateStr = match[1];
-                          const dateParts = dateStr.split(" ");
-                          return `${dateParts[0]} ${dateParts[1]} ${dateParts[2].slice(-2)}`;
-                        }
-                        return value;
-                      }
-                    } catch {
-                      return value;
-                    }
-                  }}
-                  interval={0}
-                  angle={-45}
-                  textAnchor="end"
-                  height={70}
-                />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="revenue" fill="#8884d8" barSize={40} maxBarSize={40} />
+          if (reportFilter === 'weekly') {
+            const match = value.match(/\((\d{2} \w+ \d{4})\)/);
+            if (match) {
+              const dateStr = match[1];
+              const dateParts = dateStr.split(" ");
+              return `${dateParts[0]} ${dateParts[1]} ${dateParts[2].slice(-2)}`;
+            }
+            return value;
+          }
+        } catch {
+          return value;
+        }
+      }}
+      interval={0}
+      angle={-45}
+      textAnchor="end"
+      height={70}
+    />
+    <YAxis />
+    <Tooltip />
+    <Bar dataKey="revenue" fill="#8884d8" barSize={40} maxBarSize={40} />
 
-              </BarChart>
-            </ResponsiveContainer>
+  </BarChart>
+</ResponsiveContainer>
 
           </div>
         </div>
