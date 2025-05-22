@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./CustomerManageAddAddress.css";
 import PhoneInput from "react-phone-input-2";
 import PopupMessage from "../../../components/Popup/Popup";
@@ -91,14 +91,12 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
         e.preventDefault();
         setLoading(true);
         setPopupMessage("");
-
         const customer_id = localStorage.getItem("customer_id");
         if (!customer_id) {
             alert("Please log in to continue.");
             setLoading(false);
             return;
         }
-
         const requiredFields = {
             first_name: "First Name",
             last_name: "Last Name",
@@ -119,7 +117,6 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                 return;
             }
         }
-
         try {
             const response = await fetch(`${API_BASE_URL}/add-customer-address`, {
                 method: "POST",

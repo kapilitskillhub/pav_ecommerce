@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../AddCategory/AddCategory.css"; 
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
@@ -23,7 +23,6 @@ const AddSubCategory = () => {
   const displayPopup = (text, type = "success") => {
     setPopupMessage({ text, type });
     setShowPopup(true);
-
     setTimeout(() => {
       setShowPopup(false);
     }, 10000);
@@ -37,23 +36,17 @@ const AddSubCategory = () => {
       navigate("/admin-login");
     }
   }, [navigate]);
-
   const handleFileChange = (e) => {
     if (e.target.files.length === 0) return;
     const file = e.target.files[0];
-
     setSubCategoryImage(file);
     setImagePreview(URL.createObjectURL(file));
     setIsImageUploaded(true);
-
     e.target.value = ""; 
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const adminId = sessionStorage.getItem("admin_id");
-  
     if (!adminId) {
     displayPopup(
           <>
@@ -63,25 +56,20 @@ const AddSubCategory = () => {
         );
       return;
     }
-
     if (!subCategoryName.trim()) {
       displayPopup("Please enter the subcategory name.", "error");
-
       return;
     }
     if (!subCategoryImage) {
       displayPopup("Please upload image.", "error");
-
       return;
     }
-
     setLoading(true);
     const formData = new FormData();
     formData.append("admin_id", adminId);
     formData.append("category_id", category_id);
     formData.append("sub_category_name", subCategoryName);
     formData.append("sub_category_image", subCategoryImage);
-
     try {
       const response = await fetch(`${API_BASE_URL}/add-subcategory`, {
         method: "POST",
@@ -109,11 +97,9 @@ const AddSubCategory = () => {
       setLoading(false);
     }
   };
-
   const handleCancel = () => {
     navigate("/view-subcategories", { state: { category_id, category_name } });
   };
-
   return (
     <div className="add-card-form-page">
       

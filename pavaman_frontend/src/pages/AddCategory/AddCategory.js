@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AddCategory.css";
 import UploadFileIcon from "../../assets/images/upload-file-icon.svg";
@@ -17,11 +17,9 @@ const AddCategory = () => {
   const navigate = useNavigate();
   const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
   const [showPopup, setShowPopup] = useState(false);
-
   const displayPopup = (text, type = "success") => {
     setPopupMessage({ text, type });
     setShowPopup(true);
-
     setTimeout(() => {
       setShowPopup(false);
     }, 10000);
@@ -35,23 +33,17 @@ const AddCategory = () => {
       navigate("/admin-login");
     }
   }, [navigate]);
-
   const handleFileChange = (e) => {
     if (e.target.files.length === 0) return;
     const file = e.target.files[0];
-
     setImage(file);
     setImagePreview(URL.createObjectURL(file));
     setIsImageUploaded(true);
-
     e.target.value = "";
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const adminId = sessionStorage.getItem("admin_id");
-
     if (!adminId) {
       displayPopup(
         <>
@@ -61,23 +53,19 @@ const AddCategory = () => {
       );
       return;
     }
-
     if (!name.trim()) {
       displayPopup("Please enter the category name.", "error");
-
       return;
     }
     if (!image) {
       displayPopup("Please upload image.", "error");
-
       return;
     }
     setLoading(true);
     const formData = new FormData();
-    formData.append("admin_id", adminId); 
+    formData.append("admin_id", adminId);
     formData.append("category_name", name);
     formData.append("category_image", image);
-
     try {
       const response = await fetch(`${API_BASE_URL}/add-category`, {
         method: "POST",
@@ -86,22 +74,18 @@ const AddCategory = () => {
           "Accept": "application/json",
         },
       });
-
       const data = await response.json();
       if (response.ok) {
         displayPopup("Category added successfully!", "success");
         setTimeout(() => {
           navigate("/view-categories", { state: { successMessage: "Category added successfully!" } });
-        }, 2000); 
-        
+        }, 2000);
       } else {
         displayPopup(data.error || "Failed to add category.", "error");
-
       }
     } catch (error) {
       console.error("Error:", error);
-      displayPopup(error,"Something went wrong. Please try again.", "error");
-
+      displayPopup(error, "Something went wrong. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -109,7 +93,6 @@ const AddCategory = () => {
   const handleCancel = () => {
     navigate("/view-categories");
   };
-
   return (
     <div className="add-card-form-page">
       <div className="admin-popup">

@@ -39,18 +39,16 @@ const PavamanFooter = () => {
             <h4>Services</h4>
             <ul className='service-options'>
               <li><span onClick={() => navigate('/contact')}>Contact Us</span></li>
-             <li><span onClick={() => navigate('/b2b')}>Pavaman B2B</span></li>
-               <li><span onClick={() => navigate('/policies')}>Policies</span></li>
+              <li><span onClick={() => navigate('/b2b')}>Pavaman B2B</span></li>
+              <li><span onClick={() => navigate('/policies')}>Policies</span></li>
             </ul>
           </div>
         </div>
       </div>
-
       <div className="footer-bottom">
         <p>© <strong>Pavaman</strong> is a registered trademark - All Rights Reserved</p>
       </div>
     </footer>
   );
 };
-
 export default PavamanFooter;

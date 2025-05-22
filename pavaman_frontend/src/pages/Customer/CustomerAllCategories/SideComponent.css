@@ -1,6 +1,5 @@
-/* Sidebar container */
 .all-sidebar {
-  width: 300px; /* Default width */
+  width: 300px;
   min-height: 100vh;
   background-color: #f8f9fa;
   padding: 10px 5px;
@@ -11,15 +10,11 @@
   text-transform: capitalize;
   box-sizing: border-box;
 }
-
-/* Sidebar list */
 .all-sidebar ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-
-/* Subcategory item */
 .all-subcategory-item {
   display: flex;
   align-items: center;
@@ -29,14 +24,11 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   border-radius: 4px;
-  flex-wrap: wrap; /* Allow wrapping of text */
+  flex-wrap: wrap;
 }
-
 .all-subcategory-item:hover {
   background-color: #e9ecef;
 }
-
-/* Subcategory image */
 .side-image {
   width: 40px;
   height: 40px;
@@ -44,60 +36,47 @@
   flex-shrink: 0;
   border-radius: 4px;
 }
-
-/* Subcategory text */
 .side-text {
   font-size: 13px;
   color: #4450A2;
   font-weight: 600;
   text-align: left;
-  white-space: normal; /* Allow text to wrap */
-  word-wrap: break-word; /* Break words if necessary */
-  word-break: break-word; /* Ensure the long words break properly */
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
   flex-grow: 1;
-  max-width: 160px; /* Set max-width to control text overflow */
-  display: block; /* Make sure it's a block element for wrapping */
+  max-width: 160px;
+  display: block;
 }
-
-/* Responsive styles for medium screens (tablet) */
 @media (max-width: 768px) {
   .all-sidebar {
-    width: 180px; /* Slightly narrower sidebar */
+    width: 180px;
   }
-
   .side-text {
     font-size: 9px;
-    white-space: normal; /* Ensure it wraps */
-    max-width: none; /* Allow full width of container */
+    white-space: normal;
+    max-width: none;
   }
 }
-
-/* Responsive styles for small screens (mobile) */
 @media (max-width: 480px) {
   .all-sidebar {
-    width: 60px; /* Narrow the sidebar even more */
+    width: 60px;
   }
-
-  /* Show text and allow wrapping */
   .side-text {
-    display: block; /* Ensure it's visible */
+    display: block;
     font-size: 9px;
-    white-space: normal; /* Wrap text */
-    word-wrap: break-word; /* Ensure words break */
-    word-break: break-word; /* Prevent text overflow */
-    max-width: 100%; /* Allow text to take full width */
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
   }
-
-  /* Adjust image size for mobile */
   .side-image {
     width: 36px;
     height: 36px;
   }
-
-  /* Align items in the center (for smaller screens) */
   .all-subcategory-item {
-    flex-direction: column; /* Stack the image and text vertically */
+    flex-direction: column;
     justify-content: center;
-    align-items: center; /* Center everything */
+    align-items: center;
   }
 }

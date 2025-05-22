@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import defaultImage from "../../../assets/images/product.png";
 import "../CustomerViewCart/CustomerViewCart.css"
 import { RiDeleteBinLine } from "react-icons/ri";
 import PopupMessage from "../../../components/Popup/Popup";

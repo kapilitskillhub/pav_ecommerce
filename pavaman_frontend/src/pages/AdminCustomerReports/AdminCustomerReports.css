@@ -3,26 +3,22 @@
   background-color: #f9f9f9;
   color: #333;
 }
-
 .dashboard-reports {
   padding: 20px;
   background-color: #f9f9f9;
   color: #333;
 }
-
 .sales-reports {
   font-size: 28px;
   margin-bottom: 20px;
   color: #1e293b;
 }
-
 .summary-cards {
   display: flex;
   gap: 20px;
   margin-bottom: 30px;
   flex-wrap: wrap;
 }
-
 .card-sales-first,
 .card-sales-second,
 .card-sales-third {
@@ -40,19 +36,15 @@
   justify-content: center;
   background: #ffffff;
 }
-
 .card-sales-first {
   background: linear-gradient(to right, rgb(177, 241, 158), rgb(118, 198, 118));
 }
-
 .card-sales-second {
   background: linear-gradient(to right, rgb(167, 167, 224), rgb(189, 184, 184));
 }
-
 .card-sales-third {
   background: linear-gradient(to right, rgb(224, 200, 167), rgb(240, 195, 195));
 }
-
 .today-heading {
   display: flex;
   align-items: center;
@@ -65,12 +57,10 @@
   color: #17823d;
   font-size: 24px;
 }
-
 .monthly-icon {
   color: #035cea;
   font-size: 24px;
 }
-
 .yearly-icon {
   color: #fbaa1e;
   font-size: 24px;
@@ -81,15 +71,12 @@
   margin: 0;
   font-size: 18px;
 }
-
-
 .charts-status {
   display: flex;
   flex-wrap: wrap;
   gap: 30px;
   margin-bottom: 30px;
 }
-
 .chart-box {
   flex: 1 1 100%;
   background-color: #eff3fa;
@@ -100,14 +87,12 @@
   position: relative;
   overflow: hidden;
 }
-
 .chart-box h3 {
   font-size: 22px;
   color: #4450A2;
   font-weight: bold;
   margin-bottom: 10px;
 }
-
 .chart-box select {
   position: absolute;
   top: 20px;
@@ -121,7 +106,6 @@
   background-color: #ced1e2;
   cursor: pointer;
 }
-
 .bar-chart {
   display: flex;
   justify-content: space-between;
@@ -130,7 +114,6 @@
   margin-top: 40px;
   padding: 0 10px;
 }
-
 .bar-wrapper {
   display: flex;
   flex-direction: column;
@@ -150,7 +133,6 @@
   height: var(--bar-height);
   position: relative;
 }
-
 .bar:hover::after {
   content: attr(data-amount);
   position: absolute;
@@ -162,7 +144,6 @@
   font-size: 12px;
   white-space: nowrap;
 }
-
 .bar-wrapper label {
   margin-top: 6px;
   font-size: 12px;
@@ -190,7 +171,6 @@
   flex-wrap: wrap;
   margin-top: 20px;
 }
-
 .top-products,
 .bottom-products {
   flex: 1;
@@ -200,7 +180,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
   min-width: 300px;
 }
-
 .top-products h3,
 .bottom-products h3 {
   margin-bottom: 15px;
@@ -210,13 +189,11 @@
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 5px;
 }
-
 .top-products ul,.bottom-products ul {
   list-style-type: none;
   padding-left: 0;
   margin: 0;
 }
-
 .top-products li,.bottom-products li {
   display: flex;
   justify-content: space-between;
@@ -229,7 +206,6 @@
   color: #334155;
   transition: background-color 0.3s ease;
 }
-
 .top-products li:hover {
   background-color: #e2e8f0;
 }
@@ -242,23 +218,16 @@
   color: #64748b;
   margin-top: 10px;
 }
-
-
-
-
 .today-icon {
   color: #17823d;
   display: inherit;
 }
-
 .monthly-icon {
   color: #035cea;
 }
-
 .yearly-icon {
   color: #f89e03;
 }
-
 .filter-controls {
   display: flex;
   align-items: center;
@@ -266,13 +235,11 @@
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
-
 .filter-controls label {
   font-weight: bold;
   font-size: 16px;
   color: #1e293b;
 }
-
 .filter-controls select {
   padding: 8px 12px;
   font-size: 14px;
@@ -286,7 +253,6 @@
 .react-datepicker-wrapper {
   width: auto;
 }
-
 .react-datepicker__input-container input {
   padding: 8px 12px;
   font-size: 14px;
@@ -297,7 +263,6 @@
   width: 140px;
   cursor: pointer;
 }
-
 .filter-controls input[type="number"] {
   padding: 8px 12px;
   font-size: 14px;
@@ -311,13 +276,11 @@
     align-items: flex-start;
     gap: 10px;
   }
-
   .chart-box,
   .pie-chart-box {
     max-width: 100% !important;
   }
 }
-
 .react-datepicker {
   font-family: 'Inter' !important;
   border: 1px solid #cbd5e1;
@@ -327,26 +290,22 @@
   padding: 10px;
   color: #4450A2 !important;
 }
-
 .react-datepicker__header {
   background-color: #e2e8f0;
   border-bottom: 1px solid #cbd5e1;
   padding-top: 10px;
 }
-
 .react-datepicker__day-names {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
 }
-
 .react-datepicker__day-name {
   color: #64748b;
   font-weight: bold;
   width: 2rem;
   text-align: center;
 }
-
 .react-datepicker__day {
   width: 2rem;
   line-height: 2rem;
@@ -357,11 +316,9 @@
   color: #334155;
   transition: background-color 0.2s ease;
 }
-
 .react-datepicker__day:hover {
   background-color: #c7d2fe;
 }
-
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
   background-color: #3b82f6;
@@ -371,7 +328,6 @@
   border: 1px solid #3b82f6;
   font-weight: bold;
 }
-
 .react-datepicker__navigation {
   top: 14px;
 }
@@ -379,12 +335,9 @@
 .react-datepicker__navigation-icon::before {
   border-color: #1e293b;
 }
-
-
 .recharts-default-tooltip{
   border-radius: 20px;
 }
-
 .react-datepicker__input-container input{
     border-radius: 20px !important;
 }

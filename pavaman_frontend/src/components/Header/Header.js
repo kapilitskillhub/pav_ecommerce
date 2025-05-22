@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
 import SearchIcon from "../../assets/images/search.svg";
-import RefreshIcon from "../../assets/images/search.svg"; 
 import { IoPerson } from "react-icons/io5";
 import { RiRefreshLine } from "react-icons/ri";
 import API_BASE_URL from "../../config";

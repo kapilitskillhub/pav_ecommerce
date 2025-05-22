@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../CustomerViewCategory/CustomerViewCategory.css";
 import "../CustomerViewSubCategory/CustomerViewSubCategory.css";
-import defaultImage from "../../../assets/images/default.png"
 import ViewDiscountedProducts from "../CustomerDiscountProducts/CustomerDiscountProducts";
 import { Range } from 'react-range';
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
@@ -21,13 +20,13 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
     const [maxPrice, setMaxPrice] = useState(10000);
     const [values, setValues] = useState([0, 10000]);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-const [showFilters, setShowFilters] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
 
-useEffect(() => {
-  const handleResize = () => setIsMobile(window.innerWidth <= 768);
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
 
     useEffect(() => {
@@ -115,7 +114,7 @@ useEffect(() => {
             const data = await response.json();
 
             if (data.status_code === 200 && data.categories) {
-                setCategories(data.categories); 
+                setCategories(data.categories);
                 setError("");
             } else {
                 setCategories([]);
@@ -128,20 +127,15 @@ useEffect(() => {
             setLoading(false);
         }
     };
-
-
-
     const handleViewProducts = (subCategory) => {
         localStorage.setItem("sub_category_id", subCategory.sub_category_id);
 
         navigate(`/categories/${category_name}/${subCategory.sub_category_name}`);
     };
-
     const handleFilterProducts = async () => {
         const [min, max] = values;
         setMinPrice(min);
         setMaxPrice(max);
-
         try {
             const response = await fetch(`${API_BASE_URL}/filter-product-price-each-category`, {
                 method: "POST",
@@ -156,7 +150,6 @@ useEffect(() => {
                     max_price: max,
                 }),
             });
-
             const data = await response.json();
 
             if (data.status_code === 200) {
@@ -172,12 +165,9 @@ useEffect(() => {
             setError("An unexpected error occurred while filtering.");
         }
     };
-
-
     return (
         <div className="customer-dashboard container">
             <CarouselLanding />
-
             {loading && <p>Loading...</p>}
             {error && <p>{error}</p>}
 
@@ -190,70 +180,70 @@ useEffect(() => {
                     <span className="breadcrumb-current">Subcategories</span>
                 </div>
             )}
-<div className="customer-page-layout">
-  {isMobile && (
-    <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
-      {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
-    </div>
-  )}
-  {(!isMobile || showFilters) && (
-    <div className={`sidebar-filter ${isMobile ? "mobile-visible" : ""}`}>
-      <div className="sidebar-filter-heading">Filter by Price</div>
-      <div>
-        <div className="slider-btn">
-          <Range
-            className="price-slider-range"
-            values={values}
-            step={100}
-            min={minPrice}
-            max={maxPrice}
-            onChange={(newValues) => setValues(newValues)}
-            renderTrack={({ props, children }) => (
-              <div
-                {...props}
-                style={{
-                  ...props.style,
-                  width: "100%",
-                  background: "white",
-                  borderRadius: "4px",
-                  margin: "20px 0",
-                  border: "0.5px solid grey",
-                }}
-              >
-                {children}
-              </div>
-            )}
-            renderThumb={({ props }) => (
-              <div
-                {...props}
-                style={{
-                  ...props.style,
-                  height: "15px",
-                  width: "15px",
-                  backgroundColor: "#4450A2",
-                  borderRadius: "50%",
-                }}
-              />
-            )}
-          />
-        </div>
+            <div className="customer-page-layout">
+                {isMobile && (
+                    <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
+                        {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
+                    </div>
+                )}
+                {(!isMobile || showFilters) && (
+                    <div className={`sidebar-filter ${isMobile ? "mobile-visible" : ""}`}>
+                        <div className="sidebar-filter-heading">Filter by Price</div>
+                        <div>
+                            <div className="slider-btn">
+                                <Range
+                                    className="price-slider-range"
+                                    values={values}
+                                    step={100}
+                                    min={minPrice}
+                                    max={maxPrice}
+                                    onChange={(newValues) => setValues(newValues)}
+                                    renderTrack={({ props, children }) => (
+                                        <div
+                                            {...props}
+                                            style={{
+                                                ...props.style,
+                                                width: "100%",
+                                                background: "white",
+                                                borderRadius: "4px",
+                                                margin: "20px 0",
+                                                border: "0.5px solid grey",
+                                            }}
+                                        >
+                                            {children}
+                                        </div>
+                                    )}
+                                    renderThumb={({ props }) => (
+                                        <div
+                                            {...props}
+                                            style={{
+                                                ...props.style,
+                                                height: "15px",
+                                                width: "15px",
+                                                backgroundColor: "#4450A2",
+                                                borderRadius: "50%",
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </div>
 
-        <div className="slider-price-btn">
-          <div className="sidebar-filter-values">
-            <label className="price-range-label">
-              <div>
-                ₹{values[0]} - ₹{values[1]}
-              </div>
-            </label>
-          </div>
+                            <div className="slider-price-btn">
+                                <div className="sidebar-filter-values">
+                                    <label className="price-range-label">
+                                        <div>
+                                            ₹{values[0]} - ₹{values[1]}
+                                        </div>
+                                    </label>
+                                </div>
 
-          <button className="filter-button" onClick={handleFilterProducts}>
-            Filter
-          </button>
-        </div>
-      </div>
-    </div>
-  )}
+                                <button className="filter-button" onClick={handleFilterProducts}>
+                                    Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <div className="sub-main-content">
                     <div className="customer-products">
                         <div className="customer-products-heading">Subcategories</div>

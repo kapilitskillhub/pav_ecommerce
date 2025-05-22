@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AddProductsExcel.css';
 import { useLocation, useNavigate } from 'react-router-dom';

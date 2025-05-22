@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import{ useState, useEffect } from "react";
 import CustomerManageAddAddress from "../CustomerManageAddAddress/CustomerManageAddAddress";
 import CustomerManageEditAddress from "../CustomerManageEditAddress/CustomerManageEditAddress";
 import { BsThreeDotsVertical } from "react-icons/bs";

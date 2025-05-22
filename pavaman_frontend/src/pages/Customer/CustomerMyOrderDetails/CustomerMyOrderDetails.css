@@ -1,11 +1,13 @@
 .order-box {
   width: 700px;
   margin: auto;
+  border-radius: 20px;
   padding: 20px;
   background-color: #dbe0f9;
   text-align: start;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
-
 .main-heading {
   font-size: 22px;
   font-weight: 600;
@@ -14,7 +16,6 @@
   border-bottom: 1px solid #ccc;
   padding-bottom: 8px;
 }
-
 .other-items-heading {
   font-size: 18px;
   font-weight: 500;
@@ -33,18 +34,15 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
   gap: 15px;
 }
-
 .custom-product-image {
   width: 100px;
   height: 100px;
   object-fit: cover;
   border-radius: 6px;
 }
-
 .custom-product-info {
   flex: 1;
 }
-
 .custom-product-title {
   font-size: 16px;
   font-weight: 600;
@@ -52,7 +50,6 @@
   color: #222;
   text-transform: capitalize;
 }
-
 .custom-arrow-button {
   font-size: 22px;
   color: #4450A2;
@@ -61,12 +58,10 @@
   display: flex;
   align-items: center;
 }
-
 .highlight-product {
   border: 1px solid #aaa;
   background-color: #fafafa;
 }
-
 .shipping-address-box {
   background: #ffffff;
   padding: 15px;
@@ -74,13 +69,11 @@
   margin: 20px 0;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 }
-
 .shipping-address-box h3 {
   font-size: 20px;
   margin-bottom: 10px;
   color: #4450A2;
 }
-
 .shipping-address-box p {
   margin: 3px 0;
   font-size: 14px;
@@ -92,7 +85,6 @@
 .payment-details-heading{
   text-transform: capitalize;
 }
-
 .payment-box {
   background: #ffffff;
   padding: 15px;
@@ -100,24 +92,20 @@
   margin-top: 20px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 }
-
 .payment-box h3 {
   font-size: 18px;
   margin-bottom: 10px;
   color: #4450A2;
 }
-
 .payment-box p {
   font-size: 14px;
   margin: 5px 0;
   color: #444;
 }
-
 .invoice-button-wrapper {
   text-align: start;
   margin-top: 10px;
 }
-
 .invoice-button {
   background-color: #4450A2;
   color: white;
@@ -128,7 +116,6 @@
   border-radius: 20px;
   cursor: pointer;
 }
-
 .invoice-button:hover {
   background-color: #4450A2;
 }

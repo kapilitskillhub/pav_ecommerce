@@ -6,7 +6,6 @@
     border-radius: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 .manage-form-title {
     color: #4F4892;
     font-size: 32px;
@@ -18,13 +17,11 @@
     display: flex;
     flex-direction: column;
 }
-
 .manage-form-row {
     display: flex;
     gap: 10px;
     margin-bottom: 12px;
 }
-
 .manage-input-group {
     flex: 1;
     width: 100%;
@@ -33,7 +30,6 @@
     display: flex;
     flex-direction: column;
 }
-
 .manage-input-group input,
 .manage-input-group select,
 .manage-address-input {
@@ -42,7 +38,6 @@
     border: 1px solid #ddd;
     border-radius: 20px;
     font-size: 16px;
-    
 }
 .manage-input-group input:focus {
     border-color: #999;;
@@ -54,9 +49,7 @@
     font-size: 15px;
     color: #4450A2;
     margin-top: 5px;
-    display: inherit;
-    
-   
+    display: inherit;   
 }
 .edit-manage-address-input  input:focus{
     border-color: #4450A2;
@@ -134,9 +127,7 @@ textarea.edit-manage-address-input input:focus {
 
 .radio-option input[type="radio"]:checked {
     background-color: #4450A2;
-    
 }
-
 .radio-option label {
     font-size: 14px;
     color: #333333;
@@ -148,13 +139,11 @@ textarea.edit-manage-address-input input:focus {
 .Address-type{
     display: inherit; 
 }
-
 .button-container {
     display: flex;
     gap: 14px;
     justify-content: space-between;
 }
-
 .manage-buttons{
     flex: 1;
     padding: 0px 51px;
@@ -175,7 +164,6 @@ textarea.edit-manage-address-input input:focus {
     background: #4450A2;
     transform: scale(1.05);
 }
-/* cancel */
 .manage-buttons[type="button"] {
     background: #646363;
     color: white;
@@ -191,7 +179,6 @@ textarea.edit-manage-address-input input:focus {
         flex-direction: column;
         gap: 10px;
     }
-
     .manage-buttons {
         width: 100%; 
         font-size: 13px; 

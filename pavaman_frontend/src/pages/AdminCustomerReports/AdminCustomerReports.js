@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import './AdminCustomerReports.css';
@@ -23,9 +23,9 @@ const AdminCustomerReports = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const [reportYear, setReportYear] = useState(new Date().getFullYear());
-  const [reportFilter, setReportFilter] = useState('yearly'); 
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); 
-  const [selectedWeek, setSelectedWeek] = useState(1); 
+  const [reportFilter, setReportFilter] = useState('yearly');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedWeek, setSelectedWeek] = useState(1);
   const [yearRange, setYearRange] = useState({
     from: new Date(new Date().getFullYear(), 0),
     to: new Date(new Date().getFullYear(), 11),
@@ -36,8 +36,6 @@ const AdminCustomerReports = () => {
   });
   const [weekDate, setWeekDate] = useState(new Date());
   const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'];
-
-  // Function to format amounts to currency
   const formatAmount = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -56,7 +54,6 @@ const AdminCustomerReports = () => {
       setShowPopup(false);
     }, 10000);
   };
-
   useEffect(() => {
     const storedAdminId = sessionStorage.getItem('admin_id');
     if (!storedAdminId) {
@@ -68,14 +65,12 @@ const AdminCustomerReports = () => {
       );
       return;
     }
-
     setAdminId(storedAdminId);
     fetchSalesSummary(storedAdminId);
     fetchTopProducts(storedAdminId);
     fetchBottomProducts(storedAdminId);
     fetchOrderStatusSummary(storedAdminId);
   }, []);
-
   useEffect(() => {
     if (adminId) {
       fetchMonthlyRevenue(adminId);
@@ -96,7 +91,6 @@ const AdminCustomerReports = () => {
       console.error('Error fetching sales summary', err);
     }
   };
-
   const fetchMonthlyRevenue = async (admin_id) => {
     try {
       const payload = {
@@ -111,7 +105,7 @@ const AdminCustomerReports = () => {
         payload.start_date_str = format(monthRange.from, 'yyyy-MM-dd');
         payload.end_date_str = format(monthRange.to, 'yyyy-MM-dd');
       } else if (reportFilter === "weekly") {
-        const startOfWeek = startOfWeekFunc(weekDate, { weekStartsOn: 1 }); 
+        const startOfWeek = startOfWeekFunc(weekDate, { weekStartsOn: 1 });
         const endOfWeek = endOfWeekFunc(weekDate, { weekStartsOn: 1 });
         payload.start_date_str = format(startOfWeek, 'yyyy-MM-dd');
         payload.end_date_str = format(endOfWeek, 'yyyy-MM-dd');
@@ -139,7 +133,6 @@ const AdminCustomerReports = () => {
     }
 
   };
-
   const fetchTopProducts = async (admin_id) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/top-five-selling-products`, { admin_id });
@@ -152,21 +145,16 @@ const AdminCustomerReports = () => {
 
     }
   };
-
-
   const fetchBottomProducts = async (admin_id) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/not-selling-products`, { admin_id });
       if (res.data.status_code === 200) {
         setBottomProducts(res.data.not_selling_products.slice(0, 5));
       }
-
-
     } catch (err) {
       console.error('Error fetching bottom products', err);
     }
   };
-
   const fetchOrderStatusSummary = async (admin_id) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/order-status-summary`, { admin_id });
@@ -182,23 +170,18 @@ const AdminCustomerReports = () => {
       console.error('Error fetching order status summary', err);
     }
   };
-
   const handleFilterClick = () => {
     fetchMonthlyRevenue(adminId);
   };
-
   return (
     <div className="dashboard-reports">
       <h2 className='sales-reports'>Sales Reports</h2>
-
       <div className="summary-cards">
         <div className="card-sales-first"><h3 className='today-heading'><BsCoin className="today-icon" />Today</h3> <p>{formatAmount(summary.today)}</p></div>
         <div className="card-sales-second"><h3 className='today-heading'><PiHandCoinsBold className="monthly-icon" />Monthly</h3><p>{formatAmount(summary.month)}</p></div>
         <div className="card-sales-third"><h3 className='today-heading'><GiCoins className="yearly-icon" />Yearly</h3><p>{formatAmount(summary.total)}</p></div>
       </div>
-
       <div className="charts-status">
-
         <div className="chart-box">
           <h3>Yearly Sales ({reportYear})</h3>
           <div className="admin-popup">
@@ -211,7 +194,6 @@ const AdminCustomerReports = () => {
               <option value="monthly">Monthly</option>
               <option value="weekly">Weekly</option>
             </select>
-
             {reportFilter === 'yearly' && (
               <>
                 <div>
@@ -234,7 +216,6 @@ const AdminCustomerReports = () => {
                 </div>
               </>
             )}
-
             {reportFilter === 'monthly' && (
               <>
                 <div>
@@ -273,47 +254,59 @@ const AdminCustomerReports = () => {
           </div>
 
           <div className="bar-chart">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={Object.entries(monthlyRevenue).map(([key, value]) => ({ name: key, revenue: value }))}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  tickFormatter={(value) => {
-                    try {
-                      if (reportFilter === 'yearly') {
-                        return value; // 
-                      }
+           <ResponsiveContainer width="100%" height={300}>
+  <BarChart
+    data={
+      (() => {
+        const chartData = Object.entries(monthlyRevenue).map(([key, value]) => ({ name: key, revenue: value }));
+        if (chartData.length === 1) {
+          // Add dummy point to prevent stretching
+          chartData.push({ name: " ", revenue: 0 });
+        }
+        return chartData;
+      })()
+    }
+  >
+    <CartesianGrid strokeDasharray="3 3" />
+    <XAxis
+      dataKey="name"
+      tickFormatter={(value) => {
+        try {
+          if (reportFilter === 'yearly') {
+            return value;
+          }
 
-                      if (reportFilter === 'monthly') {
-                        return format(new Date(reportYear, parseInt(value) - 1), 'MMM, yy');
-                      }
+          if (reportFilter === 'monthly') {
+            return format(new Date(reportYear, parseInt(value) - 1), 'MMM, yy');
+          }
 
-                      if (reportFilter === 'weekly') {
-                        const match = value.match(/\((\d{2} \w+ \d{4})\)/);
-                        if (match) {
-                          const dateStr = match[1];
-                          const dateParts = dateStr.split(" ");
-                          return `${dateParts[0]} ${dateParts[1]} ${dateParts[2].slice(-2)}`;
-                        }
-                        return value;
-                      }
-                    } catch {
-                      return value;
-                    }
-                  }}
-                  interval={0}
-                  angle={-45}
-                  textAnchor="end"
-                  height={70}
-                />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="revenue" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+          if (reportFilter === 'weekly') {
+            const match = value.match(/\((\d{2} \w+ \d{4})\)/);
+            if (match) {
+              const dateStr = match[1];
+              const dateParts = dateStr.split(" ");
+              return `${dateParts[0]} ${dateParts[1]} ${dateParts[2].slice(-2)}`;
+            }
+            return value;
+          }
+        } catch {
+          return value;
+        }
+      }}
+      interval={0}
+      angle={-45}
+      textAnchor="end"
+      height={70}
+    />
+    <YAxis />
+    <Tooltip />
+    <Bar dataKey="revenue" fill="#8884d8" barSize={40} maxBarSize={40} />
+
+  </BarChart>
+</ResponsiveContainer>
+
           </div>
         </div>
-
         <div className="pie-chart-box">
           <h3 >Order Status</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -336,52 +329,49 @@ const AdminCustomerReports = () => {
           </ResponsiveContainer>
         </div>
       </div>
-
       <div className="product-boxes">
         <div className="top-products">
           <h3>Top 5 Products</h3>
           <table className='dashboard-table'>
-    <thead>
-      <tr>
-        <th>Product Name</th>
-        <th>Quantity</th>
-      </tr>
-    </thead>
-    <tbody>
-      {(topProducts || []).map(p => (
-        <tr key={p.product_id}>
-          <td>{p.product_name}</td>
-          <td>{p.total_sold}</td>
-        </tr>
-      ))}
-      
-    </tbody>
-  </table>
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(topProducts || []).map(p => (
+                <tr key={p.product_id}>
+                  <td>{p.product_name}</td>
+                  <td>{p.total_sold}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         <div className="bottom-products">
           <h3>Bottom 5 Products</h3>
           <table className='dashboard-table'>
-    <thead>
-      <tr>
-        <th>Product Name</th>
-      </tr>
-    </thead>
-    <tbody>
-            {(bottmProducts || []).map(p => (
-              <tr key={p.id}>
-                <td >{p.product_name}</td>
+            <thead>
+              <tr>
+                <th>Product Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(bottmProducts || []).map(p => (
+                <tr key={p.id}>
+                  <td >{p.product_name}</td>
                 </tr>
-            ))}
-            <button className="view-more-button" onClick={() => navigate("/bottom-products")}>
-                                View More...
-                        </button>
-          </tbody>
+              ))}
+              <button className="view-more-button" onClick={() => navigate("/bottom-products")}>
+                View More...
+              </button>
+            </tbody>
           </table>
         </div>
       </div>
     </div>
   );
 };
-
 export default AdminCustomerReports;

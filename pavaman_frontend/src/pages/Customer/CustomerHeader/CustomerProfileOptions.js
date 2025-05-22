@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CustomerProfileOptions.css";
 import { IoIosArrowForward } from "react-icons/io";
@@ -38,7 +38,7 @@ const CustomerProfileOptions = () => {
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-    navigate("/"); // Redirect to homepage after logout
+    navigate("/"); 
   };
 
   return (
@@ -46,7 +46,6 @@ const CustomerProfileOptions = () => {
       <div className="profile-header">
         <h2>Hello, {customerName || "Guest"} 👋</h2>
       </div>
-
       {isLoggedIn ? (
         <>
           <div className="profile-option" onClick={() => navigate("/profile")}>

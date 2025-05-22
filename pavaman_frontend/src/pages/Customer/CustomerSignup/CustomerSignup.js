@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "../CustomerSignup/CustomerSignup.css";
 import Logo from "../../../assets/images/aviation-logo.png";
 import LogInImage from "../../../assets/images/signinpage-image.png";

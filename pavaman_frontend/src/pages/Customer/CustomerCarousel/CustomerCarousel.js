@@ -1,4 +1,3 @@
-import React from "react";
 import Slider from "react-slick";
 import carouselImage from "../../../assets/images/carousel-banner.png";
 import "./CustomerCarousel.css";
@@ -29,7 +28,6 @@ const CarouselLanding = () => {
     autoplaySpeed: 5000,
     arrows: true,
   };
-
   return (
     <div className="carousel-wrapper container">
       <Slider {...settings}>

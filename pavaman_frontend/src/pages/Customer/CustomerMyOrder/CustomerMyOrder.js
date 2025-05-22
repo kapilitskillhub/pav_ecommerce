@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CustomerMyOrder.css';
 import { FaCircleArrowRight } from "react-icons/fa6";
@@ -17,7 +17,6 @@ const CustomerMyOrders = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const isMobile = window.innerWidth <= 425;
-
   const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
   const [showPopup, setShowPopup] = useState(false);
   const [deliveryStatus, setDeliveryStatus] = useState("");
@@ -25,16 +24,11 @@ const CustomerMyOrders = () => {
   const [showReviewFormFor, setShowReviewFormFor] = useState(null);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
-
-  const [editReviewFor, setEditReviewFor] = useState(null); 
+  const [editReviewFor, setEditReviewFor] = useState(null);
   const [editRating, setEditRating] = useState(0);
   const [editFeedback, setEditFeedback] = useState("");
-
-
-const [currentPage, setCurrentPage] = useState(1);
-const ordersPerPage = 10; 
-
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 10;
   const displayPopup = (text, type = "success") => {
     setPopupMessage({ text, type });
     setShowPopup(true);
@@ -43,17 +37,13 @@ const ordersPerPage = 10;
       setShowPopup(false);
     }, 10000);
   };
-
   useEffect(() => {
-  if (searchTerm.trim() === "") {
-    fetchOrders();
-  }
-}, [searchTerm]);
-
-
+    if (searchTerm.trim() === "") {
+      fetchOrders();
+    }
+  }, [searchTerm]);
   const fetchOrders = async () => {
     if (!customerId) return;
-
     try {
       const response = await fetch(`${API_BASE_URL}/customer-my-order`, {
         method: "POST",
@@ -64,7 +54,6 @@ const ordersPerPage = 10;
         }),
       });
       const data = await response.json();
-
       if (response.ok) {
         const flatProducts = [];
         data.payments.forEach(order => {
@@ -77,9 +66,7 @@ const ordersPerPage = 10;
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ customer_id: customerId }),
         });
-
         const ratingData = await ratingResponse.json();
-
         const ratingsMap = {};
         if (ratingResponse.ok) {
           ratingData.ratings.forEach(rating => {
@@ -110,8 +97,6 @@ const ordersPerPage = 10;
       setError("Fetch error: " + error.message);
     }
   };
-
-
   useEffect(() => {
     fetchOrders();
   }, [customerId]);
@@ -130,7 +115,6 @@ const ordersPerPage = 10;
       },
     });
   };
-
   if (error) {
     return (
       <div className="error-message">
@@ -143,13 +127,11 @@ const ordersPerPage = 10;
       customer_id: customerId,
       order_time: orderTime || null,
     };
-
     if (status === "Delivered") {
       requestBody.delivery_status = "Delivered";
     } else if (status === "On the way") {
       requestBody.shipping_status = "Shipped";
     }
-
     try {
       const response = await fetch(`${API_BASE_URL}/filter-my-order`, {
         method: "POST",
@@ -166,8 +148,6 @@ const ordersPerPage = 10;
             flatProducts.push({ ...product, order });
           });
         });
-
-        // Fetch ratings
         const ratingResponse = await fetch(`${API_BASE_URL}/view-rating`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -204,15 +184,11 @@ const ordersPerPage = 10;
       displayPopup("Something went wrong while filtering orders.", "error");
     }
   };
-
-
-
   const handleStatusFilter = (status) => {
 
     setDeliveryStatus(status);
     filterMyOrders(status, orderTime);
   };
-
   const handleTimeFilter = (time) => {
     setOrderTime(time);
     filterMyOrders(deliveryStatus, time);
@@ -223,13 +199,11 @@ const ordersPerPage = 10;
     ...Array.from({ length: 4 }, (_, i) => `${currentYear - i}`),
     "Older"
   ];
-
   const handleClearFilters = () => {
     setDeliveryStatus("");
     setOrderTime("");
     fetchOrders();
   };
-
   const renderStars = (rating) => {
     const totalStars = 5;
     return (
@@ -242,8 +216,6 @@ const ordersPerPage = 10;
       </div>
     );
   };
-
-
   const handleSubmitReview = async (product) => {
     try {
       const response = await fetch(`${API_BASE_URL}/submit-feedback-rating`, {
@@ -259,12 +231,10 @@ const ordersPerPage = 10;
           feedback,
         }),
       });
-
       const result = await response.json();
-
-      if (response.ok) {;
+      if (response.ok) {
+        ;
         displayPopup("Thank you! Your review has been submitted.", "success");
-
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.order_product_id === product.order_product_id
@@ -276,7 +246,6 @@ const ordersPerPage = 10;
               : p
           )
         );
-
         setShowReviewFormFor(null);
         setRating(0);
         setFeedback("");
@@ -286,11 +255,8 @@ const ordersPerPage = 10;
     } catch (error) {
       console.error("Error submitting review:", error);
       displayPopup("An error occurred while submitting your review.", "error");
-
     }
   };
-
-
   const handleEditReview = async (product) => {
     try {
       const response = await fetch(`${API_BASE_URL}/edit-feedback-rating`, {
@@ -307,9 +273,7 @@ const ordersPerPage = 10;
           feedback: editFeedback,
         }),
       });
-
       const result = await response.json();
-
       if (response.ok) {
         displayPopup("Your review has been updated.", "success");
         setProducts((prevProducts) =>
@@ -335,84 +299,72 @@ const ordersPerPage = 10;
 
     }
   };
-
-  
   const searchOrdersByProduct = async (term) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/customer-my-order`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customer_id: customerId,
-        action: "search",
-        search_product_name: term.trim(),
-      }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      const flatProducts = [];
-      data.payments.forEach(order => {
-        order.order_products.forEach(product => {
-          flatProducts.push({ ...product, order });
-        });
-      });
-      const ratingResponse = await fetch(`${API_BASE_URL}/view-rating`, {
+    try {
+      const response = await fetch(`${API_BASE_URL}/customer-my-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer_id: customerId }),
+        body: JSON.stringify({
+          customer_id: customerId,
+          action: "search",
+          search_product_name: term.trim(),
+        }),
       });
-
-      const ratingData = await ratingResponse.json();
-
-      const ratingsMap = {};
-      if (ratingResponse.ok) {
-        ratingData.ratings.forEach(rating => {
-          ratingsMap[rating.order_product_id] = {
-            rating: rating.rating,
-            feedback: rating.feedback || "",
+      const data = await response.json();
+      if (response.ok) {
+        const flatProducts = [];
+        data.payments.forEach(order => {
+          order.order_products.forEach(product => {
+            flatProducts.push({ ...product, order });
+          });
+        });
+        const ratingResponse = await fetch(`${API_BASE_URL}/view-rating`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ customer_id: customerId }),
+        });
+        const ratingData = await ratingResponse.json();
+        const ratingsMap = {};
+        if (ratingResponse.ok) {
+          ratingData.ratings.forEach(rating => {
+            ratingsMap[rating.order_product_id] = {
+              rating: rating.rating,
+              feedback: rating.feedback || "",
+            };
+          });
+        }
+        const productsWithRatings = flatProducts.map(product => {
+          const ratingInfo = ratingsMap[product.order_product_id] || {};
+          return {
+            ...product,
+            rating: ratingInfo.rating || null,
+            feedback: ratingInfo.feedback || "",
           };
         });
+        setProducts(productsWithRatings);
+      } else {
+        setProducts([]);
+        setError(data.error || "No results found.");
       }
-
-      const productsWithRatings = flatProducts.map(product => {
-        const ratingInfo = ratingsMap[product.order_product_id] || {};
-        return {
-          ...product,
-          rating: ratingInfo.rating || null,
-          feedback: ratingInfo.feedback || "",
-        };
-      });
-
-      setProducts(productsWithRatings);
-    } else {
-      setProducts([]);
-      setError(data.error || "No results found.");
+    } catch (error) {
+      setError("Search fetch error: " + error.message);
     }
-  } catch (error) {
-    setError("Search fetch error: " + error.message);
-  }
-};
+  };
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = products.slice(indexOfFirstOrder, indexOfLastOrder);
+  const paginate = pageNumber => {
+    setCurrentPage(pageNumber);
+    scrollToTop();
+  };
+  const totalPages = Math.ceil(products.length / ordersPerPage);
 
-const indexOfLastOrder = currentPage * ordersPerPage;
-const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-const currentOrders = products.slice(indexOfFirstOrder, indexOfLastOrder);
-
-const paginate = pageNumber => {
-  setCurrentPage(pageNumber);
-  scrollToTop(); 
-};
-const totalPages = Math.ceil(products.length / ordersPerPage);
-
-const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-};
-
-
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
   return (
     <div className="my-orders-wrapper container">
       <div className="breadcrumb-order">
@@ -443,9 +395,7 @@ const scrollToTop = () => {
                 /> {status}
               </label>
             ))}
-
           </div>
-
           <div className="filter-section">
             <div className="filter-header">ORDER TIME</div>
             {orderTimeOptions.map((time) => (
@@ -465,10 +415,8 @@ const scrollToTop = () => {
               Clear Filters
             </button>
           </div>
-
         </aside>
         <section className="orders-section">
-  
           <div className="orders-search">
             <input
               type="text"
@@ -476,16 +424,14 @@ const scrollToTop = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-     <button 
-  className="search-btn" 
-  onClick={() => searchOrdersByProduct(searchTerm)}
-  disabled={!searchTerm.trim()}
->
-  Search
-</button>
-
+            <button
+              className="search-btn"
+              onClick={() => searchOrdersByProduct(searchTerm)}
+              disabled={!searchTerm.trim()}
+            >
+              Search
+            </button>
           </div>
-
           <h2 className="heading-my-order">My Orders</h2>
           <div className="popup-cart">
             {showPopup && (
@@ -496,13 +442,11 @@ const scrollToTop = () => {
               />
             )}
           </div>
-
           <div className="orders-list">
             {products.length === 0 ? (
               <p>No orders found.</p>
             ) : (
               currentOrders.map((product, index) => (
-                
                 <div className={`order-card ${product.order_product_id === selected_product_id ? 'highlight-product' : ''}`} ref={product.order_product_id === selected_product_id ? highlightedRef : null}>
                   <div className="product-summary">
                     <img src={product.product_image}
@@ -533,7 +477,7 @@ const scrollToTop = () => {
                               ? "Shipped, Item will be delivered soon"
                               : "Order Placed. Item will be shipped soon"}
                         </p>
-                        {console.log(product.delivery_status, product.rating)} 
+                        {console.log(product.delivery_status, product.rating)}
 
                         {product.delivery_status === "Delivered" && product.rating && (
                           <div className="product-rating">
@@ -594,9 +538,6 @@ const scrollToTop = () => {
                             </div>
                           </div>
                         )}
-
-
-
                         {product.delivery_status === "Delivered" && product.rating && (
                           <div className="edit-review-button-container">
                             <button
@@ -652,41 +593,33 @@ const scrollToTop = () => {
                             </div>
                           </div>
                         )}
-
-
                         <div className="toggle-container">
                           <span className="toggle-details" onClick={() => goToOrderDetails(product)}>
                             <FaCircleArrowRight />
                           </span>
                         </div>
                       </div>
-
-
-
                     </div>
                   </div>
                 </div>
-
               ))
             )}
           </div>
         </section>
       </div>
-        <div className="pagination-myorder">
-  <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
-  {Array.from({ length: totalPages }, (_, index) => (
-    <button
-      key={index + 1}
-      onClick={() => paginate(index + 1)}
-      className={currentPage === index + 1 ? 'active' : ''}
-    >
-      {index + 1}
-    </button>
-  ))}
-  <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
-</div>
-
-
+      <div className="pagination-myorder">
+        <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => paginate(index + 1)}
+            className={currentPage === index + 1 ? 'active' : ''}
+          >
+            {index + 1}
+          </button>
+        ))}
+        <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+      </div>
     </div>
   );
 

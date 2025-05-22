@@ -97,8 +97,6 @@
     padding: 12px;
  } 
 }
-
-
 @media (max-width: 768px) { 
 .manage-address-list { 
     max-width: 95%;
@@ -122,7 +120,6 @@
             margin: 10px auto;
         }
     }
-   
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -146,7 +143,6 @@
     width: 90%;
     max-width: 400px;
 }
-
 .dlt-popup-message {
     font-size: 16px;
     color: #333;
@@ -170,7 +166,6 @@
     color: white;
     transition: all 0.3s ease;
 }
-
 .popup-confirm-btn {
     background-color: #4450A2;
 }
@@ -201,7 +196,6 @@
         font-size: 15px;
      }
 }
-
 .notification-container {
     position: fixed;
     top: 20px;

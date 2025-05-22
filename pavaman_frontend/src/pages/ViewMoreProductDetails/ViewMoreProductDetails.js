@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./ViewMoreProductDetails.css"; // Import CSS for styling
+import "./ViewMoreProductDetails.css"; 
 import { FaAngleLeft } from "react-icons/fa6";
 import { FaAngleRight } from "react-icons/fa";
 import { FaRupeeSign } from "react-icons/fa";

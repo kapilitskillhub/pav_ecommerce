@@ -1,8 +1,6 @@
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-
 const { Range } = Slider; 
-
 const PriceSlider = ({ minPrice, maxPrice, setMinPrice, setMaxPrice }) => {
     const handleSliderChange = (values) => {
         setMinPrice(values[0]);
@@ -23,12 +21,10 @@ const PriceSlider = ({ minPrice, maxPrice, setMinPrice, setMaxPrice }) => {
                     { backgroundColor: "#fff", borderColor: "#ff2e74", height: 16, width: 16 }
                 ]}
             />
-
             <div className="price-range-values">
                 ₹{minPrice} - ₹{maxPrice}
             </div>
         </div>
     );
 };
-
 export default PriceSlider;

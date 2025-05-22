@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "./AdminAddDiscount.css";
@@ -76,22 +76,18 @@ const AdminAddDiscount = () => {
       prev.includes(id) ? prev.filter(subId => subId !== id) : [...prev, id]
     );
   };
-
   const handleSave = async () => {
     setError('');
     setSuccess('');
     const adminId = sessionStorage.getItem('admin_id');
-
     if (!categoryId || selectedSubcategories.length === 0 || !discount) {
       setError('Please select category, at least one subcategory, and enter a discount.');
       return;
     }
-
     if (!discount.endsWith('%')) {
       setError('Discount must end with "%", e.g., 10%.');
       return;
     }
-
     const selectedCategory = categories.find(cat => cat.category_id === categoryId);
     const payload = {
       admin_id: adminId,
@@ -119,7 +115,6 @@ const AdminAddDiscount = () => {
       setError('Server error while applying discount.');
     }
   };
-
   const handleSelectAll = (e) => {
     const isChecked = e.target.checked;
     if (isChecked) {
@@ -129,10 +124,7 @@ const AdminAddDiscount = () => {
       setSelectedSubcategories([]);
     }
   };
-
   const isAllSelected = subcategories.length > 0 && selectedSubcategories.length === subcategories.length;
-
-
   return (
     <div className="add-discount-container">
       <div className='add-discount-heading'>Add Discount</div>
@@ -152,11 +144,9 @@ const AdminAddDiscount = () => {
           ))}
         </select>
       </div>
-
       {subcategories.length === 0 && categoryId && (
         <p className="no-subcategory-message">No subcategories available for the selected category.</p>
       )}
-
       {subcategories.length > 0 && (
         <div className="subcategory-table-container">
           <table className="subcategory-table">
@@ -173,7 +163,6 @@ const AdminAddDiscount = () => {
                 </th>
               </tr>
             </thead>
-
             <tbody>
               {subcategories.map((sub, index) => (
                 <tr key={sub.id}>
@@ -189,11 +178,9 @@ const AdminAddDiscount = () => {
                 </tr>
               ))}
             </tbody>
-
           </table>
         </div>
       )}
-
       {categoryId && selectedSubcategories.length > 0 && (
         <div className="discount-form-group">
           <label className="discount-form-group-label">Discount</label>
@@ -206,11 +193,8 @@ const AdminAddDiscount = () => {
           />
         </div>
       )}
-
-
       {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}
-
       <div className="discount-button-group">
         <button className="cart-place-order" onClick={handleSave}>Save</button>
         <button className="cart-delete-selected" onClick={() => navigate("/discounts")}>Cancel</button>
@@ -218,5 +202,4 @@ const AdminAddDiscount = () => {
     </div>
   );
 };
-
 export default AdminAddDiscount;

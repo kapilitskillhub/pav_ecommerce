@@ -5,14 +5,12 @@
     color: #384477;
     margin-top: 30px;
 }
-
 .customer-products-section{
     display: grid;
     gap: 16px;
     grid-template-columns: repeat(5, 1fr);
     margin: 20px auto;
 }
-
 .customer-product-card{
     border: 1px solid rgba(0, 0, 0, .125);
     border-radius: 22px;
@@ -20,14 +18,12 @@
     flex-direction: column;
     justify-content: space-between;
 }
-
 .customer-product-image{
     border-radius: 14px;
     width: 191px;
     height: 191px;
     margin: 16px;
 }
-
 .customer-product-name{
     font-size: 20px;
     font-weight: 500;
@@ -39,52 +35,40 @@
     display: block;
     margin: 16px auto;
     text-transform: capitalize;
-
 }
-
 .empty-space{
     height: 36px;
 }
-
 .customer-discount-section-name,
 .customer-discount-section-price,
 .customer-discount-section-original-price{
     margin:10px;
     text-align: left;
 }
-
 .customer-discount-section-price{
     font-size: 18px;
 }
-
 .customer-discount-section-original-price{
     font-size: 14px;
     color: grey;
     text-decoration: line-through;
 }
-
 .add-cart-section{
     display: flex;
     flex-direction: row;
 }
-
 .add-to-cart-button{
     color: #485692;
     font-size: 30px;
-
 }
-
 .discount-section .customer-product-card{
     padding: 0px;
 }
-
 .filter-sort-section{
     display: flex;
     justify-content: flex-end;
     align-items: center;
-
 }
-
 .sorting-section{
         border: 2px solid grey;
         border-radius: 20px;
@@ -92,23 +76,18 @@
         width: 300px;
         padding: 4px;
 }
-
-
 .sorting-section label{
     color: #485692;
     font-size: 16px;
     padding: 2px;
     font-weight: 600;
 }
-
 .sorting-section select{
     border: none;
     font-size: 16px;
     color: grey;
     padding: 2px;
 }
-
-
 .sorting-section input{
     font-size: 16px;
 }
@@ -117,13 +96,11 @@
         grid-template-columns: repeat(5, 1fr); 
     }
 }
-
 @media (max-width: 1200px) {
     .customer-products-section {
         grid-template-columns: repeat(4, 1fr); 
     }
 }
-
 @media (max-width: 992px) {
     .customer-products-section {
         grid-template-columns: repeat(4, 1fr); 
@@ -135,7 +112,6 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
-
 @media (max-width: 480px) {
     .customer-products-section {
         grid-template-columns: repeat(2, 1fr); 
@@ -154,20 +130,16 @@
 
          justify-content: center;
     }
-    
 }
-
 @media (max-width: 375px) {
     .customer-products-section {
         grid-template-columns: repeat(2, 1fr); 
     }
-
     .customer-product-image{
         width: 120px;
         height: 120px;
         margin: 10px;
     }
-
     .customer-product-name {
         font-size: 13px;
         font-weight: 500;

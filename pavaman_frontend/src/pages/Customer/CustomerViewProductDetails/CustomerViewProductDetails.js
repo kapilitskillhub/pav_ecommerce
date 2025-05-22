@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import{ useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai"; // Import React Icons
+import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 import defaultImage from "../../../assets/images/product.png";
 import "./CustomerViewProductDetails.css";
 import { MdCloudDownload } from "react-icons/md";
@@ -60,7 +60,7 @@ const CustomerViewProductDetails = () => {
                 body: JSON.stringify({
                     category_name,
                     sub_category_name,
-                    product_name, // Ensure product_name is included
+                    product_name,
                 }),
             });
 
@@ -77,8 +77,6 @@ const CustomerViewProductDetails = () => {
             setLoading(false);
         }
     };
-
-    // Change image on arrow click
     const handlePrevImage = () => {
         setActiveImageIndex((prevIndex) =>
             prevIndex === 0 ? productDetails.product_images.length - 1 : prevIndex - 1
@@ -91,7 +89,6 @@ const CustomerViewProductDetails = () => {
         );
     };
     const handleAddCart = async (product_id) => {
-        // const customer_id = sessionStorage.getItem("customer_id");
         const customer_id = localStorage.getItem("customer_id");
 
 
@@ -110,7 +107,6 @@ const CustomerViewProductDetails = () => {
             displayPopup("Invalid product. Please try again.", "error");
             return;
         }
-
         try {
             const response = await fetch(`${API_BASE_URL}/add-cart-product`, {
                 method: "POST",
@@ -135,12 +131,8 @@ const CustomerViewProductDetails = () => {
             displayPopup("An unexpected error occurred while adding to cart.", error, "error");
         }
     };
-
     const handleBuyNow = async (product_id) => {
-        // const customer_id = sessionStorage.getItem("customer_id");
         const customer_id = localStorage.getItem("customer_id");
-
-
         if (!customer_id) {
             displayPopup(
                 <>
@@ -148,7 +140,6 @@ const CustomerViewProductDetails = () => {
                 </>,
                 "error"
             );
-            // navigate("/customer-login");
             return;
         }
 
@@ -158,32 +149,28 @@ const CustomerViewProductDetails = () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/products/order-multiple-products`, { // Updated API endpoint
+            const response = await fetch(`${API_BASE_URL}/products/order-multiple-products`, { 
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     customer_id: customer_id,
                     from_cart: false,
 
-                    products: [{ product_id: product_id, quantity: 1 }], // Updated request format
+                    products: [{ product_id: product_id, quantity: 1 }], 
                 }),
             });
 
             const data = await response.json();
 
             if (data.status_code === 201) {
-                // localStorage.setItem("product_ids", product_id);
-                // localStorage.setItem("order_ids", data.orders[0]?.order_id);
-                localStorage.setItem("order_ids", JSON.stringify([data.orders[0]?.order_id])); // Or multiple order IDs
-                localStorage.setItem("product_ids", JSON.stringify([product_id])); // Or multiple product IDs
+                localStorage.setItem("order_ids", JSON.stringify([data.orders[0]?.order_id])); 
+                localStorage.setItem("product_ids", JSON.stringify([product_id]));
                 navigate("/checkout-page", { state: { orderDetails: data } });
             } else {
                 displayPopup("Failed to place order.", data.error, "error");
-                // alert(data.error || "Failed to place order.");
             }
         } catch (error) {
             displayPopup("An unexpected error occurred while placing the order.", error, "error");
-            // alert("An unexpected error occurred while placing the order.");
         }
     };
 
@@ -194,15 +181,11 @@ const CustomerViewProductDetails = () => {
             if (!response.ok) {
                 throw new Error("Failed to download file.");
             }
-
-            // Get blob data
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
-
-            // Create a temporary <a> element for download
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", `material_${productId}.pdf`); // Customize file name
+            link.setAttribute("download", `material_${productId}.pdf`); 
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -210,7 +193,6 @@ const CustomerViewProductDetails = () => {
         } catch (error) {
             console.error("Download error:", error);
             displayPopup("Failed to download the material file.", "error");
-            // alert("Failed to download the material file.");
         }
     };
 
@@ -221,7 +203,7 @@ const CustomerViewProductDetails = () => {
         const shareData = {
             title: product.product_name,
             text: message,
-            url: shareUrl, // some platforms (like WhatsApp) only show the URL, but others use text too
+            url: shareUrl,
         };
 
         if (navigator.share) {
@@ -247,7 +229,6 @@ const CustomerViewProductDetails = () => {
 
             {!loading && !error && productDetails && (
                 <div className="customer-view-details">
-                    {/* <div className="customer-view-header">{category_name} / {sub_category_name}/{productDetails.product_name}</div> */}
                     {!loading && !error && (
                         <div className="breadcrumb">
                             <span className="breadcrumb-link" onClick={() => navigate("/")}>Home</span>
@@ -264,7 +245,6 @@ const CustomerViewProductDetails = () => {
                                     navigate("/categories/view-sub-categories/", {
                                         state: {
                                             category_name: category_name,
-                                            // category_id: category_id,
                                         },
                                     })
                                 }
@@ -279,7 +259,6 @@ const CustomerViewProductDetails = () => {
                                     navigate(`/categories/${encodeURIComponent(category_name)}/${encodeURIComponent(sub_category_name)}`, {
                                         state: {
                                             sub_category_name: sub_category_name,
-                                            // category_id: category_id,
                                         },
                                     })
                                 }
@@ -301,7 +280,6 @@ const CustomerViewProductDetails = () => {
                     </div>
                     <div className="customer-view-section">
                         <div className="customer-image-section">
-                            {/* Image Carousel with React Icons */}
                             <div className="customer-view-image-container">
                                 <button className=" image-arrow left-arrow" onClick={handlePrevImage}>
                                     <AiOutlineLeft />
@@ -312,14 +290,12 @@ const CustomerViewProductDetails = () => {
                                         : defaultImage}
                                     alt="Product"
                                     className="customer-main-image"
-                                    // onError={(e) => (e.target.src = defaultImage)}
                                 />
                                 <button className=" image-arrow right-arrow" onClick={handleNextImage}>
                                     <AiOutlineRight />
                                 </button>
                             </div>
 
-                            {/* Thumbnail Images */}
                             <div className="customer-thumbnail-container">
                                 {productDetails.product_images?.map((image, index) => (
                                     <img
@@ -333,13 +309,10 @@ const CustomerViewProductDetails = () => {
                                 ))}
                             </div>
                         </div>
-
-                        {/* Product Info */}
                         <div className="customer-view-info">
                             <div className="title-share-div">
                                 <p className="customer-view-title">{productDetails.product_name}</p>
                                 <div>
-
                                     <PiShareFatFill
                                         className="customer-share-button"
                                         onClick={() => handleShare(productDetails)}
@@ -378,7 +351,7 @@ const CustomerViewProductDetails = () => {
                                 <div className="customer-wishlist-buttons">
                                     <button className="customer-wishlist-button"
                                         onClick={(e) => {
-                                            e.stopPropagation(); // Prevents navigation when clicking on the cart icon
+                                            e.stopPropagation();
                                             handleAddCart(productDetails.product_id);
                                         }}
                                     >Add to Cart</button>
@@ -392,32 +365,9 @@ const CustomerViewProductDetails = () => {
 
                                 </div>
                             )}
-                            {/* <div className="customer-options">
-                                <div className="customer-options-icons">
-                                    <div>< RiCustomerService2Line /> </div>
-                                    <div className="customer-icon-text">customer support</div>
-                                </div>
-                                <div className="customer-options-icons">
-                                    <div><TbTruckDelivery /></div>
-                                    <div className="customer-icon-text">Free Delivery</div>
-                                </div>
-                                <div className="customer-options-icons">
-                                    <div>< PiShieldCheckBold /></div>
-                                    <div className="customer-icon-text">6 months warranty</div>
-                                </div>
-                                <div className="customer-options-icons">
-                                    <div><FaRupeeSign /></div>
-                                    <div className="customer-icon-text">online payment</div>
-                                </div>
-                            </div> */}
-
-
                         </div>
                     </div>
-
-
                     <div className="customer-view-tabs-container">
-                        {/* Tabs Navigation */}
                         <div className="customer-tabs">
                             <button
                                 className={activeTab === "description" ? "active" : ""}
@@ -437,11 +387,7 @@ const CustomerViewProductDetails = () => {
                             >
                                 Material
                             </button>
-
-
                         </div>
-
-                        {/* Tab Content */}
                         <div className="customer-tab-content">
                             {activeTab === "description" && <p className="product-description">{productDetails.description}</p>}
                             {activeTab === "specification" && (productDetails.specifications ? (
@@ -458,8 +404,6 @@ const CustomerViewProductDetails = () => {
                             ) : (
                                 <p>No specifications available.</p>
                             ))}
-
-
                             {activeTab === "material" && (<div className="customer-material-section">
                                 <div>
                                     <a className="customer-material-file" href={productDetails.material_file} target="_blank" rel="noopener noreferrer">
@@ -472,8 +416,6 @@ const CustomerViewProductDetails = () => {
                                 </div>
                             </div>
                             )}
-
-
                         </div>
                     </div>
                 </div>

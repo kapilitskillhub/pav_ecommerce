@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import{ useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiMenu, FiChevronRight, FiHome, FiShoppingBag, FiPhone } from "react-icons/fi";
 import { FaClipboardList } from "react-icons/fa";
