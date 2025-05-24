@@ -46,62 +46,55 @@ const generateInvoicePDF = async (customerId, order, mode = 'download') => {
 
         y += 5;
         doc.setFont('helvetica', 'bold');
-        doc.text(`GSTIN: XXABCDEFGH1Z1`, 14, y);
+        doc.text(`GSTIN: 36AAMCP6691B1Z5`, 14, y);
         const billing = invoice["Billing To"];
         const delivery = invoice["Delivery To"];
-
         y += 10;
         doc.setFont('helvetica', 'bold');
-        doc.text('Bill To:', 14, y);
-        doc.text('Ship To:', 105, y);
+        doc.text('Order Details:', 14, y);
+        doc.text('Bill To / Ship To:', 105, y);
 
         doc.setFont('helvetica', 'normal');
         y += 5;
-        doc.text(`${billing.name}`, 14, y);
-        doc.text(`${delivery.name}`, 105, y);
-
-        y += 5;
-        doc.text(`Phone: ${billing.phone}`, 14, y);
-        doc.text(`Phone: ${delivery.phone}`, 105, y);
-
-        y += 5;
+        let yLeft = y;
+        let yRight = y;
+        doc.text(`Order ID: ${invoice.order_id}`, 14, yLeft);
+        yLeft += 5;
+        doc.text(`Order Date: ${invoice.order_date}`, 14, yLeft);
+        yLeft += 5;
+        doc.text(`${delivery.name}`, 105, yRight);
+        yRight += 5;
         const deliveryAddress = delivery.address.split('\n');
         deliveryAddress.forEach(line => {
-            const splitLines = doc.splitTextToSize(line, 90); 
+            const splitLines = doc.splitTextToSize(line, 90);
             splitLines.forEach(subLine => {
-                doc.text(subLine, 105, y);
-                y += 5;
+                doc.text(subLine, 105, yRight);
+                yRight += 5;
             });
         });
-
-        y += 5;
-        doc.setFont('helvetica', 'bold');
-        doc.text(`Invoice No: ${invoice.invoice_number}`, 14, y);
-        doc.text(`Invoice Date: ${invoice.invoice_date}`, 105, y);
-
-        y += 5;
-        doc.text(`Order ID: ${invoice.order_id}`, 14, y);
-        doc.text(`Order Date: ${invoice.order_date}`, 105, y);
-
+        doc.text(`Invoice No: ${invoice.invoice_number}`, 14, yLeft);
+        yLeft += 5;
+        doc.text(`Invoice Date: ${invoice.invoice_date}`, 14, yLeft);
+        y = Math.max(yLeft, yRight) + 5;
         autoTable(doc, {
             startY: y + 10,
             head: [[
                 'Product Title',
+                'HSN',
                 'Qty',
-                'Price',
-                'Discount%',
                 'Gross Amount',
-                'GST (%)',
+                'Discount',
+                'GST',
                 'Total'
             ]],
             body: invoice.items.map(item => ([
                 item.product_name,
+                item.hsn,
                 item.quantity,
-                item.price,
-                item.discount_percent,
-                item.gross_amount,
-                item.gst,
-                item.total_price
+                Number(item.price).toFixed(2),
+                Number(item.discount).toFixed(2),
+                Number(item.gst_amount).toFixed(2),
+                Number(item.total_price).toFixed(2),
             ])),
             headStyles: {
                 fillColor: [68, 80, 162],
@@ -132,8 +125,8 @@ const generateInvoicePDF = async (customerId, order, mode = 'download') => {
         const totalY = doc.lastAutoTable.finalY + 10;
 
         doc.setFont('helvetica', 'bold');
-        doc.text(`Grand Total  ${invoice.grand_total}`, 150, totalY);
-
+        // doc.text(`Grand Total:   ${invoice.grand_total}`, 150, totalY);
+        doc.text(`Grand Total:  INR ${Number(invoice.grand_total).toFixed(2)}`, 150, totalY);
         doc.setFont('helvetica', 'normal');
         doc.text(`Payment Mode: ${invoice.payment_mode}`, 150, totalY + 7);
         doc.addImage(signatureImg, 'PNG', 150, totalY + 10, 40, 15);
@@ -149,7 +142,7 @@ const generateInvoicePDF = async (customerId, order, mode = 'download') => {
         doc.text('For support, contact us at: support@yourstore.com', 14, footerY + 10);
 
         if (mode === 'view') {
-            doc.output('dataurlnewwindow'); 
+            doc.output('dataurlnewwindow');
         } else {
             doc.save(`Invoice_${invoice.invoice_number}.pdf`);
         }
