@@ -14,7 +14,8 @@ const AllCategories = () => {
   useEffect(() => {
     const fetchCategoriesAndSubcategories = async () => {
       try {
-        const categoryRes = await axios.post(`{API_BASE_URL}/get-all-category-subcategory`,{
+        const categoryRes =await axios.post(`${API_BASE_URL}/get-all-category-subcategory`, {
+
           customer_id: customerId,
         });
         if (categoryRes.data.status_code === 200) {
@@ -41,7 +42,8 @@ const AllCategories = () => {
       try {
         const results = [];
         for (const category of categoriesWithSubcategories) {
-          const response = await axios.post(`API_BASE_URL}/customer-search-subcategories`,{
+          const response = await axios.post(`${API_BASE_URL}/customer-search-subcategories`, {
+
             customer_id: customerId,
             category_id: category.category_id,
             sub_category_name: searchValue,

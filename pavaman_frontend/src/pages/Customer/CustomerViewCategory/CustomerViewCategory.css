@@ -4,6 +4,7 @@
     text-align: left;
     color: #384477;
     margin-top: 30px;
+    text-transform: capitalize;
 }
 .customer-products-section{
     display: grid;

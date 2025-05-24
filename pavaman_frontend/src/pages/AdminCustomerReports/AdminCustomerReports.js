@@ -26,10 +26,14 @@ const AdminCustomerReports = () => {
   const [reportFilter, setReportFilter] = useState('yearly');
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedWeek, setSelectedWeek] = useState(1);
-  const [yearRange, setYearRange] = useState({
-    from: new Date(new Date().getFullYear(), 0),
-    to: new Date(new Date().getFullYear(), 11),
-  });
+ const currentYear = new Date().getFullYear();
+const startYear = currentYear - 11; // 12 years including current year
+
+const [yearRange, setYearRange] = useState({
+  from: new Date(startYear, 0, 1),  // January 1st of startYear
+  to: new Date(currentYear, 11, 31), // December 31st of currentYear
+});
+
   const [monthRange, setMonthRange] = useState({
     from: new Date(new Date().getFullYear(), 0),
     to: new Date(new Date().getFullYear(), 11),
@@ -54,6 +58,21 @@ const AdminCustomerReports = () => {
       setShowPopup(false);
     }, 10000);
   };
+
+useEffect(() => {
+  if (reportFilter === 'yearly') {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 11; // last 12 years
+
+    setYearRange({
+      from: new Date(startYear, 0, 1),
+      to: new Date(currentYear, 11, 31),
+    });
+  }
+}, [reportFilter]);
+
+
+
   useEffect(() => {
     const storedAdminId = sessionStorage.getItem('admin_id');
     if (!storedAdminId) {
@@ -118,6 +137,11 @@ const AdminCustomerReports = () => {
           setMonthlyRevenue(res.data.monthly_revenue || {});
         } else if (reportFilter === 'yearly') {
           setMonthlyRevenue(res.data.yearly_revenue || {});
+          const yearlyChartData = Object.entries(monthlyRevenue).map(([year, value]) => ({
+  year,
+  revenue: value,
+}));
+
         } else if (reportFilter === 'weekly') {
           setMonthlyRevenue(res.data.daywise_revenue || {});
         }
@@ -183,7 +207,7 @@ const AdminCustomerReports = () => {
       </div>
       <div className="charts-status">
         <div className="chart-box">
-          <h3>Yearly Sales ({reportYear})</h3>
+         <h3>{reportFilter.charAt(0).toUpperCase() + reportFilter.slice(1)} Sales ({reportYear})</h3>
           <div className="admin-popup">
             <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
           </div>

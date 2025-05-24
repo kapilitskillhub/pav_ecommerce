@@ -338,6 +338,8 @@ const CustomerHeader = (onSearch) => {
           location.pathname.includes("/b2b") ||
           location.pathname.includes("/policies") ||
           location.pathname.includes("/product-details") ||
+          location.pathname.includes("/all-categories") ||
+          location.pathname.includes("/all-products") ||
           location.pathname === "/"
         ) && (
           

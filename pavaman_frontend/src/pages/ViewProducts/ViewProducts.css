@@ -14,3 +14,19 @@
 .upload-product-excel:hover {
   background-color: #303a84;
 }
+.product-info-view p {
+    margin: 5px 0;
+    font-size: 13px;
+    text-align: start;
+    margin-left: 20px;
+    font-weight: bolder;
+}
+.all-product-discount-price-view{
+  font-size: 15px;
+  text-decoration: line-through;
+}
+.all-discount-tag-view{
+    font-size: 14px;
+    color: #fd933b;
+    font-weight: bold;
+} 

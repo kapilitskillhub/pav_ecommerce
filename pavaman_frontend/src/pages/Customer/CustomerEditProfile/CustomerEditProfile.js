@@ -119,19 +119,23 @@ const CustomerEditProfile = () => {
                         required
                     />
                 </div>
-
                 <div className="input-single">
                     <h3 className="profile-edit-heading-first">Mobile Number</h3>
-                    <PhoneInput
-                        country={"in"}
-                        value={formData.mobile_number}
-                        onChange={(value) => handlePhoneChange(value, "mobile_number")}
-                        inputProps={{ name: "mobile_number", required: true }}
-                        placeholder="Mobile Number"
-                        required
-                    />
-                </div>
+                   <PhoneInput
+  country={'in'}
+  value={formData.mobile_no.replace('+', '')} // Remove '+' for proper formatting
+  onChange={(value) => handlePhoneChange(value)}
+  inputProps={{
+    name: 'mobile_no',
+    required: true,
+  }}
+  enableSearch={true}
+  autoFormat={true}
+  disableCountryCode={false}
+  disableDropdown={false}
+/>
 
+                </div>
                 <div className="button-row">
                     <button className="save-changes-edit-profile" type="submit">Save Changes</button>
                     <button className="cancel-edit-profile" type="button" onClick={() => navigate("/profile")}>Cancel</button>
