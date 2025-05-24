@@ -245,7 +245,17 @@ const displayPopup = (text, type = "success") => {
                 <p className="view-product-header"> {category_name} / {sub_category_name} / <span>{product_name}</span></p>
 
                 <p className="view-product-name">{productDetails.product_details.product_name || "N/A"}</p>
-                <p className="view-product-price"> <FaRupeeSign /> {productDetails.product_details.price || "N/A"}(include GST)</p>
+                <p className="view-product-price"> <FaRupeeSign /> {productDetails.product_details.final_price || "N/A"}(include GST)</p>
+                 
+{productDetails.product_details.price !== productDetails.product_details.final_price && (
+  <p className="customer-original-price">
+    ₹ {productDetails.product_details.price}
+    <span>(Incl. GST)</span>
+  
+  </p>
+)}
+
+
                 <p className="view-product-discount"> <strong> Discount:</strong> {productDetails.product_details.discount || "N/A"}</p>
                 <p className="view-product-discount"> <strong> GST:</strong> {productDetails.product_details.gst || "N/A"}</p>
 

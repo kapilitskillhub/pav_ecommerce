@@ -368,7 +368,7 @@ const CustomerMyOrders = () => {
   return (
     <div className="my-orders-wrapper container">
       <div className="breadcrumb-order">
-        <span onClick={() => navigate("/")}>Home</span> &gt;
+        <span onClick={() => navigate("/")}>Home</span> 
         <span className="current-my-orders">My Orders</span>
       </div>
 

@@ -261,12 +261,12 @@ const CustomerViewProducts = () => {
             {!loading && !error && (
                 <div className="breadcrumb">
                     <span className="breadcrumb-link" onClick={() => navigate("/")}>Home</span>
-                    <span className="breadcrumb-separator"> &gt; </span>
+                    <span className="breadcrumb-separator"> › </span>
 
                     <span className="breadcrumb-link" onClick={() => navigate("/")}>
                         {categoryName}
                     </span>
-                    <span className="breadcrumb-separator"> &gt; </span>
+                    <span className="breadcrumb-separator"> › </span>
 
                     <span
                         className="breadcrumb-link"
@@ -281,7 +281,7 @@ const CustomerViewProducts = () => {
                     >
                         {subCategoryName}
                     </span>
-                    <span className="breadcrumb-separator"> &gt; </span>
+                    <span className="breadcrumb-separator"> › </span>
                     <span className="breadcrumb-current">Products</span>
                 </div>
             )}
@@ -398,10 +398,12 @@ const CustomerViewProducts = () => {
                                                         <div className="discount-tag">
                                                             {product.discount && parseFloat(product.discount) > 0 ? `${product.discount} off` : ''}
                                                         </div>
-                                                    </>
+                                                        
+                                                    </> 
+                                                   
                                                 ) : (
 
-                                                    <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>, <>&nbsp;</>
+                                                 <>&nbsp;</>,<>&nbsp;</>,<>&nbsp;</>,<>&nbsp;</>
                                                 )}
                                             </div>
                                             <div className="add-cart-section">

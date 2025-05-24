@@ -87,7 +87,7 @@ const EditSubcategory = () => {
   return (
     <div className="edit-sub-form-page">
       <header className="form-header">
-        <h1 className="form-title">Edit SubCategory</h1>
+        <h1 className="form-title-subcategory">Edit SubCategory</h1>
         <div className="admin-popup">
         <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
       </div>

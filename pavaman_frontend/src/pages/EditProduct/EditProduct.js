@@ -134,7 +134,7 @@ console.log(`${name} updated. Selected ${files.length} file(s).`);
 
   return (
     <div className="edit-product-container">
-      <h2  className="form-title">Edit Product</h2>
+      <h2  className="form-title-subcategory">Edit Product</h2>
 
       {error && <p className="error-message">{error}</p>}
       <div className="admin-popup">
@@ -156,7 +156,7 @@ console.log(`${name} updated. Selected ${files.length} file(s).`);
         <div className="input-row">
           <div>
             <label className="label">SKU</label>
-            <input type="text" name="sku_nUmber" value={product.sku_number} onChange={handleChange} required className="input-field" />
+            <input type="text" name="sku_number" value={product.sku_number} onChange={handleChange} required className="input-field" />
           </div>
           <div>
             <label className="label">HSN</label>

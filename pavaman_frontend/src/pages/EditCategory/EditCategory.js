@@ -121,7 +121,7 @@ const EditCategory = () => {
   return (
     <div className="add-card-form-page">
       <header className="form-header">
-        <h1 className="form-title">Edit Category</h1>
+        <h1 className="form-title-subcategory">Edit Category</h1>
       </header>
       <div className="admin-popup">
         <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
