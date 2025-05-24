@@ -5,6 +5,7 @@ import "../SignIn/Signin.css";
 import Logo from "../../assets/images/aviation-logo.png";
 import LogInImage from "../../assets/images/signinpage-image.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import API_BASE_URL from "../../config";
 
 const SignIn = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
@@ -31,7 +32,7 @@ const SignIn = ({ setIsAuthenticated }) => {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/admin-login", {
+      const response = await axios.post(`${API_BASE_URL}/admin-login`, {
         email,
         password,
       });
@@ -59,7 +60,7 @@ const SignIn = ({ setIsAuthenticated }) => {
   
     try {
       const verifyResponse = await axios.post(
-        "http://127.0.0.1:8000/admin-verify-otp",
+        `${API_BASE_URL}/admin-verify-otp`,
         {
           email: adminEmail,
           otp,

@@ -132,7 +132,7 @@ const AddProduct = () => {
     };
     return (
         <div className="add-product-container">
-            <h2 className="form-title-product">Add Product</h2>
+            <h2 className="form-title-subcategory">Add Product</h2>
             <div className="admin-popup">
                 <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
             </div>

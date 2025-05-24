@@ -32,7 +32,7 @@ from .models import (
 from .sms_utils import send_bulk_sms
 import threading
 
-
+import threading
 def is_valid_password(password):
     if len(password) < 8:
         return "Password must be at least 8 characters long."
@@ -45,8 +45,6 @@ def is_valid_password(password):
     if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
         return "Password must contain at least one special character."
     return None
-
-
 def match_password(password, re_password):
     if password != re_password:
         return "Passwords must be same."
@@ -1476,86 +1474,6 @@ def delete_customer_address(request):
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
-
-@csrf_exempt
-def order_product_details(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body.decode('utf-8'))
-            product_id = data.get('product_id')
-            customer_id = data.get('customer_id')
-            quantity = max(int(data.get('quantity', 1)), 1)
-
-            if not customer_id or not product_id:
-                return JsonResponse({"error": "customer_id and product_id are required.", "status_code": 400}, status=400)
-
-            try:
-                customer = CustomerRegisterDetails.objects.get(id=customer_id)
-                product = ProductsDetails.objects.get(id=product_id)
-                admin = PavamanAdminDetails.objects.order_by('id').first()
-
-            except CustomerRegisterDetails.DoesNotExist:
-                return JsonResponse({"error": "Customer not found.", "status_code": 404}, status=404)
-            except ProductsDetails.DoesNotExist:
-                return JsonResponse({"error": "Product not found.", "status_code": 404}, status=404)
-            except PavamanAdminDetails.DoesNotExist:
-                return JsonResponse({"error": "Admin not found.", "status_code": 404}, status=404)
-
-            if not product.category or not product.sub_category:
-                return JsonResponse({"error": "Product's category or subcategory is not set.", "status_code": 400}, status=400)
-
-            if "stock" not in product.availability.lower() and "few" not in product.availability.lower():
-                return JsonResponse({"error": "Product is out of stock.", "status_code": 400}, status=400)
-
-            if product.quantity < quantity:
-                return JsonResponse({"error": "Requested quantity is unavailable.", "status_code": 400}, status=400)
-
-            price = round(float(product.price), 2)
-            discount = round(float(product.discount or 0))
-            gst = round(float(product.gst or 0))
-            discounted_amount = round((price * discount) / 100, 2)
-            final_price = round(price - discounted_amount, 2)
-            total_price = round(final_price * quantity, 2)
-            current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
-            order = OrderProducts.objects.create(
-                customer=customer,
-                product=product,
-                category=product.category,
-                sub_category=product.sub_category,
-                quantity=quantity,
-                price=price,
-                discount=discount,
-                gst=gst,
-                final_price=final_price,
-                order_status="Pending",
-                created_at=current_time,
-                admin=admin
-            )
-
-            image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
-            image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
-
-            return JsonResponse({
-                "message": "Order Created successfully!",
-                "order_id": order.id,
-                "product_name":product.product_name,
-                "product_images": image_url,
-                "number_of_quantities": quantity,
-                "product_price": f"{price:.2f}",
-                "discount": f"{discount}%",
-                "gst": f"{gst}%",
-                "discounted_amount": f"{discounted_amount:.2f}",
-                "final_price": f"{final_price:.2f}",                
-                "total_price": f"{total_price:.2f}",
-                "status_code": 201
-            }, status=201)
-
-        except Exception as e:
-            return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-
-    return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-
 @csrf_exempt
 def order_summary(request):
     if request.method == 'POST':
@@ -2249,43 +2167,6 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
         return False
 
 @csrf_exempt
-def cancel_order(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body.decode('utf-8'))
-            order_id = data.get('order_id')
-            customer_id = data.get('customer_id')
-            product_id = data.get('product_id')
-
-            if not all([order_id, customer_id, product_id]):
-                return JsonResponse({"error": "order_id, customer_id, and product_id are required.", "status_code": 400}, status=400)
-
-            try:
-                order = OrderProducts.objects.get(id=order_id, customer_id=customer_id, product_id=product_id)
-                product = order.product
-            except OrderProducts.DoesNotExist:
-                return JsonResponse({"error": "Order not found or does not belong to the given customer and product.", "status_code": 404}, status=404)
-
-            product.quantity += order.quantity
-            product.save()
-
-            order.delete()
-
-            return JsonResponse({
-                "message": "Order cancelled successfully!",
-                "order_id": order_id,
-                "product_id": product_id,
-                "customer_id": customer_id,
-                "restored_quantity": order.quantity,
-                "product_name": product.product_name,
-                "status_code": 200
-            }, status=200)
-
-        except Exception as e:
-            return JsonResponse({"error": str(e), "status_code": 500}, status=500)
-    return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-@csrf_exempt
 def cancel_multiple_orders(request):
     if request.method == 'POST':
         try:
@@ -2332,59 +2213,6 @@ def cancel_multiple_orders(request):
         except Exception as e:
             return JsonResponse({"error": str(e), "status_code": 500}, status=500)
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-def get_category_and_subcategory_product_counts(category_id,category_name):
-    try:
-        category= CategoryDetails.objects.get(id=category_id,category_name=category_name,category_status=1)
-        subcategories=SubCategoryDetails.objects.filter(category=category,sub_category_status=1)
-        total_category_product_count = 0
-        subcategory_list=[]
-        for subcategory in subcategories:
-            subcategory_product_count=ProductsDetails.objects.filter(sub_category=subcategory,product_status=1).count()
-            total_category_product_count +=subcategory_product_count
-
-            subcategory_list.append({
-                "sub_category_id":str(subcategory.id),
-                "sub_category_name":subcategory.sub_category_name,
-                "product_count":subcategory_product_count
-            })
-        return{
-            "category_id":str(category.id),
-            "category_name":category.category_name,
-            "total_category_product_count": total_category_product_count,
-            "subcategories":subcategory_list
-        }
-    except CategoryDetails.DoesNotExist:
-        return None
-
-@csrf_exempt
-def view_category_and_subcategory_product_counts(request):
-    if request.method =="POST":
-        try:
-            data = json.loads(request.body.decode('utf-8'))
-            category_id=data.get('category_id')
-            category_name = data.get('category_name')
-
-            if not category_id or not category_name:
-                return JsonResponse({"error":"category_id and category_name are required.", "status_code": 400}, status=400)
-
-            category_data=get_category_and_subcategory_product_counts(category_id,category_name)
-            if category_data:
-                return JsonResponse({
-                    "message":"Data retrieved successfully.",
-
-                    "categories":[category_data]
-                },status=200)
-            else:
-                return JsonResponse({"error": "Category not found.", "status_code": 404}, status=404)
-        
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format.", "status_code": 400}, status=400)
-        except Exception as e:
-            return JsonResponse({"error":str(e),"status_code":500},status=500)
-    return JsonResponse({"error":"Invalid Request menthod","status_code":405},status=405)
-
-
 #this is for subcatagory page
 
 @csrf_exempt
@@ -3741,20 +3569,21 @@ def generate_invoice_for_customer(request):
                 product = ProductsDetails.objects.filter(id=order.product_id).first()
                 if not product:
                     continue
-                price = float(product.price)
+                price = round(float(product.price),2)
                 discount_percent = float(product.discount or 0)
-
-                discount_amount = (price * discount_percent) / 100
+                gst_amount=round(float(price * product.gst/100),2)
+                discount_amount =round( (price * discount_percent) / 100,2)
                 final_price = price - discount_amount
                 items.append({
                     "product_name": product.product_name,
                     "sku":product.sku_number,
+                    "hsn":product.hsn_code,
                     "quantity": order.quantity,
-                    "price" :product.price,
+                    "price" :price,
+                    "gst_amount":gst_amount,
                     "gst": f"{int(product.gst or 0)}%",
                     "discount_percent": f"{int(discount_percent)}%",
-                    "discount": round(discount_amount, 2),
-                    "gross_amount": round(final_price),
+                    "discount": discount_amount,
                     "final_price": order.final_price,
                     "total_price": round(order.final_price * order.quantity, 2) 
                 })
@@ -3774,10 +3603,9 @@ def generate_invoice_for_customer(request):
                     "phone": address.mobile_number if address else "",
                 },
                 "sold_by": "Pavaman",
-                "gstin": "XXABCDEFGH1Z1",
                 "total_items": len(items),
                 "items": items,
-                "grand_total": payment.total_amount,
+                "grand_total": payment.amount,
                 "payment_mode": payment.payment_mode,
                 
             })

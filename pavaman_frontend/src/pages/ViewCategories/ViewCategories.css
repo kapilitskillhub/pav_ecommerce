@@ -3,6 +3,7 @@
     font-size: 32px;
     font-weight: 600;
     color: #485692;
+    margin-top: 15px;
 }
 .category-cards {
     display: grid;

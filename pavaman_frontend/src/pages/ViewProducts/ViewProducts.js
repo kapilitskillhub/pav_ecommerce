@@ -44,11 +44,11 @@ const ViewProducts = ({ products, setProducts }) => {
 
   useEffect(() => {
     if (successMessage) {
-      displayPopup(successMessage, "success"); 
+      displayPopup(successMessage, "success");
       setShowActionSuccessPopup(true);
     }
   }, [successMessage]);
-  
+
 
   useEffect(() => {
     if (showActionSuccessPopup) {
@@ -99,6 +99,8 @@ const ViewProducts = ({ products, setProducts }) => {
         sku_number: product.sku_number,
         price: product.price,
         quantity: product.quantity,
+        gst: product.gst || "",
+        hsn_code: product.hsn_code || "",
         discount: product.product_discount || "",
         description: product.product_description || "",
         product_images: product.product_images || [],
@@ -141,9 +143,9 @@ const ViewProducts = ({ products, setProducts }) => {
       console.error("Invalid product data");
       return;
     }
-    
+
     const adminId = sessionStorage.getItem("admin_id");
-  
+
     navigate("/view-product-details", {
       state: {
         admin_id: adminId,
@@ -157,20 +159,20 @@ const ViewProducts = ({ products, setProducts }) => {
   };
   const uploadproductExcel = () => {
     const adminId = sessionStorage.getItem("admin_id");
-  navigate("/uploadproductexcel", {
-      state: { admin_id:adminId,category_id, sub_category_id },
+    navigate("/uploadproductexcel", {
+      state: { admin_id: adminId, category_id, sub_category_id },
     });
-};
+  };
 
   return (
     <div>
 
       <div className="category-div">
         <div className="category-heading">Products</div>
-            <button  className="upload-product-excel" onClick={uploadproductExcel}>Upload Product Excel</button>
+        <button className="upload-product-excel" onClick={uploadproductExcel}>Upload Product Excel</button>
         <div className="admin-popup">
-        <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
-      </div>
+          <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
+        </div>
         {error && <p className="error-message">{error}</p>}
         {!loading && products.length === 0 && <p className="no-data">No products found.</p>}
       </div>
@@ -179,21 +181,39 @@ const ViewProducts = ({ products, setProducts }) => {
         {products.map((product) => (
           <div key={product.product_id} className="category-card product-card">
             <img
-             src={
-  product.product_images ||
-  (Array.isArray(product.product_image_url) ? product.product_image_url[0] : product.product_image_url) ||
-  "default_image_url.jpg"
-}
+              src={
+                product.product_images ||
+                (Array.isArray(product.product_image_url) ? product.product_image_url[0] : product.product_image_url) ||
+                "default_image_url.jpg"
+              }
               alt={product.product_name}
               className="card-image"
               onClick={() => handleProductClick(product)}
             />
-            <div className="product-info">
+            <div className="product-info-view">
               <p className="card-name">{product.product_name || "N/A"}</p>
               <p className="card-code">SKU: {product.sku_number || "N/A"}</p>
-              <p className="card-price">
-                <FaRupeeSign /> {product.price || "N/A"}/- (Incl GST)
-              </p>
+             {product.final_price === product.price ? (
+                                    <>
+                                        <p className="all-product-price">₹ {product.final_price} (incl. GST)</p>
+                                        <div className="all-product-discount">
+                                            <span className="all-product-discount-price invisible-price">₹{product.price} (incl. GST)</span>
+                                            <div className="all-discount-tag">
+                                                <span className="invisible-discount">--</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="all-product-price">₹ {product.final_price} (incl. GST)</p>
+                                        <div className="all-product-discount">
+                                            <span className="all-product-discount-price-view">₹{product.price}(incl. GST)</span>
+                                            <div className="all-discount-tag-view">
+                                                {product.discount ? `${product.discount} off` : <span className="invisible-discount">--</span>}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
             </div>
             <div className="card-menu">
               <div onClick={() => handleEditProduct(product)} className="edit-label">
@@ -238,7 +258,6 @@ const ViewProducts = ({ products, setProducts }) => {
         </div>
       )}
 
- 
     </div>
   );
 };

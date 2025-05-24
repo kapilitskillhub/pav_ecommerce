@@ -174,9 +174,9 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
             {!loading && !error && (
                 <div className="breadcrumb">
                     <span className="breadcrumb-link" onClick={() => navigate("/")}>Home</span>
-                    <span className="breadcrumb-separator"> &gt; </span>
+                    <span className="breadcrumb-separator"> › </span>
                     <span className="breadcrumb-link" onClick={() => navigate("/")}>{category_name}</span>
-                    <span className="breadcrumb-separator"> &gt; </span>
+                    <span className="breadcrumb-separator"> › </span>
                     <span className="breadcrumb-current">Subcategories</span>
                 </div>
             )}
