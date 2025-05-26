@@ -137,11 +137,11 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>First Name<span className="required-star">*</span></label>
-                            <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} required />
+                            <input type="text" placeholder="First Name" name="first_name" value={formData.first_name} onChange={handleChange} required />
                         </div>
                         <div className="manage-input-group">
                             <label>Last Name<span className="required-star">*</span></label>
-                            <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required />
+                            <input type="text" name="last_name"  placeholder="Last Name" value={formData.last_name} onChange={handleChange} required />
                         </div>
                     </div>
                     <div className="manage-form-row">
@@ -154,7 +154,10 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                                 name="mobile_number"
                                 value={formData.mobile_number}
                                 onChange={(value) => handlePhoneChange(value, "mobile_number")}
-                                required pattern="\d{10}" />
+                                required pattern="\d{10}"
+                                placeholder="Mobile Number"
+                                />
+                                
                         </div>
                         <div className="manage-input-group">
                             <label>Alternate Mobile</label>
@@ -165,47 +168,48 @@ const AddCustomerAddress = ({ onAddressAdded }) => {
                                 value={formData.alternate_mobile}
                                 onChange={(value) => handlePhoneChange(value, "alternate_mobile")}
                                 inputProps={{ name: "alternate_mobile" }}
+                                placeholder="Alternate number"
                             />
                         </div>
                     </div>
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>Email<span className="required-star">*</span></label>
-                            <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                            <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
                         </div>
                         <div className="manage-input-group">
                             <label>Pincode<span className="required-star">*</span></label>
-                            <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} required pattern="\d{6}" />
+                            <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} required pattern="\d{6}" />
                         </div>
                     </div>
 
                     <label className="address-label">Address<span className="required-star">*</span></label>
-                    <textarea className="manage-address-input" name="street" value={formData.street} onChange={handleChange} required />
+                    <textarea className="manage-address-input" placeholder="Address (Street, Area, Flat No.)"  name="street" value={formData.street} onChange={handleChange} required />
 
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>District<span className="required-star">*</span></label>
-                            <input type="text" name="district" value={formData.district} onChange={handleChange} required />
+                            <input type="text" name="district" placeholder="District" value={formData.district} onChange={handleChange} required />
                         </div>
                         <div className="manage-input-group">
                             <label>State<span className="required-star">*</span></label>
-                            <input type="text" name="state" value={formData.state} onChange={handleChange} required />
+                            <input type="text" name="state" placeholder="State"  value={formData.state} onChange={handleChange} required />
                         </div>
                     </div>
 
                     <div className="manage-input-group">
                         <label>Mandal<span className="required-star">*</span></label>
-                        <input type="text" name="mandal" value={formData.mandal} onChange={handleChange} required />
+                        <input type="text" name="mandal" placeholder="Mandal" value={formData.mandal} onChange={handleChange} required />
                     </div>
 
                     <div className="manage-form-row">
                         <div className="manage-input-group">
                             <label>Landmark</label>
-                            <input type="text" name="landmark" value={formData.landmark} onChange={handleChange} />
+                            <input type="text" name="landmark" placeholder="Landmark" value={formData.landmark} onChange={handleChange} />
                         </div>
                         <div className="manage-input-group">
-                            <label>Locality<span className="required-star">*</span></label>
-                            <input type="text" name="locality" value={formData.locality} onChange={handleChange} required />
+                            <label>City/Town<span className="required-star">*</span></label>
+                            <input type="text" name="locality" placeholder="City/Town" value={formData.locality} onChange={handleChange} required />
                         </div>
                     </div>
 

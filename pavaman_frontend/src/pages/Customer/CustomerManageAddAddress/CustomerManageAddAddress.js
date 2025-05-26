@@ -204,6 +204,7 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                                 value={formData.alternate_mobile}
                                 onChange={(value) => handlePhoneChange(value, "alternate_mobile")}
                                 inputProps={{ name: "alternate_mobile" }}
+                                placeholder="Alternate Mobile"
                             />
                         </div>
                     </div>
@@ -241,8 +242,8 @@ const CustomerManageAddAddress = ({ onAddressAdded, setShowAddAddressForm }) => 
                             <input type="text" name="landmark" placeholder="Landmark (Optional)" value={formData.landmark} onChange={handleChange} />
                         </div>
                         <div className="manage-input-group">
-                            <label>Locality <span className="required-star">*</span></label>
-                            <input type="text" name="locality" placeholder="Locality" value={formData.locality} onChange={handleChange} required />
+                            <label>City/Town <span className="required-star">*</span></label>
+                            <input type="text" name="locality" placeholder="City/Town" value={formData.locality} onChange={handleChange} required />
                         </div>
                     </div>
                     <div className="cm-manage-address-type">

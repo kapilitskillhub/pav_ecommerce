@@ -1,3 +1,8 @@
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .customer-discount-products-heading {
     font-size: 25px;
     font-weight: 400;
@@ -13,6 +18,7 @@
     margin: 20px auto;
     justify-content: center;
     max-width: 1200px; 
+    overflow: hidden;
 }
 .product-image-wrapper {
     width: 230px;
@@ -25,14 +31,16 @@
 .customer-discount-product-card {
     border: 2px solid #dadada; 
     border-radius: 12px;   
-    margin: 16px auto;
+   margin: 16px auto;
     padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex;
     object-fit: contain;
     background: white;
+
+
     text-align: center;
     height: 415px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); 
@@ -296,4 +304,26 @@
         width: 90%;
         padding: 10px;
     }
+}
+/* Container when only one product is shown without slider */
+.single-discount-product-wrapper {
+  display: flex;
+  justify-content: flex-start;   /* center horizontally */
+  padding: 10px 0;
+}
+
+/* Ensure the single product card behaves nicely */
+.single-discount-product-wrapper .customer-discount-product-card {
+  max-width: 280px; 
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .single-discount-product-wrapper {
+    justify-content: center; /* Center align on smaller screens */
+  }
+
+  .single-discount-product-wrapper .customer-discount-product-card {
+    max-width: 80%;
+  }
 }
