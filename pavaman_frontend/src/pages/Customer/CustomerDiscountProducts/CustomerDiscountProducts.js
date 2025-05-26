@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import API_BASE_URL from "../../../config";
 import PopupMessage from "../../../components/Popup/Popup";
+
 const ViewDiscountedProducts = () => {
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
@@ -17,9 +18,11 @@ const ViewDiscountedProducts = () => {
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
     const sliderRef = useRef(null);
+
     useEffect(() => {
         fetchData();
     }, []);
+
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
         setShowPopup(true);
@@ -28,13 +31,13 @@ const ViewDiscountedProducts = () => {
             setShowPopup(false);
         }, 10000);
     };
+
     const fetchData = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id: localStorage.getItem("customer_id") || null }),
-
             });
             const data = await response.json();
             if (data.status_code === 200) {
@@ -48,6 +51,7 @@ const ViewDiscountedProducts = () => {
             setLoading(false);
         }
     };
+
     const handleAddCart = async (product_id) => {
         const customer_id = localStorage.getItem("customer_id");
         if (!customer_id) {
@@ -85,6 +89,7 @@ const ViewDiscountedProducts = () => {
             displayPopup("An unexpected error occurred while adding to cart.", error, "error");
         }
     };
+
     const sliderSettings = {
         infinite: true,
         speed: 1000,
@@ -99,6 +104,7 @@ const ViewDiscountedProducts = () => {
             { breakpoint: 480, settings: { slidesToShow: 2 } },
         ],
     };
+
     const handleViewProductDetails = (product) => {
         if (!product.category_id || !product.sub_category_id) {
             displayPopup("Category or Subcategory ID is missing.", "error");
@@ -112,6 +118,63 @@ const ViewDiscountedProducts = () => {
             },
         });
     };
+
+    const renderProductCard = (product) => (
+        <div
+            key={product.product_id}
+            className="customer-discount-product-card"
+            onClick={() => handleViewProductDetails(product)}
+        >
+            <div className="product-image-wrapper">
+                <img
+                    src={product.product_image_url}
+                    alt={product.product_name}
+                    className="customer-discount-product-image"
+                />
+            </div>
+            <div className="customer-product-name customer-discount-section-name">
+                {product.product_name}
+            </div>
+            <div className="customer-discount-section-price">
+                <span>₹</span>{product.final_price}.00 (incl. GST)
+            </div>
+            <div>
+                <div className="customer-discount-section-original-price">
+                    ₹{product.price}.00 (incl. GST)
+                    <div className="discount-tag">
+                        {product.discount && `${product.discount} off`}
+                    </div>
+                </div>
+                <div className="add-cart-section">
+                    <span
+                        className={`availability ${
+                            product.availability === "Out of Stock"
+                                ? "out-of-stock"
+                                : product.availability === "Very Few Products Left"
+                                    ? "few-left"
+                                    : "in-stock"
+                        }`}
+                    >
+                        {product.availability === "Out of Stock"
+                            ? "Out of Stock"
+                            : product.availability === "Very Few Products Left"
+                                ? "Very Few Products Left"
+                                : "In Stock"}
+                    </span>
+                    {(product.availability === "Very Few Products Left" || product.availability === "In Stock") && (
+                        <BiSolidCartAdd
+                            className="add-to-cart-button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleAddCart(product.product_id);
+                            }}
+                        />
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <div className="customer-dashboard container discount-dashboard">
             {loading && <p>Loading...</p>}
@@ -130,68 +193,22 @@ const ViewDiscountedProducts = () => {
                         )}
                     </div>
                     {discountedProducts.length > 0 ? (
-                        <Slider {...sliderSettings}>
-                            {discountedProducts.map((product) => (
-                                <div
-                                    key={product.product_id}
-                                    className="customer-discount-product-card"
-                                    onClick={() => handleViewProductDetails(product)}
-                                >
-
-                                    <div className="product-image-wrapper">
-                                        <img
-                                            src={product.product_image_url}
-                                            alt={product.product_name}
-                                            className="customer-discount-product-image"
-                                        />
-                                    </div>
-                                    <div className="customer-product-name customer-discount-section-name">
-                                        {product.product_name}
-                                    </div>
-                                    <div className="customer-discount-section-price">
-                                        <span>₹</span>{product.final_price}.00 (incl. GST)
-                                    </div>
-                                    <div >
-                                        <div className="customer-discount-section-original-price">
-                                            ₹{product.price}.00 (incl. GST)
-                                            <div className="discount-tag">
-                                                {product.discount && `${product.discount} off`}
-                                            </div>
-                                        </div>
-                                        <div className="add-cart-section">
-                                            <span
-                                                className={`availability ${product.availability === "Out of Stock"
-                                                    ? "out-of-stock"
-                                                    : product.availability === "Very Few Products Left"
-                                                        ? "few-left"
-                                                        : "in-stock"
-                                                    }`}
-                                            >
-                                                {product.availability === "Out of Stock"
-                                                    ? "Out of Stock"
-                                                    : product.availability === "Very Few Products Left"
-                                                        ? "Very Few Products Left"
-                                                        : "In Stock"}
-                                            </span>
-                                            {(product.availability === "Very Few Products Left" || product.availability === "In Stock") && (
-                                                <BiSolidCartAdd
-                                                    className="add-to-cart-button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleAddCart(product.product_id);
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </Slider>
-                    ) : (<p className="no-discount-products">No Discounted Products Available</p>)}
+                        discountedProducts.length === 1 ? (
+                            <div className="single-discount-product-wrapper">
+                                {renderProductCard(discountedProducts[0])}
+                            </div>
+                        ) : (
+                            <Slider {...sliderSettings}>
+                                {discountedProducts.map((product) => renderProductCard(product))}
+                            </Slider>
+                        )
+                    ) : (
+                        <p className="no-discount-products">No Discounted Products Available</p>
+                    )}
                 </div>
             )}
         </div>
     );
 };
-export default ViewDiscountedProducts;
 
+export default ViewDiscountedProducts;

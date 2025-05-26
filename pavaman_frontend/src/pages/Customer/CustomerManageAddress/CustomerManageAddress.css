@@ -82,11 +82,10 @@
     transform: scale(1.05);  
     }
 
-.manage-address-item p { 
+ .manage-address-item p { 
     font-size: 15px;
-    color: #2c2626; 
     margin-top: 5px;
-    } 
+    }  
                              
   
 @media (max-width: 768px) {
