@@ -2080,7 +2080,7 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
         </div>
 
         <h2 style="color: #2E7D32;">Thank You for Your Purchase!</h2>
-        <p style="font-size: 15px;">Hi {customer_name},</p>
+        <p style="font-size: 15px;">Hello {customer_name},</p>
         <p style="font-size: 15px;">We’re excited to let you know that your payment has been successfully processed. Your order is now being prepared and will be shipped soon.</p>
 
         <table style="margin: 20px 0;">
