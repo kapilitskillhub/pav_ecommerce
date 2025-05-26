@@ -1107,7 +1107,7 @@ def update_cart_quantity(request):
             cart_item.quantity = quantity
             cart_item.save()
             return JsonResponse({"status_code": 200, "message": "Quantity updated successfully"})
-        except Cart.DoesNotExist:
+        except CartProducts.DoesNotExist:
             return JsonResponse({"status_code": 404, "error": "Cart item not found"})
     return JsonResponse({"status_code": 405, "error": "Invalid request method"})
 
@@ -1479,73 +1479,6 @@ def delete_customer_address(request):
             return JsonResponse({"error": "Invalid JSON format.", "status_code": 400}, status=400)
         except Exception as e:
             return JsonResponse({"error": f"An unexpected error occurred: {str(e)}", "status_code": 500}, status=500)
-
-    return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
-
-@csrf_exempt
-def order_product_details(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body.decode('utf-8'))
-            product_id = data.get('product_id')
-            customer_id = data.get('customer_id')
-            quantity = max(int(data.get('quantity', 1)), 1)
-
-            if not customer_id or not product_id:
-                return JsonResponse({"error": "customer_id and product_id are required.", "status_code": 400}, status=400)
-
-            try:
-                customer = CustomerRegisterDetails.objects.get(id=customer_id)
-                product = ProductsDetails.objects.get(id=product_id)
-                admin = PavamanAdminDetails.objects.order_by('id').first()
-
-            except CustomerRegisterDetails.DoesNotExist:
-                return JsonResponse({"error": "Customer not found.", "status_code": 404}, status=404)
-            except ProductsDetails.DoesNotExist:
-                return JsonResponse({"error": "Product not found.", "status_code": 404}, status=404)
-            except PavamanAdminDetails.DoesNotExist:
-                return JsonResponse({"error": "Admin not found.", "status_code": 404}, status=404)
-
-            if not product.category or not product.sub_category:
-                return JsonResponse({"error": "Product's category or subcategory is not set.", "status_code": 400}, status=400)
-
-            if "stock" not in product.availability.lower() and "few" not in product.availability.lower():
-                return JsonResponse({"error": "Product is out of stock.", "status_code": 400}, status=400)
-
-            if product.quantity < quantity:
-                return JsonResponse({"error": "Requested quantity is unavailable.", "status_code": 400}, status=400)
-
-            price = product.price
-            final_price = price * quantity
-
-            current_time = datetime.utcnow() + timedelta(hours=5, minutes=30)
-            order = OrderProducts.objects.create(
-                customer=customer,
-                product=product,
-                category=product.category,
-                sub_category=product.sub_category,
-                quantity=quantity,
-                price=price,
-                final_price=final_price,
-                order_status="Pending",
-                created_at=current_time,
-                admin=admin
-            )
-            image_path = product.product_images[0] if isinstance(product.product_images, list) and product.product_images else None
-            image_url = f"{settings.AWS_S3_BUCKET_URL}/{image_path}" if image_path else ""
-            return JsonResponse({
-                "message": "Order Created successfully!",
-                "order_id": order.id,
-                "product_name":product.product_name,
-                "product_images":image_url ,
-                "number_of_quantities": quantity,
-                "product_price": price,
-                "total_price": final_price,
-                "status_code": 201
-            }, status=201)
-
-        except Exception as e:
-            return JsonResponse({"error": str(e), "status_code": 500}, status=500)
 
     return JsonResponse({"error": "Invalid HTTP method. Only POST is allowed.", "status_code": 405}, status=405)
 
