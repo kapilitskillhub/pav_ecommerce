@@ -41,6 +41,7 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                 longitude: address.longitude || "",
                 state: address.state || "",
                 district: address.district || "",
+                locality:address.locality ||"",
                 mandal: address.mandal || ""
             });
         }
@@ -141,8 +142,8 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                     </div>
 
                     <div className="form-row">
-                        <div className="input-group">
-                            <label>Mobile Number <span className="required-star">*</span></label>
+                        <div className="input-group alternate-mobile">
+                            <p className="mobile-no-edit">Mobile Number <span className="required-star">*</span></p>
                             <PhoneInput
                                 country={"in"}
                                 value={formData.mobile_number}
@@ -151,8 +152,8 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                                 required
                             />
                         </div>
-                        <div className="input-group">
-                            <label>Alternate Mobile (Optional)</label>
+                        <div className="input-group alternate-mobile">
+                            <p className="mobile-no-edit">Alternate Mobile (Optional)</p>
                             <PhoneInput
                                 country={"in"}
                                 value={formData.alternate_mobile}
@@ -196,6 +197,17 @@ const ManageEditCustomerAddress = ({ address, onEditCompleted }) => {
                             <label>Landmark (Optional)</label>
                         </div>
                     </div>
+                     <div className="input-group">
+                            <input
+                                className="input-text-field"
+                                type="text"
+                                name="locality"
+                                value={formData.landmark}
+                                onChange={handleChange}
+                                required
+                            />
+                            <label>City/Town<span className="required-star">*</span></label>
+                        </div>
                     <div className="form-row address-type-container" style={{ flexDirection: "column" }}>
                         <label className="Address-type">Address Type:</label>
                         <div className="address-type-options">

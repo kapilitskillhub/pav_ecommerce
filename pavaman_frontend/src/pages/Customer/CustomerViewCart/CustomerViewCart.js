@@ -342,23 +342,40 @@ const searchCart = async (query) => {
             displayPopup("An unexpected error occurred.", "error");
         }
     };
+    const handleQuantityChange = async (product_id, change) => {
+    setCartItems((prevItems) => {
+        const updatedCart = prevItems.map((item) =>
+            item.product_id === product_id
+                ? { ...item, quantity: Math.max(1, item.quantity + change) }
+                : item
+        );
 
+        setTotalPrice(calculateTotalPrice(updatedCart));
 
-    const handleQuantityChange = (product_id, change) => {
-        setCartItems((prevItems) => {
-            const updatedCart = prevItems.map((item) =>
-                item.product_id === product_id
-                    ? { ...item, quantity: Math.max(1, item.quantity + change) }
-                    : item
-            );
+        return updatedCart;
+    });
 
-            setCartItems(updatedCart);
-            setTotalPrice(calculateTotalPrice(updatedCart));
+    const customer_id = localStorage.getItem("customer_id");
+    const currentItem = cartItems.find(item => item.product_id === product_id);
+    if (!customer_id || !currentItem) return;
 
-            return updatedCart;
+    const newQuantity = Math.max(1, currentItem.quantity + change);
+
+    try {
+        await fetch(`${API_BASE_URL}/update-cart-quantity`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                customer_id,
+                product_id,
+                quantity: newQuantity
+            }),
         });
-    };
-    
+    } catch (error) {
+        console.error("Error updating quantity:", error);
+        displayPopup("Failed to update quantity. Please try again.", "error");
+    }
+};
     return (
         <div className="cart-container container">
             <div className="popup-cart">

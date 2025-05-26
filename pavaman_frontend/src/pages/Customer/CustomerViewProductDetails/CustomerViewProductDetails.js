@@ -213,21 +213,21 @@ const CustomerViewProductDetails = () => {
 
 
     const handleMouseMove = (e) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
+        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - left) / width) * 100;
+        const y = ((e.clientY - top) / height) * 100;
 
-    if (zoomImageRef.current) {
-        zoomImageRef.current.style.transformOrigin = `${x}% ${y}%`;
-        zoomImageRef.current.style.transform = "scale(2)";
-    }
-};
+        if (zoomImageRef.current) {
+            zoomImageRef.current.style.transformOrigin = `${x}% ${y}%`;
+            zoomImageRef.current.style.transform = "scale(2)";
+        }
+    };
 
-const handleMouseLeave = () => {
-    if (zoomImageRef.current) {
-        zoomImageRef.current.style.transform = "scale(1)";
-    }
-};
+    const handleMouseLeave = () => {
+        if (zoomImageRef.current) {
+            zoomImageRef.current.style.transform = "scale(1)";
+        }
+    };
 
 
     const handleShare = (product) => {
@@ -255,188 +255,188 @@ const handleMouseLeave = () => {
                 });
         }
     };
-return (
-    <div className="customer-view-details-container container">
-        {loading && <p className="loading">Loading...</p>}
-        {error && <p className="error-message">{error}</p>}
+    return (
+        <div className="customer-view-details-container container">
+            {loading && <p className="loading">Loading...</p>}
+            {error && <p className="error-message">{error}</p>}
 
-        {!loading && !error && productDetails && (
-            <div className="customer-view-details">
-                {/* Breadcrumb */}
-                <div className="breadcrumb">
-                    <span className="breadcrumb-link" onClick={() => navigate("/")}>Home</span>
-                    <span className="breadcrumb-separator"> › </span>
-                    <span className="breadcrumb-link" onClick={() => navigate("/")}>{category_name}</span>
-                    <span className="breadcrumb-separator"> › </span>
-                    <span className="breadcrumb-link" onClick={() => navigate("/categories/view-sub-categories/", { state: { category_name } })}>{sub_category_name}</span>
-                    <span className="breadcrumb-separator"> › </span>
-                    <span className="breadcrumb-link" onClick={() => navigate(`/categories/${encodeURIComponent(category_name)}/${encodeURIComponent(sub_category_name)}`, { state: { sub_category_name } })}>{product_name}</span>
-                </div>
-
-                {/* Popup */}
-                <div className="popup-discount">
-                    {showPopup && (
-                        <PopupMessage
-                            message={popupMessage.text}
-                            type={popupMessage.type}
-                            onClose={() => setShowPopup(false)}
-                        />
-                    )}
-                </div>
-                <div className="customer-view-section">
-                    <div className="customer-image-section">
-                        <div className="customer-view-image-container">
-                            <button className="image-arrow left-arrow" onClick={handlePrevImage}>
-                                <AiOutlineLeft />
-                            </button>
-                           <div
-  className="customer-main-image-zoom-container"
-  onMouseMove={handleMouseMove}
-  onMouseLeave={handleMouseLeave}
->
-  <img
-    src={productDetails.product_images?.[activeImageIndex] || defaultImage}
-    alt="Product"
-    className=" customer-main-image customer-main-image-zoom"
-    ref={zoomImageRef}
-  />
-</div>
-
-                            <button className="image-arrow right-arrow" onClick={handleNextImage}>
-                                <AiOutlineRight />
-                            </button>
-                            <button className="zoom-icon" onClick={handleZoomOpen}>
-                                <MdZoomIn />
-                            </button>
-                        </div>
-
-                        <div className="customer-thumbnail-container">
-                            {productDetails.product_images?.map((image, index) => (
-                                <img
-                                    key={index}
-                                    src={image || defaultImage}
-                                    alt="Thumbnail"
-                                    className={`customer-thumbnail ${index === activeImageIndex ? "active" : ""}`}
-                                    onClick={() => setActiveImageIndex(index)}
-                                    onError={(e) => (e.target.src = defaultImage)}
-                                />
-                            ))}
-                        </div>
+            {!loading && !error && productDetails && (
+                <div className="customer-view-details">
+                    {/* Breadcrumb */}
+                    <div className="breadcrumb">
+                        <span className="breadcrumb-link" onClick={() => navigate("/")}>Home</span>
+                        <span className="breadcrumb-separator"> › </span>
+                        <span className="breadcrumb-link" onClick={() => navigate("/")}>{category_name}</span>
+                        <span className="breadcrumb-separator"> › </span>
+                        <span className="breadcrumb-link" onClick={() => navigate("/categories/view-sub-categories/", { state: { category_name } })}>{sub_category_name}</span>
+                        <span className="breadcrumb-separator"> › </span>
+                        <span className="breadcrumb-link" onClick={() => navigate(`/categories/${encodeURIComponent(category_name)}/${encodeURIComponent(sub_category_name)}`, { state: { sub_category_name } })}>{product_name}</span>
                     </div>
 
-                    <div className="customer-view-info">
-                        <div className="title-share-div">
-                            <p className="customer-view-title">{productDetails.product_name}</p>
-                            <div>
-                                <PiShareFatFill className="customer-share-button" onClick={() => handleShare(productDetails)} />
-                                <span>Share</span>
-                            </div>
-                        </div>
-
-                        <p className="customer-availability">
-                            Availability :
-                            <span className={`availability ${productDetails.availability === "Out of Stock" ? "out-of-stock" : productDetails.availability === "Very Few Products Left" ? "few-left" : "in-stock"}`}>
-                                {productDetails.availability}
-                            </span>
-                        </p>
-
-                        <p className="customer-sku">SKU: {productDetails.sku_number}</p>
-                        <p className="customer-price">₹ {productDetails.final_price.toFixed(2)} <span>(Incl. GST)</span></p>
-
-                        {productDetails.price !== productDetails.final_price && (
-                            <p className="customer-original-price">
-                                ₹ {productDetails.price.toFixed(2)} <span>(Incl. GST)</span>
-                                <span className="discount-tag-product-details">
-                                    {productDetails.discount && parseFloat(productDetails.discount) > 0 && `${productDetails.discount} off`}
-                                </span>
-                            </p>
-                        )}
-
-                        {(productDetails.availability === "Very Few Products Left" || productDetails.availability === "In Stock") && (
-                            <div className="customer-wishlist-buttons">
-                                <button className="customer-wishlist-button" onClick={(e) => { e.stopPropagation(); handleAddCart(productDetails.product_id); }}>
-                                    Add to Cart
-                                </button>
-                                <button className="customer-wishlist-button" onClick={(e) => { e.stopPropagation(); handleBuyNow(productDetails.product_id); }}>
-                                    Buy Now
-                                </button>
-                            </div>
+                    {/* Popup */}
+                    <div className="popup-discount">
+                        {showPopup && (
+                            <PopupMessage
+                                message={popupMessage.text}
+                                type={popupMessage.type}
+                                onClose={() => setShowPopup(false)}
+                            />
                         )}
                     </div>
-                </div>
+                    <div className="customer-view-section">
+                        <div className="customer-image-section">
+                            <div className="customer-view-image-container">
+                                <button className="image-arrow left-arrow" onClick={handlePrevImage}>
+                                    <AiOutlineLeft />
+                                </button>
+                                <div
+                                    className="customer-main-image-zoom-container"
+                                    onMouseMove={handleMouseMove}
+                                    onMouseLeave={handleMouseLeave}
+                                >
+                                    <img
+                                        src={productDetails.product_images?.[activeImageIndex] || defaultImage}
+                                        alt="Product"
+                                        className=" customer-main-image customer-main-image-zoom"
+                                        ref={zoomImageRef}
+                                    />
+                                </div>
 
-                {/* Zoom Modal */}
-                {isZoomOpen && (
-                    <div className="zoom-modal-overlay" onClick={handleZoomClose}>
-                        <div className="zoom-modal-content" onClick={(e) => e.stopPropagation()}>
-                            <button className="zoom-close-btn" onClick={handleZoomClose}><MdClose /></button>
-                            <div className="zoom-main-image-wrapper">
-                                <img
-                                    src={productDetails.product_images?.[activeImageIndex] || defaultImage}
-                                    alt="Zoomed"
-                                    className="zoom-main-image"
-                                />
+                                <button className="image-arrow right-arrow" onClick={handleNextImage}>
+                                    <AiOutlineRight />
+                                </button>
+                                <button className="zoom-icon" onClick={handleZoomOpen}>
+                                    <MdZoomIn />
+                                </button>
                             </div>
-                            <div className="zoom-thumbnails">
+
+                            <div className="customer-thumbnail-container">
                                 {productDetails.product_images?.map((image, index) => (
                                     <img
                                         key={index}
                                         src={image || defaultImage}
-                                        alt="Zoom Thumb"
-                                        className={`zoom-thumbnail ${index === activeImageIndex ? "active" : ""}`}
+                                        alt="Thumbnail"
+                                        className={`customer-thumbnail ${index === activeImageIndex ? "active" : ""}`}
                                         onClick={() => setActiveImageIndex(index)}
                                         onError={(e) => (e.target.src = defaultImage)}
                                     />
                                 ))}
                             </div>
                         </div>
-                    </div>
-                )}
 
-                {/* Tabs */}
-                <div className="customer-view-tabs-container">
-                    <div className="customer-tabs">
-                        <button className={activeTab === "description" ? "active" : ""} onClick={() => setActiveTab("description")}>Description</button>
-                        <button className={activeTab === "specification" ? "active" : ""} onClick={() => setActiveTab("specification")}>Specification</button>
-                        <button className={activeTab === "material" ? "active" : ""} onClick={() => setActiveTab("material")}>Material</button>
-                    </div>
-
-                    <div className="customer-tab-content">
-                        {activeTab === "description" && <p className="product-description">{productDetails.description}</p>}
-
-                        {activeTab === "specification" && (productDetails.specifications ? (
-                            <table className="customer-specification-table">
-                                <tbody>
-                                    {Object.entries(productDetails.specifications).map(([key, value]) => (
-                                        <tr key={key}>
-                                            <th>{key}</th>
-                                            <td>{value}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <p>No specifications available.</p>
-                        ))}
-
-                        {activeTab === "material" && (
-                            <div className="customer-material-section">
+                        <div className="customer-view-info">
+                            <div className="title-share-div">
+                                <p className="customer-view-title">{productDetails.product_name}</p>
                                 <div>
-                                    <a className="customer-material-file" href={productDetails.material_file} target="_blank" rel="noopener noreferrer">
-                                        View Material File
-                                    </a>
-                                </div>
-                                <div onClick={() => handleDownloadMaterialFile(productDetails.product_id)} className="customer-material-download">
-                                    <button className="download-btn">Download<MdCloudDownload /></button>
+                                    <PiShareFatFill className="customer-share-button" onClick={() => handleShare(productDetails)} />
+                                    <span>Share</span>
                                 </div>
                             </div>
-                        )}
+
+                            <p className="customer-availability">
+                                Availability :
+                                <span className={`availability ${productDetails.availability === "Out of Stock" ? "out-of-stock" : productDetails.availability === "Very Few Products Left" ? "few-left" : "in-stock"}`}>
+                                    {productDetails.availability}
+                                </span>
+                            </p>
+
+                            <p className="customer-sku">SKU: {productDetails.sku_number}</p>
+                            <p className="customer-price">₹ {productDetails.final_price.toFixed(2)} <span>(Incl. GST)</span></p>
+
+                            {productDetails.price !== productDetails.final_price && (
+                                <p className="customer-original-price">
+                                    ₹ {productDetails.price.toFixed(2)} <span>(Incl. GST)</span>
+                                    <span className="discount-tag-product-details">
+                                        {productDetails.discount && parseFloat(productDetails.discount) > 0 && `${productDetails.discount} off`}
+                                    </span>
+                                </p>
+                            )}
+
+                            {(productDetails.availability === "Very Few Products Left" || productDetails.availability === "In Stock") && (
+                                <div className="customer-wishlist-buttons">
+                                    <button className="customer-wishlist-button" onClick={(e) => { e.stopPropagation(); handleAddCart(productDetails.product_id); }}>
+                                        Add to Cart
+                                    </button>
+                                    <button className="customer-wishlist-button" onClick={(e) => { e.stopPropagation(); handleBuyNow(productDetails.product_id); }}>
+                                        Buy Now
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Zoom Modal */}
+                    {isZoomOpen && (
+                        <div className="zoom-modal-overlay" onClick={handleZoomClose}>
+                            <div className="zoom-modal-content" onClick={(e) => e.stopPropagation()}>
+                                <button className="zoom-close-btn" onClick={handleZoomClose}><MdClose /></button>
+                                <div className="zoom-main-image-wrapper">
+                                    <img
+                                        src={productDetails.product_images?.[activeImageIndex] || defaultImage}
+                                        alt="Zoomed"
+                                        className="zoom-main-image"
+                                    />
+                                </div>
+                                <div className="zoom-thumbnails">
+                                    {productDetails.product_images?.map((image, index) => (
+                                        <img
+                                            key={index}
+                                            src={image || defaultImage}
+                                            alt="Zoom Thumb"
+                                            className={`zoom-thumbnail ${index === activeImageIndex ? "active" : ""}`}
+                                            onClick={() => setActiveImageIndex(index)}
+                                            onError={(e) => (e.target.src = defaultImage)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Tabs */}
+                    <div className="customer-view-tabs-container">
+                        <div className="customer-tabs">
+                            <button className={activeTab === "description" ? "active" : ""} onClick={() => setActiveTab("description")}>Description</button>
+                            <button className={activeTab === "specification" ? "active" : ""} onClick={() => setActiveTab("specification")}>Specification</button>
+                            <button className={activeTab === "material" ? "active" : ""} onClick={() => setActiveTab("material")}>Material</button>
+                        </div>
+
+                        <div className="customer-tab-content">
+                            {activeTab === "description" && <p className="product-description">{productDetails.description}</p>}
+
+                            {activeTab === "specification" && (productDetails.specifications ? (
+                                <table className="customer-specification-table">
+                                    <tbody>
+                                        {Object.entries(productDetails.specifications).map(([key, value]) => (
+                                            <tr key={key}>
+                                                <th>{key}</th>
+                                                <td>{value}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p>No specifications available.</p>
+                            ))}
+
+                            {activeTab === "material" && (
+                                <div className="customer-material-section">
+                                    <div>
+                                        <a className="customer-material-file" href={productDetails.material_file} target="_blank" rel="noopener noreferrer">
+                                            View Material File
+                                        </a>
+                                    </div>
+                                    <div onClick={() => handleDownloadMaterialFile(productDetails.product_id)} className="customer-material-download">
+                                        <button className="download-btn">Download<MdCloudDownload /></button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
-        )}
-    </div>
-);
+            )}
+        </div>
+    );
 
 };
 
