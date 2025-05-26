@@ -191,7 +191,6 @@ AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 
 AWS_S3_BUCKET_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
-FRONTEND_URL = "http://localhost:3000"
 import os
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
-RAZORPAY_CALLBACK_URL = os.getenv("RAZORPAY_CALLBACK_URL", "http://127.0.0.1:8000/razorpay-callback")
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+RAZORPAY_CALLBACK_URL = os.getenv("RAZORPAY_CALLBACK_URL")
