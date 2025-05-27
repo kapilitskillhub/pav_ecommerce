@@ -19,6 +19,9 @@ const CustomerProfile = ({ refresh }) => {
     const [tempData, setTempData] = useState({});
     const [otpSent, setOtpSent] = useState(false);
     const [otp, setOtp] = useState("");
+    const [oldOtp, setOldOtp] = useState("");
+const [newOtp, setNewOtp] = useState("");
+
     const [step, setStep] = useState(1);
     const [newMobileOtpSent, setNewMobileOtpSent] = useState(false);
     const [showNewMobileOtpField, setShowNewMobileOtpField] = useState(false);
@@ -96,9 +99,10 @@ const CustomerProfile = ({ refresh }) => {
     };
 
     const handlePhoneChange = (value, name) => {
-        setTempData((prev) => ({ ...prev, mobile_no: value, }));
+        setTempData((prev) => ({ ...prev, [name]: value, }));
     };
 
+ 
     const sendPreviousEmailOtp = async () => {
         const response = await fetch(`${API_BASE_URL}/edit-profile-email`, {
             method: "POST",
@@ -187,93 +191,124 @@ const CustomerProfile = ({ refresh }) => {
         }
     };
 
-    const sendMobileOtp = async () => {
-        const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                action: "send_previous_otp",
-                customer_id: customerId,
-                mobile_no: tempData.mobile_no,
-            }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            setOtpSent(true);
-            triggerPopup(data.message, "success");
-        } else {
-            triggerPopup(data.error, "error");
-        }
-    };
+  const sendMobileOtp = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "send_previous_otp",
+        customer_id: customerId,
+        mobile_no: tempData.mobile_no, // old mobile
+      }),
+    });
+    const data = await response.json();
 
-    const verifyMobileOtp = async () => {
-        const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                action: "verify_previous_otp",
-                customer_id: customerId,
-                otp,
-                mobile_no: tempData.mobile_no,
-            }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            triggerPopup(data.message, "success");
-            setOtp("");
-            setOtpSent(false);
-            setNewMobileOtpSent(true);
-            setTempData((prevData) => ({
-                ...prevData,
-                mobile_no: "",
-            }));
-        } else {
-            triggerPopup(data.error, "error");
-        }
-    };
+    if (response.ok) {
+      setOtpSent(true);
+      triggerPopup(data.message, "success");
+    } else {
+      triggerPopup(data.error || "Failed to send OTP", "error");
+    }
+  } catch (error) {
+    triggerPopup("Network error. Please try again.", "error");
+    console.error(error);
+  }
+};
 
-    const sendNewMobileOtp = async () => {
-        const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                action: "send_new_otp",
-                customer_id: customerId,
-                mobile_no: "+" + tempData.mobile_no,
+const verifyMobileOtp = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "verify_previous_otp",
+        customer_id: customerId,
+        otp,
+        mobile_no: tempData.mobile_no, // old mobile number
+      }),
+    });
+    const data = await response.json();
 
-            }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            triggerPopup(data.message, "success");
-            setShowNewMobileOtpField(true);
-        } else {
-            triggerPopup(data.error, "error");
-        }
-    };
+    if (response.ok) {
+      triggerPopup(data.message, "success");
+      setOtp("");
+      setOtpSent(false);
+      setNewMobileOtpSent(true);
+      setTempData((prevData) => ({
+        ...prevData,
+        mobile_no: "",        // clear old mobile number after verification
+      }));
+    } else {
+      triggerPopup(data.error || "OTP verification failed", "error");
+    }
+  } catch (error) {
+    triggerPopup("Network error. Please try again.", "error");
+    console.error(error);
+  }
+};
 
-    const verifyNewMobileOtp = async () => {
-        const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                action: "verify_new_otp",
-                customer_id: customerId,
-                otp,
-                mobile_no: tempData.mobile_no,
-            }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            triggerPopup(data.message, "success");
-            fetchCustomerProfile();
-            setEditField(null);
-            setOtp("");
-            setNewMobileOtpSent(false);
-        } else {
-            triggerPopup(data.error, "error");
-        }
-    };
+const sendNewMobileOtp = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "send_new_otp",
+        customer_id: customerId,
+        mobile_no: tempData.new_mobile_no || "", // use new mobile number here!
+      }),
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      triggerPopup(data.message, "success");
+      setShowNewMobileOtpField(true);
+    } else {
+      triggerPopup(data.error || "Failed to send OTP to new mobile", "error");
+    }
+  } catch (error) {
+    triggerPopup("Network error. Please try again.", "error");
+    console.error(error);
+  }
+};
+
+const verifyNewMobileOtp = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/edit-profile-mobile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "verify_new_otp",
+        customer_id: customerId,
+        otp: newOtp,
+        mobile_no: tempData.new_mobile_no || "", // verify new mobile number here!
+      }),
+    });
+    const data = await response.json();
+
+    if (response.ok) {
+      triggerPopup(data.message, "success");
+      fetchCustomerProfile();
+      setEditField(null);
+      setOtp("");
+      setNewMobileOtpSent(false);
+      setShowNewMobileOtpField(false);
+      // Update mobile_no to new_mobile_no and clear new_mobile_no
+      setTempData((prev) => ({
+        ...prev,
+        mobile_no: prev.new_mobile_no,
+        new_mobile_no: "",
+      }));
+    } else {
+      triggerPopup(data.error || "OTP verification failed", "error");
+    }
+  } catch (error) {
+    triggerPopup("Network error. Please try again.", "error");
+    console.error(error);
+  }
+};
+
 
     const updateName = async () => {
         try {
@@ -414,7 +449,7 @@ const CustomerProfile = ({ refresh }) => {
                 </div>
             )}
 
-            {editField === "mobile_no" && (
+            {/* {editField === "mobile_no" && (
                 <div className="edit-popup-box">
                     <h4>Edit Profile</h4>
 
@@ -476,7 +511,131 @@ const CustomerProfile = ({ refresh }) => {
                     )}
                     <FaTimes className="close-popup" onClick={() => setEditField(null)} />
                 </div>
-            )}
+            )} */}
+            {/* const handlePhoneChange = (value, name) => {
+    setTempData((prev) => ({ ...prev, mobile_no: value }));
+}; */}
+{editField === "mobile_no" && (
+  <div className="edit-popup-box">
+    <h4>Edit Profile</h4>
+
+    {/* Show old mobile number input ONLY if OTP NOT SENT (verification pending) */}
+    {!otpSent && !newMobileOtpSent && (
+      <>
+        <PhoneInput
+          country={"in"}
+          international
+          withCountryCallingCode
+          name="mobile_no"
+          value={tempData.mobile_no || ""}
+          onChange={(value) => handlePhoneChange(value, "mobile_no")}
+          inputProps={{ name: "mobile_no", required: true }}
+          placeholder="Current mobile number"
+          required
+        />
+        <button className="send-otp-btn" onClick={sendMobileOtp}>
+          Send OTP
+        </button>
+      </>
+    )}
+
+    {/* Show OTP input for old mobile verification */}
+    {otpSent && !newMobileOtpSent && (
+      <>
+        <input
+          type="text"
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+          placeholder="Enter OTP sent to Old Mobile"
+          className="edit-input"
+        />
+        <button className="verify-otp-btn" onClick={verifyMobileOtp}>
+          Verify OTP
+        </button>
+      </>
+    )}
+
+    {/* Show new mobile number input after old mobile is verified */}
+    {/* {newMobileOtpSent && (
+      <>
+     <PhoneInput
+  country={"in"}
+  international
+  withCountryCallingCode
+  value={tempData.new_mobile_no || ""}
+  onChange={(value) =>
+    setTempData((prev) => ({
+      ...prev,
+      new_mobile_no: "+" + value, // Add "+" here
+    }))
+  }
+  inputProps={{ name: "new_mobile_no", required: true }}
+  placeholder="Enter new mobile number"
+/>
+
+        <button className="send-otp-btn" onClick={sendNewMobileOtp}>
+          Send OTP
+        </button>
+
+        {showNewMobileOtpField && (
+          <>
+            <input
+              type="text"
+              value={newOtp}
+              onChange={(e) => setNewOtp(e.target.value)}
+              placeholder="Enter OTP sent to New Mobile"
+              className="edit-input"
+            />
+            <button className="verify-otp-btn" onClick={verifyNewMobileOtp}>
+              Verify OTP
+            </button>
+          </>
+        )}
+      </>
+    )} */}
+{newMobileOtpSent && (
+  <>
+    {!showNewMobileOtpField ? (
+      <>
+        <PhoneInput
+          country={"in"}
+          international
+          withCountryCallingCode
+          value={tempData.new_mobile_no || ""}
+          onChange={(value) =>
+            setTempData((prev) => ({
+              ...prev,
+              new_mobile_no: value.startsWith("+") ? value : "+" + value,
+            }))
+          }
+          inputProps={{ name: "new_mobile_no", required: true }}
+          placeholder="Enter new mobile number"
+        />
+        <button className="send-otp-btn" onClick={sendNewMobileOtp}>
+          Send OTP
+        </button>
+      </>
+    ) : (
+      <>
+        <input
+          type="text"
+          value={newOtp}
+          onChange={(e) => setNewOtp(e.target.value)}
+          placeholder="Enter OTP sent to New Mobile"
+          className="edit-input"
+        />
+        <button className="verify-otp-btn" onClick={verifyNewMobileOtp}>
+          Verify OTP
+        </button>
+      </>
+    )}
+  </>
+)}
+
+    <FaTimes className="close-popup" onClick={() => setEditField(null)} />
+  </div>
+)}
+
             {editField === "name" && (
                 <div className="edit-popup-box">
                     <h4>Edit Profile</h4>

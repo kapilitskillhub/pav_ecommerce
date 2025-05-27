@@ -30,17 +30,17 @@ const PavamanFooter = () => {
           <div className="footer-column">
             <h4>My Account</h4>
             <ul className='my-account-contact'>
-              <li><span onClick={() => navigate('/view-cart-products')}>Cart</span></li>
-              <li><span onClick={() => navigate('/my-orders')}>Checkout</span></li>
-              <li><span onClick={() => navigate('/profile')}>My Account</span></li>
+              <li><span onClick={() =>{ window.scrollTo(0, 0); navigate('/view-cart-products'); }}>Cart</span></li>
+              <li><span onClick={() =>{ window.scrollTo(0, 0); navigate('/my-orders'); }}>Checkout</span></li>
+              <li><span onClick={() => { window.scrollTo(0, 0); navigate('/profile'); }}>My Account</span></li>
             </ul>
           </div>
           <div className="footer-column">
             <h4>Services</h4>
             <ul className='service-options'>
-              <li><span onClick={() => navigate('/contact')}>Contact Us</span></li>
-              <li><span onClick={() => navigate('/b2b')}>Pavaman B2B</span></li>
-              <li><span onClick={() => navigate('/policies')}>Policies</span></li>
+              <li><span onClick={() =>  { window.scrollTo(0, 0); navigate('/contact'); }}>Contact Us</span></li>
+              <li><span onClick={() => { window.scrollTo(0, 0); navigate('/b2b'); }}>Pavaman B2B</span></li>
+              <li><span onClick={() => { window.scrollTo(0, 0); navigate('/policies'); }}>Policies</span></li>
             </ul>
           </div>
         </div>

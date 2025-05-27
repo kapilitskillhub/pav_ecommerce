@@ -21,12 +21,12 @@ html, body {
     overflow: hidden;
 }
 .product-image-wrapper {
-    width: 230px;
+    width: 208px;
     height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 15px;
+    margin-left: 35px;
 }
 .customer-discount-product-card {
     border: 2px solid #dadada; 
@@ -177,6 +177,7 @@ html, body {
     margin-left: 15px;
 }
 }
+
 @media (max-width: 480px) {
     .customer-discount-products-section {
         grid-template-columns: repeat(2, 1fr);
@@ -193,6 +194,25 @@ html, body {
         width: 100%;
     }
 }
+
+
+@media (max-width: 1024px) {
+    .customer-discount-products-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .customer-discount-product-image,.product-image-wrapper {
+        width: 147px;
+        height: 150px;
+    }
+    .customer-discount-section-price{
+        font-size: 16px;
+    }
+    .popup-discount{
+        width: 100%;
+    }
+}
+
 .customer-dashboard .popup {
     position: fixed;
     bottom: 60%;
@@ -305,14 +325,13 @@ html, body {
         padding: 10px;
     }
 }
-/* Container when only one product is shown without slider */
+*/
 .single-discount-product-wrapper {
   display: flex;
-  justify-content: flex-start;   /* center horizontally */
+  justify-content: flex-start; 
   padding: 10px 0;
 }
 
-/* Ensure the single product card behaves nicely */
 .single-discount-product-wrapper .customer-discount-product-card {
   max-width: 280px; 
   cursor: pointer;
@@ -320,7 +339,7 @@ html, body {
 
 @media (max-width: 768px) {
   .single-discount-product-wrapper {
-    justify-content: center; /* Center align on smaller screens */
+    justify-content: center; 
   }
 
   .single-discount-product-wrapper .customer-discount-product-card {
