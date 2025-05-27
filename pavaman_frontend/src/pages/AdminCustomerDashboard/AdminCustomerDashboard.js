@@ -30,8 +30,7 @@ const Customer = () => {
                 const response = await axios.post(`${API_BASE_URL}/get-customer-by-admin/`, requestBody);
 
                 if (response.data.status === "success" && Array.isArray(response.data.customers)) {
-                    const sortedCustomers = response.data.customers.sort((a, b) => a.id - b.id);
-                    setCustomers(sortedCustomers);
+                    setCustomers(response.data.customers);
                     setActivatedCount(response.data.activated_count || 0);
                     setInactivatedCount(response.data.inactivated_count || 0);
                     setTotalCount(response.data.total_count || 0);

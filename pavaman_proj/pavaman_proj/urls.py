@@ -33,7 +33,7 @@ from pavaman_backend.customer_views import (customer_register,customer_login,vie
     view_customer_address,edit_customer_address,delete_customer_address,order_multiple_products,multiple_order_summary
     ,cancel_multiple_orders,filter_product_price,filter_product_price_each_category,sort_products_inside_subcategory,
     get_customer_details_by_admin,verify_email,resend_verification_email,google_login,update_cart_quantity,
-    google_submit_mobile,otp_generate,verify_otp,set_new_password,order_product_details,order_summary,
+    google_submit_mobile,otp_generate,verify_otp,set_new_password,
     create_razorpay_order,razorpay_callback,customer_search_categories,customer_search_subcategories,customer_search_products,
     get_payment_details_by_order, download_material_file,customer_get_payment_details_by_order,customer_logout,
     report_monthly_revenue_by_year,report_sales_summary, edit_customer_profile,get_customer_profile,
@@ -71,7 +71,6 @@ urlpatterns = [
     path('retrieve-feedback',retrieve_feedback,name= 'retrieve_feedback'),
     path('download-feedback-excel',download_feedback_excel,name= 'download_feedback_excel'),
 
-  
     path('customer-register', customer_register, name='customer_register'), 
     path('customer-login',customer_login,name='customer_login'), 
     path("google-login", google_login, name="google_login"),
@@ -94,9 +93,6 @@ urlpatterns = [
     path('view-customer-address',view_customer_address,name='view_customer_address'),
     path('edit-customer-address',edit_customer_address,name='edit_customer_address'),
     path('delete-customer-address',delete_customer_address,name='delete_customer_address'),
-    path('products/order-product-details',order_product_details,name='order_product_details'),
-    path('products/order-summary',order_summary, name='order_summary'),
-
     path('products/order-multiple-products',order_multiple_products,name='order_multiple_products'),
     path('products/order-multiple-products-summary',multiple_order_summary,name='multiple_order_summary'),
     path('products/cancel-multiple-orders',cancel_multiple_orders,name='cancel_multiple_orders'),
