@@ -150,7 +150,7 @@ const AddProduct = () => {
                     <label className="label">Product Name</label>
                     <input type="text" name="product_name" placeholder="Enter product name" onChange={handleChange} required className="input-field" />
                 </div>
-                <div className="input-row">
+                <div className="input-row text-discount-row">
                     <div>
                         <label className="label">SKU</label>
                         <input type="text" name="sku_number" placeholder="Enter SKU number" onChange={handleChange} required className="input-field" />
@@ -164,7 +164,7 @@ const AddProduct = () => {
                         <input type="text" name="price" placeholder="Enter price" onChange={handleChange} required className="input-field" />
                     </div>
                 </div>
-                <div className="input-row">
+                <div className="input-row text-discount-row">
                     <div>
                         <label className="label">Quantity</label>
                         <input type="text" name="quantity" placeholder="Enter quantity" onChange={handleChange} required className="input-field" />
