@@ -57,6 +57,9 @@ line-height: normal;
     display: flex;
     gap: 10px;
 }
+.text-discount-row{
+    width: 120%;
+}
 
 .input-row div {
     flex: 1;
