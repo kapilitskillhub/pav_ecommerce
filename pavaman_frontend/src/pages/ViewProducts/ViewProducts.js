@@ -205,12 +205,17 @@ const ViewProducts = ({ products, setProducts }) => {
                                     </>
                                 ) : (
                                     <>
-                                        <p className="all-product-price">₹ {product.final_price} (incl. GST)</p>
-                                        <div className="all-product-discount">
-                                            <span className="all-product-discount-price-view">₹{product.price}(incl. GST)</span>
-                                            <div className="all-discount-tag-view">
-                                                {product.discount ? `${product.discount} off` : <span className="invisible-discount">--</span>}
+                                        <p className="all-product-price">₹ {product.final_price} (incl. GST)
+                                          <div className="all-discount-tag-view">
+                                                {product.product_discount ? `${product.product_discount}% off` : <span className="invisible-discount">--</span>}
                                             </div>
+                                        </p>
+                                        <div className="all-product-discount">
+                                            <span className="all-product-discount-price-view">₹{product.price}.00(incl. GST)</span>
+                                            
+                                            
+                                            <p className="card-gst">GST: {product.gst ? `${product.gst}%` : "N/A"}</p>
+
                                         </div>
                                     </>
                                 )}

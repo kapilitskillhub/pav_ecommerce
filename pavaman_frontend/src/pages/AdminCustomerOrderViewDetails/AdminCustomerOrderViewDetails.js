@@ -132,7 +132,7 @@ const PaidOrderDetails = () => {
   const allshipped = Object.values(productStatuses).every(s => s.shipped);
   const allDelivered = Object.values(productStatuses).every(s => s.delivered);
 
-  if (!order) return <div className="loading">Loading...</div>;
+  if (!order) return <div className="loading">Loading,Please wait...</div>;
 
   const {
     customer_name,

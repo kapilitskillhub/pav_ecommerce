@@ -55,7 +55,7 @@ const Report = () => {
   return (
     <div className="report-wrapper">
       <h2 className="report-title">Ordered Payment Reports</h2>
-      {loading && <p className="loading-text">Loading reports...</p>}
+      {loading && <p className="loading-text">Loading, please wait...</p>}
       {error && <p className="error-text">{error}</p>}
       {!loading && !error && (
         <>
