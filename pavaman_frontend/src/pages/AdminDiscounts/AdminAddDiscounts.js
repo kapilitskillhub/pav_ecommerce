@@ -84,9 +84,9 @@ const AdminAddDiscount = () => {
       setError('Please select category, at least one subcategory, and enter a discount.');
       return;
     }
-    if (!discount.endsWith('%')) {
-      setError('Discount must end with "%", e.g., 10%.');
-      return;
+    if (isNaN(discount) || Number(discount) <= 0 || Number(discount) > 100) {
+    setError('Please enter a valid discount between 1 and 100.Do not use "%".');
+    return;
     }
     const selectedCategory = categories.find(cat => cat.category_id === categoryId);
     const payload = {
@@ -188,7 +188,7 @@ const AdminAddDiscount = () => {
             type="text"
             value={discount}
             onChange={(e) => setDiscount(e.target.value)}
-            placeholder="Enter Discount (example: 10%)"
+            placeholder="Enter Discount (example: 10)"
             className="discount-form-group-input"
           />
         </div>
@@ -197,7 +197,7 @@ const AdminAddDiscount = () => {
       {success && <p className="success-message">{success}</p>}
       <div className="discount-button-group">
         <button className="cart-place-order" onClick={handleSave}>Save</button>
-        <button className="cart-delete-selected" onClick={() => navigate("/discounts")}>Cancel</button>
+        <button className="cart-delete-selected discount-admin-side" onClick={() => navigate("/discounts")}>Cancel</button>
       </div>
     </div>
   );

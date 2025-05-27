@@ -99,7 +99,7 @@ const navigateToAverageRatings = () => {
            <div className="admin-popup">
         <PopupMessage message={popupMessage.text} type={popupMessage.type} show={showPopup} />
       </div>
-      {loading && <p className="loading-text">Loading feedback...</p>}
+      {loading && <p className="loading-text">Loading, Please wait...</p>}
       {error && <p className="error-text">{error}</p>}
       {!loading && !error && (
         <>

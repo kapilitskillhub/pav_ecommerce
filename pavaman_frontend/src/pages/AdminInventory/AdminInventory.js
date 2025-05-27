@@ -89,7 +89,7 @@ const AdminInventoryProducts = () => {
       </div>
       {error && <p className="error-message">{error}</p>}
       {loading ? (
-        <p className="loading-text">Fetching products, please wait...</p>
+        <p className="loading-text">Loading, Please wait...</p>
       ) : (
         <>
           <div className="customer-table-container">

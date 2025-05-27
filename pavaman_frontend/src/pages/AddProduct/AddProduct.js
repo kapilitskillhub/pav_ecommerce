@@ -171,12 +171,12 @@ const AddProduct = () => {
                     </div>
                     <div>
                         <label className="label">Discount</label>
-                        <input type="text" name="discount" placeholder="Enter discount" onChange={handleChange} className="input-field" />
+                        <input type="text" name="discount" placeholder="Enter discount without %" onChange={handleChange} className="input-field" />
                     </div>
 
                     <div>
                         <label className="label">GST</label>
-                        <input type="text" name="gst" placeholder="Enter GST" onChange={handleChange} required className="input-field" />
+                        <input type="text" name="gst" placeholder="Enter GST without %" onChange={handleChange} required className="input-field" />
                     </div>
                 </div>
                 <div>

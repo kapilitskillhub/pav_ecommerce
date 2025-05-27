@@ -26,13 +26,19 @@
 .admin-popup {
   margin-bottom: 15px;
 }
-.error-message,
-.loading-text {
+.error-message{
   color: #dc3545;
   font-size: 16px;
   text-align: center;
   margin: 20px 0;
 }
+.loading-text {
+  color: grey;
+  font-size: 16px;
+  text-align: center;
+  margin: 20px 0;
+}
+
 .customer-table-container {
   overflow-x: auto;
   background: #fff;
