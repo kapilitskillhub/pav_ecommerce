@@ -24,6 +24,10 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
 
+    const [showNewPassword, setShowNewPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+
 
     const [showMobilePopup, setShowMobilePopup] = useState(false);
     const location = useLocation();
@@ -513,29 +517,51 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
                     </div>
                 </div>
             )}
-            {showResetPasswordPopup && (
-                <div className="reset-password-popup">
-                    <div className="popup-content">
-                        <h3>Set New Password</h3>
-                        <input
-                            type="password"
-                            placeholder="Enter New Password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                        <input
-                            type="password"
-                            placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                        <div className="reset_buttons">
-                            <button className="reset_password" onClick={handleResetPassword}>Reset Password</button>
-                            <button className="reset-cancel" onClick={() => setShowResetPasswordPopup(false)}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+{showResetPasswordPopup && (
+    <div className="reset-password-popup">
+        <div className="popup-content-set-password">
+            <h3>Set New Password</h3>
+
+            <div className="customer-login-password-input-wrapper">
+                <input
+                    type={showNewPassword ? "text" : "password"}
+                    placeholder="Enter New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="customer-login-input-field-set-password customer-login-password-input"
+                />
+                <span
+                    className="customer-login-password-toggle-btn-set"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                    {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+            </div>
+
+            <div className="customer-login-password-input-wrapper">
+                <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="customer-login-input-field customer-login-password-input"
+                />
+                <span
+                    className="customer-login-password-toggle-btn-set"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+            </div>
+
+            <div className="reset_buttons">
+                <button className="reset_password" onClick={handleResetPassword}>Reset Password</button>
+                <button className="reset-cancel" onClick={() => setShowResetPasswordPopup(false)}>Cancel</button>
+            </div>
+        </div>
+    </div>
+)}
+
 
         </div>
     );
