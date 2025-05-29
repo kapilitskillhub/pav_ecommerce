@@ -371,11 +371,11 @@
 }
 
 .zoom-modal-content {
-  background: #fff;
+ background: #fff;
   padding: 1rem;
   border-radius: 12px;
-  max-width: 90%;
-  max-height: 90vh;
+  width: 70%;
+  height: 90vh; /* Fixed height */
   overflow-y: auto;
   position: relative;
   display: flex;
@@ -432,11 +432,9 @@
 .zoom-thumbnail.active {
   border-color: #007bff;
 }
-
-/* Responsive styles */
 @media (max-width: 1024px) {
   .zoom-main-image {
-    max-height: 50vh;
+    max-height: 1000vh;
   }
   .zoom-thumbnail {
     width: 70px;

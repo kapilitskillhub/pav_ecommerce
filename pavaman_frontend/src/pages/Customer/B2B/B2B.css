@@ -17,7 +17,7 @@
 }
 .b2b-container p {
   font-size: 1.15rem;
-  color: #003366;
+  color: black;
   line-height: 1.6;
 }
 .b2b-contact-box {
@@ -27,6 +27,10 @@
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 115, 230, 0.15);
   transition: box-shadow 0.3s ease;
+}
+
+.b2b-container-info{
+  text-align: justify;
 }
 .b2b-contact-box h2 {
   font-size: 1.8rem;

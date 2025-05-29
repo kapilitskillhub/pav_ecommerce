@@ -5,7 +5,7 @@ const B2B = () => {
   return (
     <div className="b2b-container">
       <h1>Special Offers for Business Customers</h1>
-      <p>
+      <p className='b2b-container-info'>
         We value our business partners! For exclusive offers and deals tailored
         just for your business, please contact us directly.
       </p>

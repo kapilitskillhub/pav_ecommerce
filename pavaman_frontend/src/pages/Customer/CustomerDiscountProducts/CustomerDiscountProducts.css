@@ -13,7 +13,7 @@ html, body {
 }
 .customer-discount-products-section {
     display: grid;
-    gap: 16px;
+    gap: 100px; /* or whatever value you want */
     grid-template-columns: repeat(5, 1fr);
     margin: 20px auto;
     justify-content: center;
@@ -31,7 +31,6 @@ html, body {
 .customer-discount-product-card {
     border: 2px solid #dadada; 
     border-radius: 12px;   
-   margin: 16px auto;
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -39,10 +38,9 @@ html, body {
     align-items: flex;
     object-fit: contain;
     background: white;
-
-
     text-align: center;
     height: 415px;
+    margin-bottom: 20px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); 
 }
 .customer-discount-product-card:hover {
@@ -57,6 +55,7 @@ html, body {
     object-fit: contain;
     display: block;
     margin: 0 auto;
+    margin-right: 80px;
 }
 .customer-discount-product-name {
     font-size: 18px;
@@ -163,6 +162,7 @@ html, body {
 
 @media (max-width: 768px) {
     .customer-discount-products-section {
+        gap: 12px;
         grid-template-columns: repeat(3, 1fr);
     }
     .popup-discount{
