@@ -21,7 +21,7 @@
     color: #fff;
     margin: 5px
 }
-.filer-range-slider {
+.filter-range-slider {
     height: '6px';
     width: '100%';
     background: 'white';
@@ -103,8 +103,7 @@
       font-size: 12px; 
       margin-right: 0;
     }
-  }
-  
+}
   
   @media (min-width: 601px) {
     .breadcrumb {
@@ -153,14 +152,11 @@
   gap: 20px;
 }
 }
-
 @media (max-width: 425px){
 
   .sidebar-filter{
     width: 100%;
   }
-
-
 }
 @media (max-width: 1024px) {
   .sub-main-content {
@@ -168,10 +164,9 @@
   }
 }
 @media (max-width: 1440px) {
-  
-  .sub-main-content {
-    width: 50%;
-  }
+    .sub-main-content {
+        width: 80%;
+    }
 }
 @media (max-width: 768px) {
   
@@ -179,3 +174,4 @@
     width: 100%;
   }
 }
+

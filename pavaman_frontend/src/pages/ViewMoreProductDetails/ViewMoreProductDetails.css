@@ -54,6 +54,7 @@
     font-weight: 400;
     margin-bottom: 40px;
     color: #4F4892;
+    text-transform: capitalize;
 }
 
 .view-product-header span {

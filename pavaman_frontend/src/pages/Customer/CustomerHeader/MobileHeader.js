@@ -22,14 +22,13 @@ const MobileHeader = ({ handleLogout, cartCount }) => {
 
   const [showProfileOptions, setShowProfileOptions] = useState(false);
 
-const handleUserIconClick = () => {
-  if (location.pathname === "/profile-options") {
-    navigate(-1); // Go back if already on profile page
-  } else {
-    navigate("/profile-options");
-  }
-};
-
+  const handleUserIconClick = () => {
+    if (location.pathname === "/profile-options") {
+      navigate(-1); // Go back if already on profile page
+    } else {
+      navigate("/profile-options");
+    }
+  };
 
   const toggleSearch = () => {
     setShowSearch(!showSearch);
@@ -74,6 +73,11 @@ const handleUserIconClick = () => {
     );
   };
 
+  const hideSearchIconPaths = ["/b2b", "/contact","/policies","/profile-options","/my-orders","/my-orders-details","/product-details","/edit-profile","/edit-address","/address","/checkout-page","/payment","/profile","/edit-profile"];
+  const shouldHideSearchIcon = hideSearchIconPaths.some(path =>
+    location.pathname.startsWith(path)
+  );
+
   return (
     <>
       <div className="mobile-header-section-second">
@@ -83,16 +87,15 @@ const handleUserIconClick = () => {
           </div>
 
           <div
-            className="mobile-search-icon toggle-search-icon "
-            onClick={toggleSearch}
+            className={`mobile-search-icon toggle-search-icon ${shouldHideSearchIcon ? "hidden-icon-space" : ""}`}
+            onClick={!shouldHideSearchIcon ? toggleSearch : undefined}
           >
-            <FaSearch className="mobile-customer-search-icon search-icon-color" />
+            {!shouldHideSearchIcon && (
+              <FaSearch className="mobile-customer-search-icon" />
+            )}
           </div>
 
-          <div
-            className="user-icon-wrapper"
-            onClick={handleUserIconClick}>
-          
+          <div className="user-icon-wrapper" onClick={handleUserIconClick}>
             <IoMdPerson size={24} />
           </div>
         </div>
@@ -161,12 +164,11 @@ const handleUserIconClick = () => {
           )}
           <span>Cart</span>
         </div>
-         <div className="nav-item" onClick={() => navigate("/b2b")}>
+        <div className="nav-item" onClick={() => navigate("/b2b")}>
           <LuBriefcaseBusiness className="nav-icon" />
           <span>B2B</span>
         </div>
       </div>
-      
     </>
   );
 };

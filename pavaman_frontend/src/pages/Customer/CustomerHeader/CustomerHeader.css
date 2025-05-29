@@ -294,6 +294,8 @@
         position: relative;
         cursor: pointer;
         color: white;
+        cursor: pointer;
+        margin-top: 8px;
     }
   .mobile-header-section{
     background: #4450A2;
@@ -322,17 +324,14 @@
     border-radius: 20px;
   }
   .mobile-customer-search-icon {
-    color: #4450A2;
+    color: white;
   }
   .mobile-menu {
     color: #fff;
     padding: 10px;
     position: relative;
   }
-  .user-icon-wrapper {
-    position: relative;
-    cursor: pointer;
-  }
+ 
 
 .mobile-user-dropdown {
   position: absolute;
@@ -391,9 +390,7 @@
   .mobile-category-btn-small {
     display: none;
   }
-  .search-icon-color{
-    color: white;
-  }
+  
 
   .toggle-search-icon{
     background-color: #4450A2;
@@ -459,6 +456,9 @@
   .mobile-menu-list-item {
     margin: 5px 90px;
   }
+  .user-icon-wrapper {
+        margin-top: 1px;
+    }
 
 }
 .mobile-category-drawer {

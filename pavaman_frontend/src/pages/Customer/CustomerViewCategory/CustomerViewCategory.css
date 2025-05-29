@@ -16,6 +16,7 @@
     border: 1px solid rgba(0, 0, 0, .125);
     border-radius: 22px;
     margin: 16px auto;
+    flex-wrap: wrap;
     flex-direction: column;
     justify-content: space-between;
 }
@@ -29,8 +30,9 @@
     font-size: 20px;
     font-weight: 500;
     color: #485692;
-    white-space: nowrap;
-    overflow: hidden;
+    white-space: normal;
+    overflow: visible;
+    word-wrap: break-word;
     text-overflow: ellipsis;
     max-width: 170px;
     display: block;
