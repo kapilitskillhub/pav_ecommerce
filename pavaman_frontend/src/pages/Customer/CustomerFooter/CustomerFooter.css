@@ -81,6 +81,15 @@
   border-top: 1px solid #ccc;
   margin-top: 20px;
 }
+
+.social-media{
+  text-align: center;
+  display: flex;
+  gap: 20px;
+   a{
+    font-size: 20px;
+   }
+}
 @media screen and (max-width: 768px) {
   .footer-top {
     flex-direction: column;
