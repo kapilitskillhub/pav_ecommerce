@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaSearch, FaMapMarkerAlt, FaShoppingCart, FaUser, FaClipboardList, FaSignOutAlt, FaSignInAlt, } from "react-icons/fa";
+import { FaSearch, FaMapMarkerAlt, FaShoppingCart, FaUser, FaClipboardList, FaSignOutAlt, FaSignInAlt, FaHeart } from "react-icons/fa";
 import { IoMdPerson } from "react-icons/io";
 import { FiChevronRight, FiHome, FiPhone } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -65,7 +65,7 @@ const CustomerHeader = (onSearch) => {
 
   const handleSearch = () => {
     const trimmedQuery = searchInput.trim();
-    console.log("Dispatching search event with query:", trimmedQuery);
+    // console.log("Dispatching search event with query:", trimmedQuery);
     window.dispatchEvent(new CustomEvent("customerCategorySearch", { detail: trimmedQuery }));
   };
 
@@ -83,7 +83,7 @@ const CustomerHeader = (onSearch) => {
       });
 
       const data = await response.json();
-      console.log("Cart API response:", data); 
+      // console.log("Cart API response:", data); 
 
       if (data.status_code === 200) {
         const items = data.cart_items || [];
@@ -340,6 +340,9 @@ const CustomerHeader = (onSearch) => {
           location.pathname.includes("/product-details") ||
           location.pathname.includes("/all-categories") ||
           location.pathname.includes("/all-products") ||
+          location.pathname.includes("/latest-products") ||
+          location.pathname.includes("/wishlist") ||
+
           location.pathname === "/"
         ) && (
           
@@ -400,6 +403,7 @@ const CustomerHeader = (onSearch) => {
                       <li onClick={() => navigate("/profile")}><FaUser /> My Profile</li>
                       <li onClick={() => navigate("/my-orders")}><FaClipboardList /> My Orders</li>
                       <li onClick={() => navigate("/address")}><FaMapMarkerAlt /> Address</li>
+                      <li onClick={() => navigate("/wishlist")}><FaHeart /> My Wishlist</li>
                       <li onClick={handleLogout}><FaSignOutAlt />Logout </li>
                     </>
                   )}

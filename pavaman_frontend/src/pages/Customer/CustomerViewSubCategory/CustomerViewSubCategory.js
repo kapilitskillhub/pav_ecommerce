@@ -6,6 +6,7 @@ import ViewDiscountedProducts from "../CustomerDiscountProducts/CustomerDiscount
 import { Range } from 'react-range';
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
 import API_BASE_URL from "../../../config";
+
 const ViewSubCategoriesAndDiscountedProducts = () => {
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
@@ -21,13 +22,21 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
     const [values, setValues] = useState([0, 10000]);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [showFilters, setShowFilters] = useState(false);
+    const [allCategories, setAllCategories] = useState([]);
+    const [selectedSubCategory, setSelectedSubCategory] = useState("");
+    const [expandedCategory, setExpandedCategory] = useState(null);
+
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-
+    useEffect(() => {
+        if (category_id) {
+            setExpandedCategoryId(category_id);
+        }
+    }, [category_id]);
 
     useEffect(() => {
         if (category_name) {
@@ -78,10 +87,29 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
             });
 
             const data = await response.json();
+
             if (data.status_code === 200) {
                 setCategories(data.subcategories);
                 setDiscountedProducts(data.discounted_products);
+                const enrichedCategories = (data.all_categories || []).map((cat) => {
+                    console.log("🔍 Mapping category:", cat.category_name, "with subcategories:", cat.subcategories);
+                    return {
+                        ...cat,
+                        subcategories: cat.subcategories || []
+                    };
+                });
 
+                setAllCategories(enrichedCategories);
+                if (enrichedCategories.length > 0 && enrichedCategories[0].subcategories.length > 0) {
+                    console.log("First subcategory:", enrichedCategories[0].subcategories[0]);
+                }
+
+                console.log("✅ Final enrichedCategories", enrichedCategories);
+
+                // Ensure current category is expanded on fetch success
+                if (category_id) {
+                    setExpandedCategoryId(category_id);
+                }
                 setMinPrice(data.min_price);
                 setMaxPrice(data.max_price);
                 setValues([data.min_price, data.max_price]);
@@ -129,9 +157,12 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
     };
     const handleViewProducts = (subCategory) => {
         localStorage.setItem("sub_category_id", subCategory.sub_category_id);
+        localStorage.setItem("sub_category_name", subCategory.sub_category_name);
+
 
         navigate(`/categories/${category_name}/${subCategory.sub_category_name}`);
     };
+    
     const handleFilterProducts = async () => {
         const [min, max] = values;
         setMinPrice(min);
@@ -157,7 +188,24 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                     .flatMap((subcategory) => subcategory.products)
                     .filter((product) => product !== undefined);
 
-                navigate("/filtered-products", { state: { filteredProducts } });
+                const categoryNames = [
+                    ...new Set(data.sub_categories.map((item) => item.category_name))
+                ];
+                setAllCategories(categoryNames);
+                setAllCategories(data.sub_categories);
+                
+        localStorage.setItem("category_id", data.category_id);
+        localStorage.setItem("category_name", data.category_name);
+
+                navigate("/filtered-products", {
+                    state: {
+                        filteredProducts,
+                        allCategories: data.sub_categories
+                       
+                    }
+                });
+
+                // navigate("/filtered-products", { state: { filteredProducts } });
             } else {
                 setError(data.error || "Failed to fetch filtered products.");
             }
@@ -165,6 +213,28 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
             setError("An unexpected error occurred while filtering.");
         }
     };
+    const toggleCategory = (category_name) => {
+        setExpandedCategory((prev) => (prev === category_name ? null : category_name));
+    };
+
+
+    const handleProducts = (category, subCategory) => {
+
+
+        localStorage.setItem("category_id", category.category_id);
+        localStorage.setItem("category_name", category.category_name);
+
+        localStorage.setItem("sub_category_id", subCategory.sub_category_id);
+        localStorage.setItem("sub_category_name", subCategory.sub_category_name);
+
+        navigate(`/categories/${category.category_name}/${subCategory.sub_category_name}`, {
+            state: {
+                category_id: category.category_id,
+                sub_category_id: subCategory.sub_category_id,
+            },
+        });
+    };
+
     return (
         <div className="customer-dashboard container">
             <CarouselLanding />
@@ -176,10 +246,11 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                     <span className="breadcrumb-link" onClick={() => navigate("/")}>Home</span>
                     <span className="breadcrumb-separator"> › </span>
                     <span className="breadcrumb-link" onClick={() => navigate("/")}>{category_name}</span>
-                    <span className="breadcrumb-separator"> › </span>
-                    <span className="breadcrumb-current">Subcategories</span>
+                    {/* <span className="breadcrumb-separator"> › </span> */}
+                    {/* <span className="breadcrumb-current">Subcategories</span> */}
                 </div>
             )}
+            <div className="customer-products-heading">Subcategories</div>
             <div className="customer-page-layout">
                 {isMobile && (
                     <div className="mobile-filter-toggle" onClick={() => setShowFilters(!showFilters)}>
@@ -242,11 +313,51 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                                 </button>
                             </div>
                         </div>
+                     
+                            <div className="category-filter-section">
+                                        <div className="sidebar-category-heading">Categories</div>
+
+                                        <div className="sidebar-category-list">
+                                            {allCategories.map((category) => (
+                                                <div key={category.category_name}>
+                                                    <div
+                                                        className="sidebar-category-name"
+                                                        onClick={() => toggleCategory(category.category_name)}
+                                                    >
+                                                        <div className="filter-cat-name">{category.category_name}</div>
+                                                        <span className="filter-cat-name">
+                                                            {expandedCategory === category.category_name ? "▲" : "▼"}
+                                                        </span>
+                                                    </div>
+
+                                                    {expandedCategory === category.category_name && (
+                                                        <div>
+                                                            {category.subcategories && category.subcategories.length > 0 ? (
+                                                                category.subcategories.map((sub) => (
+                                                                    <div
+                                                                        key={sub.sub_category_id} // use `sub.id` as discussed earlier
+                                                                        className="filter-subcat-name"
+                                                                        onClick={() => handleProducts(category, sub)}
+                                                                    >
+                                                                        {sub.sub_category_name}
+                                                                    </div>
+                                                                ))
+                                                            ) : (
+                                                                <div className="filter-subcat-name">No Subcategories</div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+
                     </div>
                 )}
                 <div className="sub-main-content">
                     <div className="customer-products">
-                        <div className="customer-products-heading">Subcategories</div>
+
                         <div className="customer-products-section">
                             {categories.map((subcategory) => (
                                 <div key={subcategory.sub_category_id} className="customer-product-card"

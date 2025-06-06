@@ -223,3 +223,14 @@ class FeedbackRating(models.Model):
     def str(self):
         return f"Rating {self.rating} by Customer {self.customer.id} for Product {self.product.name}"
 
+class Wishlist(models.Model):
+    admin = models.ForeignKey(PavamanAdminDetails, on_delete=models.CASCADE)
+    customer = models.ForeignKey(CustomerRegisterDetails, on_delete=models.CASCADE)
+    product = models.ForeignKey(ProductsDetails, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('customer', 'product')
+
+    def __str__(self):
+        return f"{self.customer.email} - {self.product.product_name}"

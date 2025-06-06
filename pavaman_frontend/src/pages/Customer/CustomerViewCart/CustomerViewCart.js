@@ -1,4 +1,4 @@
-import{ useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../CustomerViewCart/CustomerViewCart.css"
 import { RiDeleteBinLine } from "react-icons/ri";
@@ -82,59 +82,59 @@ const CustomerViewCart = () => {
             setLoading(false);
         }
     };
-const searchCart = async (query) => {
-    setLoading(true);
-    const customer_id = localStorage.getItem("customer_id");
+    const searchCart = async (query) => {
+        setLoading(true);
+        const customer_id = localStorage.getItem("customer_id");
 
-    if (!customer_id) {
-        displayPopup(
-            <>
-                Please <Link to="/customer-login" className="popup-link">log in</Link> to search your cart.
-            </>,
-            "error"
-        );
-        setLoading(false);
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/customer-cart-view-search`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ customer_id, product_name: query }),
-        });
-
-        const data = await response.json();
-
-        if (data.status_code === 200) {
-          const normalizedItems = data.cart_items.map((item) => {
-    const discountPercent = item.discount
-        ? parseFloat(item.discount.replace('%', '')) || 0
-        : 0;
-    const discountAmount = (item.price || 0) * (discountPercent / 100);
-
-    return {
-        ...item,
-        price_per_item: item.price ?? item.final_price ?? 0,
-        discounted_amount: discountAmount,
-    };
-});
-            setCartItems(normalizedItems);
-            setTotalPrice(
-                normalizedItems.reduce(
-                    (acc, item) => acc + (item.final_price * item.quantity),
-                    0
-                ) || 0
+        if (!customer_id) {
+            displayPopup(
+                <>
+                    Please <Link to="/customer-login" className="popup-link">log in</Link> to search your cart.
+                </>,
+                "error"
             );
-        } else {
-            setError(data.message || "Failed to search cart.");
+            setLoading(false);
+            return;
         }
-    } catch (error) {
-        setError("An unexpected error occurred during search.");
-    } finally {
-        setLoading(false);
-    }
-};
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/customer-cart-view-search`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ customer_id, product_name: query }),
+            });
+
+            const data = await response.json();
+
+            if (data.status_code === 200) {
+                const normalizedItems = data.cart_items.map((item) => {
+                    const discountPercent = item.discount
+                        ? parseFloat(item.discount.replace('%', '')) || 0
+                        : 0;
+                    const discountAmount = (item.price || 0) * (discountPercent / 100);
+
+                    return {
+                        ...item,
+                        price_per_item: item.price ?? item.final_price ?? 0,
+                        discounted_amount: discountAmount,
+                    };
+                });
+                setCartItems(normalizedItems);
+                setTotalPrice(
+                    normalizedItems.reduce(
+                        (acc, item) => acc + (item.final_price * item.quantity),
+                        0
+                    ) || 0
+                );
+            } else {
+                setError(data.message || "Failed to search cart.");
+            }
+        } catch (error) {
+            setError("An unexpected error occurred during search.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleDeleteCartItem = async (product_id) => {
         const customer_id = localStorage.getItem("customer_id");
@@ -184,16 +184,16 @@ const searchCart = async (query) => {
     };
 
     const calculatePrice = (items) => {
-    return items.reduce((sum, item) => sum + (item.price_per_item * item.quantity), 0);
-};
+        return items.reduce((sum, item) => sum + (item.price_per_item * item.quantity), 0);
+    };
 
-    
+
 
     const calculateTotalPrice = (items) => {
         return items.reduce((sum, item) => sum + item.final_price * item.quantity, 0);
     };
 
-     const calculateSelectedPrice = () => {
+    const calculateSelectedPrice = () => {
         const selectedItems = cartItems.filter(item => selectedProducts.includes(item.product_id));
         return selectedItems.reduce((sum, item) => sum + item.price_per_item * item.quantity, 0);
     };
@@ -216,21 +216,21 @@ const searchCart = async (query) => {
     };
     const calculateTotalGST = () => {
         return cartItems
-          .reduce((acc, item) => {
-            const gstPercent = parseFloat(item.gst) || 0;
-            return acc + item.price_per_item * item.quantity * (gstPercent / 100);
-          }, 0)
-          ;
-      };
-      const calculateSelectedGST = () => {
+            .reduce((acc, item) => {
+                const gstPercent = parseFloat(item.gst) || 0;
+                return acc + item.price_per_item * item.quantity * (gstPercent / 100);
+            }, 0)
+            ;
+    };
+    const calculateSelectedGST = () => {
         return cartItems
-          .filter(item => selectedProducts.includes(item.product_id))
-          .reduce((acc, item) => {
-            const gstPercent = parseFloat(item.gst) || 0;
-            return acc + item.price_per_item * item.quantity * (gstPercent / 100);
-          }, 0)
-          ;
-      };
+            .filter(item => selectedProducts.includes(item.product_id))
+            .reduce((acc, item) => {
+                const gstPercent = parseFloat(item.gst) || 0;
+                return acc + item.price_per_item * item.quantity * (gstPercent / 100);
+            }, 0)
+            ;
+    };
 
     const handleDeleteSelectedItems = async () => {
         const customer_id = localStorage.getItem("customer_id");
@@ -343,39 +343,39 @@ const searchCart = async (query) => {
         }
     };
     const handleQuantityChange = async (product_id, change) => {
-    setCartItems((prevItems) => {
-        const updatedCart = prevItems.map((item) =>
-            item.product_id === product_id
-                ? { ...item, quantity: Math.max(1, item.quantity + change) }
-                : item
-        );
+        setCartItems((prevItems) => {
+            const updatedCart = prevItems.map((item) =>
+                item.product_id === product_id
+                    ? { ...item, quantity: Math.max(1, item.quantity + change) }
+                    : item
+            );
 
-        setTotalPrice(calculateTotalPrice(updatedCart));
+            setTotalPrice(calculateTotalPrice(updatedCart));
 
-        return updatedCart;
-    });
-
-    const customer_id = localStorage.getItem("customer_id");
-    const currentItem = cartItems.find(item => item.product_id === product_id);
-    if (!customer_id || !currentItem) return;
-
-    const newQuantity = Math.max(1, currentItem.quantity + change);
-
-    try {
-        await fetch(`${API_BASE_URL}/update-cart-quantity`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                customer_id,
-                product_id,
-                quantity: newQuantity
-            }),
+            return updatedCart;
         });
-    } catch (error) {
-        console.error("Error updating quantity:", error);
-        displayPopup("Failed to update quantity. Please try again.", "error");
-    }
-};
+
+        const customer_id = localStorage.getItem("customer_id");
+        const currentItem = cartItems.find(item => item.product_id === product_id);
+        if (!customer_id || !currentItem) return;
+
+        const newQuantity = Math.max(1, currentItem.quantity + change);
+
+        try {
+            await fetch(`${API_BASE_URL}/update-cart-quantity`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    customer_id,
+                    product_id,
+                    quantity: newQuantity
+                }),
+            });
+        } catch (error) {
+            console.error("Error updating quantity:", error);
+            displayPopup("Failed to update quantity. Please try again.", "error");
+        }
+    };
     return (
         <div className="cart-container container">
             <div className="popup-cart">
@@ -441,7 +441,7 @@ const searchCart = async (query) => {
                                     <p className="discounted-price">₹ {item.final_price ? item.final_price.toFixed(2) : "0.00"}(incl. GST)</p>
                                     {item.price_per_item !== item.final_price && (
                                         <p className="original-price">₹ {item.price_per_item ? item.price_per_item.toFixed(2) : "0.00"}
- (incl. GST)
+                                            (incl. GST)
                                             <span className="discount-tag">
 
                                                 {item.discount && parseFloat(item.discount) > 0 && `${item.discount} off`}
@@ -453,7 +453,7 @@ const searchCart = async (query) => {
                                 <div>
 
                                     <p className="subtotal"><b>Subtotal: ₹ </b>{item.final_price && item.quantity ? (item.final_price * item.quantity).toFixed(2) : "0.00"}
- </p>
+                                    </p>
                                 </div>
 
                             </div>
@@ -472,7 +472,7 @@ const searchCart = async (query) => {
                 )}
 
                 <div className="cart-price-section">
-                    {selectedProducts.length === 0 && (
+                    {cartItems.length >0 && selectedProducts.length === 0 && (
                         <div className="cart-side-section">
                             <div>
                                 <div className="cart-price-header">Price details</div>
@@ -497,7 +497,7 @@ const searchCart = async (query) => {
                             </div>
                         </div>
                     )}
-                    {selectedProducts.length > 0 && (
+                    {cartItems.length >0 && selectedProducts.length > 0 && (
                         <div className="cart-side-section">
                             <div>
                                 <div className="cart-price-header">Total Payable</div>

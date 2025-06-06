@@ -8,16 +8,16 @@ const Policies = () => {
         <h2>Return Policies</h2>
         <ul>
           <li>
-            To exchange a product, please send us photos of the damaged item. We will evaluate the damage and decide on the best way to exchange or return the product.
+            We provide a seven-day return policy for equipment, beginning on the date of delivery to the customer.
           </li>
           <li>
-            If the item is not in stock for replacement, we will issue a full refund.
+            Anything beyond 7 days of delivery will not be eligible for return.
           </li>
           <li>
-            If we are unable to provide a replacement due to stock unavailability, a 100% refund will be issued.
+            <strong>Note:</strong> Uploading the appropriate unboxing video and pictures of the products is required if the customer needs to replace the item/product.
           </li>
           <li>
-            <strong>Note:</strong> To be eligible for a replacement, the customer must upload a proper unboxing video along with images of the product.
+            We will give a 100% refund if we don't have the product in stock to replace it.
           </li>
         </ul>
       </section>
@@ -25,7 +25,7 @@ const Policies = () => {
         <h2>Order Cancellation</h2>
         <ul>
           <li>
-            Please note that if the item has already shipped, the order cannot be cancelled.
+            Please be noted that orders cannot be cancelled once the item has been shipped.
           </li>
         </ul>
       </section>
