@@ -10,6 +10,7 @@ import PopupMessage from "../../../components/Popup/Popup";
 import { Link } from "react-router-dom";
 import { PiShareFatFill } from "react-icons/pi";
 import API_BASE_URL from "../../../config";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 const CustomerViewProductDetails = () => {
     const location = useLocation();
@@ -27,6 +28,8 @@ const CustomerViewProductDetails = () => {
     const [zoomStyle, setZoomStyle] = useState({});
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
+    const [isWishlisted, setIsWishlisted] = useState(false);
+
 
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
@@ -72,6 +75,9 @@ const CustomerViewProductDetails = () => {
 
             if (data.status_code === 200) {
                 setProductDetails(data.product_details);
+                setIsWishlisted(data.product_details.is_in_wishlist || false);
+
+
             } else {
                 setError(data.error || "Failed to fetch product details.");
             }
@@ -255,6 +261,43 @@ const CustomerViewProductDetails = () => {
                 });
         }
     };
+
+    const toggleWishlist = async () => {
+        const customer_id = localStorage.getItem("customer_id");
+        if (!customer_id) {
+            displayPopup(
+                <>
+                    Please <Link to="/customer-login" className="popup-link">log in</Link> to manage wishlist.
+                </>,
+                "error"
+            );
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/add-wishlist`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    customer_id,
+                    product_id: productDetails.product_id,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.status_code === 200) {
+                setIsWishlisted((prev) => !prev);
+                displayPopup(data.message || "Wishlist updated!", "success");
+            } else {
+                displayPopup(data.error || "Failed to update wishlist.", "error");
+            }
+        } catch (error) {
+            displayPopup("Something went wrong while updating wishlist.", "error");
+        }
+    };
+
+
     return (
         <div className="customer-view-details-container container">
             {loading && <p className="loading">Loading...</p>}
@@ -327,6 +370,19 @@ const CustomerViewProductDetails = () => {
                         <div className="customer-view-info">
                             <div className="title-share-div">
                                 <p className="customer-view-title">{productDetails.product_name}</p>
+                                <div
+                                    className="wishlist-icon product-wishlist-icon"
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click
+                                        toggleWishlist();
+                                    }}
+                                >
+                                    {isWishlisted ? (
+                                        <AiFillHeart className="wishlist-heart filled" />
+                                    ) : (
+                                        <AiOutlineHeart className="wishlist-heart" />
+                                    )}
+                                </div>
                                 <div>
                                     <PiShareFatFill className="customer-share-button" onClick={() => handleShare(productDetails)} />
                                     <span>Share</span>
@@ -351,6 +407,7 @@ const CustomerViewProductDetails = () => {
                                     </span>
                                 </p>
                             )}
+
 
                             {(productDetails.availability === "Very Few Products Left" || productDetails.availability === "In Stock") && (
                                 <div className="customer-wishlist-buttons">

@@ -60,6 +60,13 @@ const CustomerViewProducts = () => {
     }, [sortOrder]);
 
     useEffect(() => {
+        if (subCategoryName) {
+            fetchProducts();
+        }
+    }, [subCategoryName, location.state]);
+
+
+    useEffect(() => {
         if (categoryName) {
             fetchProducts(categoryName);
         }
@@ -143,6 +150,11 @@ const CustomerViewProducts = () => {
 
             if (data.status_code === 200 && data.products) {
                 setProducts(data.products);
+                const initialWishlist = data.products
+                    .filter((product) => product.wishlist_status === true)
+                    .map((product) => product.product_id);
+                setWishlist(initialWishlist);
+
                 setError("");
             } else {
                 setProducts([]);
@@ -255,6 +267,10 @@ const CustomerViewProducts = () => {
 
             if (response.ok) {
                 setProducts(data.products);
+                const initialWishlist = data.products
+                    .filter((product) => product.wishlist_status === true)
+                    .map((product) => product.product_id);
+                setWishlist(initialWishlist);
             } else {
                 setError(data.error || 'Failed to fetch products');
             }
@@ -285,6 +301,15 @@ const CustomerViewProducts = () => {
             },
         });
     };
+    useEffect(() => {
+        if (products.length > 0) {
+            const initialWishlist = products
+                .filter((product) => product.wishlist_status === true)
+                .map((product) => product.product_id);
+            setWishlist(initialWishlist);
+        }
+    }, [products]);
+
 
     const toggleWishlist = async (product_id) => {
         const customer_id = localStorage.getItem("customer_id");
@@ -452,7 +477,7 @@ const CustomerViewProducts = () => {
                                                             {category.subcategories && category.subcategories.length > 0 ? (
                                                                 category.subcategories.map((sub) => (
                                                                     <div
-                                                                        key={sub.id} // use `sub.id` as discussed earlier
+                                                                        key={sub.id}
                                                                         className="filter-subcat-name"
                                                                         onClick={() => handleViewProducts(category, sub)}
                                                                     >
@@ -481,7 +506,7 @@ const CustomerViewProducts = () => {
                                 products.map((product) => (
                                     <div
                                         key={product.product_id}
-                                        className="customer-product-card"
+                                        className="customer-product-card product-card-wishlist"
                                         onClick={() => handleViewProductDetails(product)}
                                     >
                                         <div
@@ -499,19 +524,20 @@ const CustomerViewProducts = () => {
                                         </div>
 
 
+                                        <div>
+                                            {/* <div>{console.log(product.product_image_url)}</div> */}
+                                            <img
+                                                src={
+                                                    product.product_images ||
+                                                    (Array.isArray(product.product_image_url)
+                                                        ? product.product_image_url[0]
+                                                        : product.product_image_url)
+                                                }
 
-                                        {/* <div>{console.log(product.product_image_url)}</div> */}
-                                        <img
-                                            src={
-                                                product.product_images ||
-                                                (Array.isArray(product.product_image_url)
-                                                    ? product.product_image_url[0]
-                                                    : product.product_image_url)
-                                            }
-
-                                            alt={product.product_name}
-                                            className="customer-product-image"
-                                        />
+                                                alt={product.product_name}
+                                                className="customer-product-image"
+                                            />
+                                        </div>
                                         <div className="customer-product-name">{product.product_name}</div>
                                         <div className="customer-discount-section-price">₹{product.final_price}.00 (incl. GST)</div>
                                         <div>

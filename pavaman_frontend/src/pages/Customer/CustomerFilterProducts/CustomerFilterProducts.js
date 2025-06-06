@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import API_BASE_URL from "../../../config";
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
 import { Range } from 'react-range';
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 const FilteredProducts = () => {
     const location = useLocation();
@@ -35,6 +36,7 @@ const FilteredProducts = () => {
     const [products, setProducts] = useState(filteredProducts);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
+    const [wishlist, setWishlist] = useState([]);
 
     const displayPopup = (text, type = "success") => {
         setPopupMessage({ text, type });
@@ -202,6 +204,10 @@ const FilteredProducts = () => {
 
             if (response.ok) {
                 setProducts(data.products);
+                    const initialWishlist = data.products
+                    .filter((product) => product.wishlist_status === true)
+                    .map((product) => product.product_id);
+                setWishlist(initialWishlist);
             } else {
                 setError(data.error || 'Failed to fetch products');
             }
@@ -211,7 +217,51 @@ const FilteredProducts = () => {
             setLoading(false);
         }
     };
+        useEffect(() => {
+        if (products.length > 0) {
+            const initialWishlist = products
+                .filter((product) => product.wishlist_status === true)
+                .map((product) => product.product_id);
+            setWishlist(initialWishlist);
+        }
+    }, [products]);
 
+    const toggleWishlist = async (product_id) => {
+        const customer_id = localStorage.getItem("customer_id");
+        if (!customer_id) {
+            displayPopup(
+                <>
+                    Please <Link to="/customer-login" className="popup-link">log in</Link> to add to wishlist.
+                </>,
+                "error"
+            );
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/add-wishlist`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ customer_id, product_id }),
+            });
+            const data = await response.json();
+
+            if (data.status_code === 200) {
+                displayPopup(data.message, "success");
+
+                // Toggle the wishlist state
+                setWishlist((prev) =>
+                    prev.includes(product_id)
+                        ? prev.filter((id) => id !== product_id)
+                        : [...prev, product_id]
+                );
+            } else {
+                displayPopup(data.message || "Failed to add to wishlist.", "error");
+            }
+        } catch (error) {
+            displayPopup("An error occurred while adding to wishlist.", "error");
+        }
+    };
     return (
         <div className="customer-dashboard container">
             < CarouselLanding />
@@ -350,9 +400,22 @@ const FilteredProducts = () => {
                             products.map((product) => (
                                 <div
                                     key={product.product_id}
-                                    className="customer-product-card"
+                                    className="customer-product-card wishlist-card"
                                     onClick={() => handleViewProductDetails(product)}
                                 >
+                                             <div
+                                            className="wishlist-icon"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent card click
+                                                toggleWishlist(product.product_id);
+                                            }}
+                                        >
+                                            {wishlist.includes(product.product_id) ? (
+                                                <AiFillHeart className="wishlist-heart filled" />
+                                            ) : (
+                                                <AiOutlineHeart className="wishlist-heart" />
+                                            )}
+                                        </div>
                                     <img
                                         src={product.product_image_url}
                                         alt={product.product_name}

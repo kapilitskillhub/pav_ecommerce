@@ -347,6 +347,7 @@
     display: flex;
     gap: 80px;
     justify-content: space-between;
+    position: relative;
 }
 .customer-share-button{
     color: #4450A2;
@@ -545,3 +546,12 @@
     transition: transform 0.2s ease;
 }
 
+
+.product-wishlist-icon{
+  top: -4px;
+  right: 75px;
+
+  .wishlist-heart {
+    font-size: 24px;
+  }
+}

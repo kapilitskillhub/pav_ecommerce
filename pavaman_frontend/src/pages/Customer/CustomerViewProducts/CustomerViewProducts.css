@@ -133,6 +133,9 @@
     }
 }
 
+.product-card-wishlist{
+    position: relative;
+}
 .wishlist-icon {
     position: absolute;
     top: 10px;
