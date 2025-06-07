@@ -13,7 +13,7 @@ const B2B = () => {
         <h2>Business Contact</h2>
         <div className="b2b-contact-line">
           <FaPhoneAlt className="contact-icon phone-icon" />&nbsp;
-          <span className="b2b-contact-text">+1-800-123-4567</span>
+          <span className="b2b-contact-text">+91 906 313 3029</span>
         </div>
         <div className="b2b-contact-line">
           <FaEnvelope className="contact-icon email-icon" />&nbsp;&nbsp;

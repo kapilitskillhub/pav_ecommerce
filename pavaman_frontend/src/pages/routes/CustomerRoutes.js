@@ -28,6 +28,8 @@ import Contact from "../Customer/Contact/Contact";
 import B2B from '../Customer/B2B/B2B';
 import CustomerProfileOptions from "../../pages/Customer/CustomerHeader/CustomerProfileOptions";
 import Policies from '../Customer/CustomerFooter/TempPolicies';
+import ViewWishlist from "../Customer/CustomerWishlist/CustomerViewWishlist";
+import LatestProducts from "../Customer/LatestProducts/LatestProducts";
 
 
 const CLIENT_ID = "698181623361-025dk4qeov6gk2er133mlcrnjka59fq6.apps.googleusercontent.com";
@@ -59,14 +61,13 @@ const CustomerRoutes = () => {
           <Route path="/my-orders" element={<CustomerMyOrder />} />
           <Route path="/my-orders-details" element={<CustomerMyOrderDetails />} />
           <Route path="/all-categories" element={<AllCategories />} />
-          <Route path="/all-products" element={<AllProducts/>} />
-          <Route path="/contact" element={<Contact/>} />
+          <Route path="/all-products" element={<AllProducts />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/b2b" element={<B2B />} />
-          <Route path="/profile-options" element={<CustomerProfileOptions/>} />
+          <Route path="/profile-options" element={<CustomerProfileOptions />} />
           <Route path="/policies" element={<Policies />} />
-
-          
-         
+          <Route path="/wishlist" element={<ViewWishlist />} />
+          <Route path="/latest-products" element={<LatestProducts/>}/>
         </Route>
       </Routes>
     </GoogleOAuthProvider>

@@ -42,6 +42,7 @@ const CustomerMyOrders = () => {
       fetchOrders();
     }
   }, [searchTerm]);
+
   const fetchOrders = async () => {
     if (!customerId) return;
     try {
@@ -97,6 +98,7 @@ const CustomerMyOrders = () => {
       setError("Fetch error: " + error.message);
     }
   };
+  
   useEffect(() => {
     fetchOrders();
   }, [customerId]);

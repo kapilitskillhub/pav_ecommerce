@@ -27,7 +27,7 @@
   align-items: center;
   color: #878787;
   cursor: pointer;
-  font-weight: 600;
+  /* font-weight: 600; */
   text-transform: capitalize;
   transition: color 0.2s ease-in-out;
 }

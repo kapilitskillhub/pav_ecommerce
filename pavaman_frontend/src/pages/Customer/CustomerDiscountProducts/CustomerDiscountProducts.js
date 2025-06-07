@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import API_BASE_URL from "../../../config";
 import PopupMessage from "../../../components/Popup/Popup";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 const ViewDiscountedProducts = () => {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ const ViewDiscountedProducts = () => {
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
     const [showPopup, setShowPopup] = useState(false);
     const sliderRef = useRef(null);
+    const [wishlist, setWishlist] = useState([]);
 
     useEffect(() => {
         fetchData();
@@ -42,6 +44,12 @@ const ViewDiscountedProducts = () => {
             const data = await response.json();
             if (data.status_code === 200) {
                 setDiscountedProducts(data.discounted_products);
+                  // Extract products that are already in wishlist
+            const wishlistProductIds = data.discounted_products
+                .filter((product) => product.is_in_wishlist)
+                .map((product) => product.product_id);
+
+            setWishlist(wishlistProductIds);
             } else {
                 setError(data.error || "Failed to fetch data");
             }
@@ -119,12 +127,65 @@ const ViewDiscountedProducts = () => {
         });
     };
 
+    const toggleWishlist = async (product_id) => {
+        const customer_id = localStorage.getItem("customer_id");
+        if (!customer_id) {
+            displayPopup(
+                <>
+                    Please <Link to="/customer-login" className="popup-link">log in</Link> to add to wishlist.
+                </>,
+                "error"
+            );
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/add-wishlist`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ customer_id, product_id }),
+            });
+            const data = await response.json();
+
+            if (data.status_code === 200) {
+                displayPopup(data.message, "success");
+
+                // Toggle the wishlist state
+                setWishlist((prev) =>
+                    prev.includes(product_id)
+                        ? prev.filter((id) => id !== product_id)
+                        : [...prev, product_id]
+                );
+            } else {
+                displayPopup(data.message || "Failed to add to wishlist.", "error");
+            }
+        } catch (error) {
+            displayPopup("An error occurred while adding to wishlist.", "error");
+        }
+    };
+
+
     const renderProductCard = (product) => (
         <div
             key={product.product_id}
             className="customer-discount-product-card"
             onClick={() => handleViewProductDetails(product)}
         >
+            <div
+                className="wishlist-icon"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    toggleWishlist(product.product_id);
+                }}
+            >
+                {wishlist.includes(product.product_id) ? (
+                    <AiFillHeart className="wishlist-heart filled" />
+                ) : (
+                    <AiOutlineHeart className="wishlist-heart" />
+                )}
+            </div>
+
+
             <div className="product-image-wrapper">
                 <img
                     src={product.product_image_url}
@@ -147,13 +208,12 @@ const ViewDiscountedProducts = () => {
                 </div>
                 <div className="add-cart-section">
                     <span
-                        className={`availability ${
-                            product.availability === "Out of Stock"
+                        className={`availability ${product.availability === "Out of Stock"
                                 ? "out-of-stock"
                                 : product.availability === "Very Few Products Left"
                                     ? "few-left"
                                     : "in-stock"
-                        }`}
+                            }`}
                     >
                         {product.availability === "Out of Stock"
                             ? "Out of Stock"

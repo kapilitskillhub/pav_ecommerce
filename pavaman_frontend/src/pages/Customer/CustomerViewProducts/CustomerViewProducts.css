@@ -4,7 +4,7 @@
 
     .header-filter {
         display: block;
-        width: 200px;
+        width: 250px;
         background-color: #f9f9f9;
         border: 1px solid #ddd;
         border-radius: 20px;
@@ -50,7 +50,7 @@
 
             .sorting-section {
                 display: block;
-                margin-bottom: 20px;
+                margin-bottom: 30px;
                 border: none;
                 display: flex;
                 flex-direction: column;
@@ -58,6 +58,10 @@
 
                 label {
                     font-weight: 500;
+                    font-size: 20px;
+                    /* text-align: left; */
+                    color: #4450A2;
+                    margin-bottom: 10px;
                 }
 
                 select {
@@ -69,6 +73,10 @@
 
                 }
             }
+            .filter-group-heading{
+                text-align: center;
+                margin-top: 30px;
+            }
         }
     }
 
@@ -78,6 +86,19 @@
         grid-template-columns: repeat(4, 1fr);
         gap: 20px;
     }
+
+    .filter-cat-name{
+        color: #4450A2;
+        font-weight: 600;
+
+    }
+    .filter-subcat-name{
+        margin: 10px 40px;
+        text-align: center;
+        text-transform: capitalize;
+        color: #4450A2;
+    }
+
 
     @media (max-width: 1200px) {
         .customer-products-section {
@@ -110,4 +131,27 @@
             grid-template-columns: repeat(2, 1fr);
         }
     }
+}
+
+.product-card-wishlist{
+    position: relative;
+}
+.wishlist-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    cursor: pointer;
+    background-color: white;
+    border-radius: 50%;
+    padding: 5px;
+}
+
+.wishlist-heart {
+    color: grey;
+    font-size: 20px;
+}
+
+.wishlist-heart.filled {
+    color: red;
 }

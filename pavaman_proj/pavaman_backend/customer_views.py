@@ -31,7 +31,7 @@ from .models import (
 )
 from .sms_utils import send_bulk_sms
 import threading
-from .msg91 import send_bulk_sms
+# from .msg91 import send_bulk_sms
 def is_valid_password(password):
     if len(password) < 8:
         return "Password must be at least 8 characters long."
@@ -1022,6 +1022,7 @@ def view_products_details(request, product_name):
                 category = CategoryDetails.objects.get(category_name=category_name)
                 sub_category = SubCategoryDetails.objects.get(sub_category_name=sub_category_name, category=category)
                 product = ProductsDetails.objects.get(product_name=product_name, category=category, sub_category=sub_category)
+                wishlist_product_ids = get_wishlist_product_ids(customer_id)
                 if customer_id:
                     try:
                         customer = CustomerRegisterDetails.objects.get(id=customer_id)
@@ -2952,7 +2953,6 @@ def format_product_list(products, wishlist_product_ids):
         }
         for product in products
     ]
-
 @csrf_exempt
 def get_customer_details_by_admin(request):
     if request.method == "POST":
