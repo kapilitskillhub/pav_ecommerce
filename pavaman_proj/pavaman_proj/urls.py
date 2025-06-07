@@ -141,6 +141,6 @@ urlpatterns = [
     path('filter_and_sort_products_each_subcategory',filter_and_sort_products_each_subcategory,name= 'filter_and_sort_products_each_subcategory'),
     path('add-to-wishlist',add_to_wishlist,name= 'add_to_wishlist'),
     path('view-wishlist',view_wishlist,name= 'view_wishlist'),
-    path('latest-products-current-year', latest_products_current_year, name='latest_products_current_year'),
+    path('latest-products', latest_products_current_year, name='latest_products_current_year'),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

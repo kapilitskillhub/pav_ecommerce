@@ -34,7 +34,7 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
     }, []);
     useEffect(() => {
         if (category_id) {
-            setExpandedCategoryId(category_id);
+            setExpandedCategory(category_id);
         }
     }, [category_id]);
 
@@ -108,7 +108,7 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
 
                 // Ensure current category is expanded on fetch success
                 if (category_id) {
-                    setExpandedCategoryId(category_id);
+                    setExpandedCategory(category_id);
                 }
                 setMinPrice(data.min_price);
                 setMaxPrice(data.max_price);

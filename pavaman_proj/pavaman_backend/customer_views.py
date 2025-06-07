@@ -202,7 +202,7 @@ def send_verification_email(email, first_name, verification_link):
                 If you didn't request this, you can safely ignore this email.<br/>
                 You're receiving this because you have an account on Pavaman.
             </p>
-            <p style="margin-top: 30px; font-size: 14px; color: #888;">Disclaimer: This is an automated email. Please do not reply.</p>
+            <p style="margin-top: 30px; font-size: 14px; color: #888;">This is an automated email. Please do not reply.</p>
         </div>
     </body>
     </html>
@@ -454,7 +454,7 @@ def otp_generate(request):
                     "reset_token":customer.reset_link
                     })
             else:
-                send_bulk_sms([identifier], f"Hi,This is your OTP for password reset on Pavaman Aviation: {otp}. It is valid for 2 minutes. Do not share it with anyone.")
+                send_bulk_sms([identifier], f"Hello! This is your OTP for password reset on Pavaman Aviation: {otp}. It is valid for 2 minutes. Do not share it with anyone.")
                 return JsonResponse({
                     "message": "OTP sent to mobile number",
                     "reset_token":customer.reset_link
@@ -516,7 +516,7 @@ def send_password_reset_otp_email(customer):
                 If you didn't request this, you can safely ignore this email.<br/>
                 You're receiving this because you have an account on Pavaman.
             </p>
-            <p style="margin-top: 30px; font-size: 14px; color: #888;">Disclaimer: This is an automated email. Please do not reply.</p>
+            <p style="margin-top: 30px; font-size: 14px; color: #888;">This is an automated email. Please do not reply.</p>
         </div>
     </body>
     </html>
@@ -1035,8 +1035,7 @@ def view_products_details(request, product_name):
                 return JsonResponse({"error": "Subcategory not found.", "status_code": 404}, status=404)
             except ProductsDetails.DoesNotExist:
                 return JsonResponse({"error": "Product not found.", "status_code": 404}, status=404)
-            wishlist_product_ids = get_wishlist_product_ids(customer_id)
-
+            
             price = float(product.price)
             discount = float(product.discount or 0)
             gst = float(product.gst or 0)
@@ -1068,8 +1067,6 @@ def view_products_details(request, product_name):
                 "number_of_specifications": product.number_of_specifications,
                 "specifications": product.specifications,
                 "is_in_wishlist": product.id in wishlist_product_ids
-
-                # "is_in_wishlist": product.id in wishlist_product_ids
             }
             response_data = {
                 "message": "Product details retrieved successfully.",
@@ -2190,7 +2187,7 @@ def send_html_order_confirmation(to_email, customer_name, product_list, total_am
 
         <p style="font-size: 15px;">Thank you for choosing <strong>Pavaman</strong>.<br>We hope you enjoy your purchase!</p>
 
-        <p style="margin-top: 30px; font-size: 14px; color: #888;">Disclaimer: This is an automated email. Please do not reply.</p>
+        <p style="margin-top: 30px; font-size: 14px; color: #888;">This is an automated email. Please do not reply.</p>
     </div>
     """
     try:
@@ -4178,7 +4175,7 @@ def edit_profile_mobile_otp_handler(request):
                 otp = random.randint(100000, 999999)
                 customer.otp = otp
                 customer.save(update_fields=["otp"])
-                message = f"Hi, Your OTP to verify your current mobile number for Pavaman Aviation is: {otp}. Please do not share this OTP with anyone."
+                message = f"Hello, Your OTP to verify your current mobile number for Pavaman Aviation is: {otp}. Please do not share this OTP with anyone."
 
                 send_bulk_sms([customer.mobile_no], message)
 
@@ -4213,7 +4210,7 @@ def edit_profile_mobile_otp_handler(request):
                 customer.otp = otp
                 customer.mobile_no = new_mobile
                 customer.save(update_fields=["otp", "mobile_no"])
-                message = f"Hi, Your OTP to verify your new mobile number for Pavaman Aviation is: {otp}. Please do not share this OTP with anyone."
+                message = f"Hello, Your OTP to verify your new mobile number for Pavaman Aviation is: {otp}. Please do not share this OTP with anyone."
 
                 send_bulk_sms([new_mobile], message)
 
@@ -4395,7 +4392,7 @@ def send_email_verification_otp_email(customer):
                 If you didn't request this, you can safely ignore this email.<br/>
                 You're receiving this because you have an account on Pavaman.
             </p>
-            <p style="margin-top: 30px; font-size: 14px; color: #888;">Disclaimer: This is an automated email. Please do not reply.</p>
+            <p style="margin-top: 30px; font-size: 14px; color: #888;">This is an automated email. Please do not reply.</p>
         </div>
     </body>
     </html>
@@ -4627,7 +4624,7 @@ def filter_and_sort_products(request):
                     "material_file": product.material_file,
                     "number_of_specifications": product.number_of_specifications,
                     "specifications": product.specifications,
-                    "wishlist_status": product.id in wishlist_product_ids,
+                    "wishlist": product.id in wishlist_product_ids,
                 }
 
                 products_list.append(product_data)
