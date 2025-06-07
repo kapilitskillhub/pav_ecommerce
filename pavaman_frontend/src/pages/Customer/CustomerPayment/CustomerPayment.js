@@ -36,18 +36,17 @@ const RazorpayPayment = ({ orderSummary }) => {
             order_id: order.order_id,
             product_id: order.product_id,
         }));
-
         try {
             const response = await fetch(`${API_BASE_URL}/create-razorpay-order`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ customer_id: customerId, order_products: orderProducts }),
+                body: JSON.stringify({ customer_id: customerId, order_products: orderProducts}),
             });
 
             const orderData = await response.json();
 
             if (!response.ok) throw new Error(orderData.error || "Failed to create Razorpay order.");
-
+            const productOrderId = orderData.product_order_id;
             const options = {
                 key: orderData.razorpay_key,
                 amount: orderData.total_amount * 100,
@@ -66,7 +65,8 @@ const RazorpayPayment = ({ orderSummary }) => {
                             razorpay_signature: paymentResponse.razorpay_signature,
                             customer_id: customerId,
                             order_products: orderProducts,
-                            address_id: orderSummary.shippingAddress?.address_id
+                            address_id: orderSummary.shippingAddress?.address_id,
+                            product_order_id:productOrderId
 
                         }),
                     });

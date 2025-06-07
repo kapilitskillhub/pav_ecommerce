@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pavaman_backend',
     'corsheaders',
-    # 'social_django',
 ]
 
 MIDDLEWARE = [
@@ -193,7 +192,10 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB
 
 from decouple import config
-
+# MSG91_AUTH_KEY = config('MSG91_AUTH_KEY')
+# MSG91_SENDER_ID = config('MSG91_SENDER_ID')
+# MSG91_ROUTE = config('MSG91_ROUTE', default='4')
+# MSG91_COUNTRY = config('MSG91_COUNTRY', default='91')
 
 TWILIO_ACCOUNT_SID = config("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = config("TWILIO_AUTH_TOKEN")
