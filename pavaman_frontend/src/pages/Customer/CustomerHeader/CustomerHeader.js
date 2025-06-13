@@ -4,7 +4,9 @@ import { IoMdPerson } from "react-icons/io";
 import { FiChevronRight, FiHome, FiPhone } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../CustomerHeader/CustomerHeader.css";
-import Logo from "../../../assets/images/logo.png";
+// import Logo from "../../../assets/images/logo.png";
+import Logo from "../../../assets/images/header logo desktop.svg";
+
 import { BiCategory } from "react-icons/bi";
 import MobileHeader from "./MobileHeader";
 import { IoMdClose } from "react-icons/io"

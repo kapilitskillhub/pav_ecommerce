@@ -9,7 +9,9 @@ import { IoMdPerson } from "react-icons/io";
 import "../CustomerHeader/MobileHeader.css";
 import { IoMdClose } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
-import Logo from "../../../assets/images/logo.png";
+// import Logo from "../../../assets/images/logo.png";
+import Logo from "../../../assets/images/header logo mobile.svg";
+
 import { LuBriefcaseBusiness } from "react-icons/lu";
 
 const MobileHeader = ({ handleLogout, cartCount }) => {
