@@ -68,6 +68,7 @@ const CustomerViewProductDetails = () => {
                     category_name,
                     sub_category_name,
                     product_name,
+                    customer_id : localStorage.getItem("customer_id")
                 }),
             });
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
-import Logo from "../../assets/images/logo.png";
+import Logo from "../../assets/images/header logo desktop.svg";
 import SearchIcon from "../../assets/images/search.svg";
 import { IoPerson } from "react-icons/io5";
 import { RiRefreshLine } from "react-icons/ri";
