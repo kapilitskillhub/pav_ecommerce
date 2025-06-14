@@ -239,7 +239,7 @@ const FilteredProducts = () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/add-wishlist`, {
+            const response = await fetch(`${API_BASE_URL}/add-to-wishlist`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id }),
@@ -348,7 +348,7 @@ const FilteredProducts = () => {
                                     </select>
                                 </div>
 
-                                <div className="filter-group">
+                                {/* <div className="filter-group">
                                     <div className="filter-group-heading sidebar-category-heading">Categories</div>
 
                                     <ul className="category-list">
@@ -387,7 +387,7 @@ const FilteredProducts = () => {
                                         ))}
                                     </ul>
 
-                                </div>
+                                </div> */}
 
                             </div>
                         </div>

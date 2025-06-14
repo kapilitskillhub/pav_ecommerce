@@ -29,6 +29,7 @@ html, body {
     /* margin-left: 35px; */
 }
 .customer-discount-product-card {
+    position: relative;
     border: 2px solid #dadada; 
     border-radius: 12px;   
     padding: 10px;
@@ -42,6 +43,7 @@ html, body {
     height: 415px;
     margin-bottom: 20px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); 
+    max-width: 220px;
 }
 .customer-discount-product-card:hover {
     box-shadow: 0px 6px 18px rgba(0, 0, 0, 0); 
@@ -56,6 +58,7 @@ html, body {
     display: block;
     margin: 0 auto;
     /* margin-right: 80px; */
+        width: 120px;
 }
 .customer-discount-product-name {
     font-size: 18px;
@@ -71,6 +74,14 @@ html, body {
     height: 34px;
 }
 
+.slick-slide {
+    padding: 0 5px; /* Adjust for spacing between cards */
+}
+.slick-list {
+    margin: 0 -5px; /* Negative to cancel out total side padding */
+}
+
+
 .customer-discount-section-name,
 .customer-discount-section-price,
 .customer-discount-section-original-price {
@@ -79,7 +90,7 @@ html, body {
     text-align: center !important;
 }
 .customer-discount-section-price {
-    font-size: 18px;
+    font-size: 16px;
     margin: 16px auto;
     text-align: center !important;
 }
@@ -206,7 +217,7 @@ html, body {
     }
 
     .customer-discount-product-image,.product-image-wrapper {
-        width: 147px;
+        width: 120px;
         height: 150px;
     }
     .customer-discount-section-price{
@@ -224,7 +235,7 @@ html, body {
     }
 
     .customer-discount-product-image,.product-image-wrapper {
-        width: 147px;
+        width: 120px;
         height: 150px;
         margin-right: 5px;
     }

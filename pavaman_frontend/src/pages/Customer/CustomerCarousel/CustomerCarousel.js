@@ -1,5 +1,7 @@
 import Slider from "react-slick";
-import carouselImage from "../../../assets/images/carousel-banner.png";
+import carouselImage from "../../../assets/images/banner-1.jpg";
+import carouselImage2 from "../../../assets/images/banner-2.jpg";
+
 import "./CustomerCarousel.css";
 
 const carouselItems = [
@@ -8,12 +10,8 @@ const carouselItems = [
     alt: "Drone Banner 1",
   },
   {
-    image: carouselImage,
+    image: carouselImage2,
     alt: "Drone Banner 2",
-  },
-  {
-    image: carouselImage,
-    alt: "Drone Banner 3",
   },
 ];
 

@@ -10,7 +10,7 @@ import API_BASE_URL from "../../../config";
 import PopupMessage from "../../../components/Popup/Popup";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
-const ViewDiscountedProducts = () => {
+const ViewDiscountedProducts = ({ slidesToShow = 5 }) => {
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
     const [discountedProducts, setDiscountedProducts] = useState([]);
@@ -44,12 +44,12 @@ const ViewDiscountedProducts = () => {
             const data = await response.json();
             if (data.status_code === 200) {
                 setDiscountedProducts(data.discounted_products);
-                  // Extract products that are already in wishlist
-            const wishlistProductIds = data.discounted_products
-                .filter((product) => product.is_in_wishlist)
-                .map((product) => product.product_id);
+                // Extract products that are already in wishlist
+                const wishlistProductIds = data.discounted_products
+                    .filter((product) => product.is_in_wishlist)
+                    .map((product) => product.product_id);
 
-            setWishlist(wishlistProductIds);
+                setWishlist(wishlistProductIds);
             } else {
                 setError(data.error || "Failed to fetch data");
             }
@@ -98,20 +98,42 @@ const ViewDiscountedProducts = () => {
         }
     };
 
-    const sliderSettings = {
-        infinite: true,
-        speed: 1000,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        pauseOnHover: true,
-        responsive: [
-            { breakpoint: 1024, settings: { slidesToShow: 4 } },
-            { breakpoint: 768, settings: { slidesToShow: 3 } },
-            { breakpoint: 480, settings: { slidesToShow: 2 } },
-        ],
-    };
+const sliderSettings = {
+    infinite: true,
+    speed: 1000,
+    slidesToShow,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: true,
+    responsive: [
+        {
+            breakpoint: 1440,
+            settings: {
+                slidesToShow: Math.min(slidesToShow, 5),
+            },
+        },
+        {
+            breakpoint: 1024,
+            settings: {
+                slidesToShow: Math.min(slidesToShow, 4),
+            },
+        },
+        {
+            breakpoint: 768,
+            settings: {
+                slidesToShow: Math.min(slidesToShow, 3),
+            },
+        },
+        {
+            breakpoint: 480,
+            settings: {
+                slidesToShow: Math.min(slidesToShow, 2),
+            },
+        },
+    ],
+};
+
 
     const handleViewProductDetails = (product) => {
         if (!product.category_id || !product.sub_category_id) {
@@ -140,7 +162,7 @@ const ViewDiscountedProducts = () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/add-wishlist`, {
+            const response = await fetch(`${API_BASE_URL}/add-to-wishlist`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id }),
@@ -209,10 +231,10 @@ const ViewDiscountedProducts = () => {
                 <div className="add-cart-section">
                     <span
                         className={`availability ${product.availability === "Out of Stock"
-                                ? "out-of-stock"
-                                : product.availability === "Very Few Products Left"
-                                    ? "few-left"
-                                    : "in-stock"
+                            ? "out-of-stock"
+                            : product.availability === "Very Few Products Left"
+                                ? "few-left"
+                                : "in-stock"
                             }`}
                     >
                         {product.availability === "Out of Stock"

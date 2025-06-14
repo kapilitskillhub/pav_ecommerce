@@ -276,7 +276,7 @@ const CustomerViewProductDetails = () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/add-wishlist`, {
+            const response = await fetch(`${API_BASE_URL}/add-to-wishlist`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
