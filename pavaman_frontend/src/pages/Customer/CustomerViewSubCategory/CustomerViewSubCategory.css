@@ -93,7 +93,7 @@ body {
 .sub-main-content {
   flex: 1;
   flex-grow: 1;
-  overflow-x: auto;
+  /* overflow-x: auto; */
   min-width: 0;
 }
 

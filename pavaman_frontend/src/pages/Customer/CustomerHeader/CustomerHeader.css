@@ -18,7 +18,7 @@
   min-width: 130px;
 }
 .customer-logo img {
-  width: 160px;
+  width: 200px;
   object-fit: contain;
   height: auto;
 }
@@ -309,6 +309,10 @@
     gap: 20px;
     justify-content: space-around;
   }
+
+  .mobile-customer-logo{
+width: 250px;
+  }
   .mobile-customer-logo img {
     max-width: 150px;
   }
@@ -451,7 +455,7 @@
     flex-direction: column;
   }
   .mobile-customer-logo img {
-    max-width: 110px;
+    width: 115px;
   }
   .mobile-menu-list-item {
     margin: 5px 90px;

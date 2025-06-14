@@ -21,21 +21,20 @@ const CustomerViewCart = () => {
     }, []);
 
     useEffect(() => {
-        fetchCartData();
+    const handleSearch = (e) => {
+        const query = e.detail?.trim(); // normalize input
+        if (!query) {
+            setError(""); // Clear stale "no items found"
+            setLoading(true);
+            fetchCartData();
+        } else {
+            searchCart(query);
+        }
+    };
 
-        const handleSearch = (e) => {
-            console.log("Search event triggered with query:", e.detail);
-            const query = e.detail;
-            if (!query) {
-                fetchCartData();
-            } else {
-                searchCart(query);
-            }
-        };
-
-        window.addEventListener("customerCategorySearch", handleSearch);
-        return () => window.removeEventListener("customerCategorySearch", handleSearch);
-    }, []);
+    window.addEventListener("customerCategorySearch", handleSearch);
+    return () => window.removeEventListener("customerCategorySearch", handleSearch);
+}, []);
 
 
     const displayPopup = (text, type = "success") => {
@@ -73,6 +72,7 @@ const CustomerViewCart = () => {
             if (data.status_code === 200) {
                 setCartItems(data.cart_items || []);
                 setTotalPrice(data.total_cart_value || 0);
+                setError("");
             } else {
                 setError(data.message || "Failed to fetch cart.");
             }
@@ -82,8 +82,11 @@ const CustomerViewCart = () => {
             setLoading(false);
         }
     };
+
     const searchCart = async (query) => {
         setLoading(true);
+        setError(""); // Clear any previous errors
+
         const customer_id = localStorage.getItem("customer_id");
 
         if (!customer_id) {
@@ -107,25 +110,35 @@ const CustomerViewCart = () => {
             const data = await response.json();
 
             if (data.status_code === 200) {
-                const normalizedItems = data.cart_items.map((item) => {
-                    const discountPercent = item.discount
-                        ? parseFloat(item.discount.replace('%', '')) || 0
-                        : 0;
-                    const discountAmount = (item.price || 0) * (discountPercent / 100);
+                const items = data.cart_items || [];
 
-                    return {
-                        ...item,
-                        price_per_item: item.price ?? item.final_price ?? 0,
-                        discounted_amount: discountAmount,
-                    };
-                });
-                setCartItems(normalizedItems);
-                setTotalPrice(
-                    normalizedItems.reduce(
-                        (acc, item) => acc + (item.final_price * item.quantity),
-                        0
-                    ) || 0
-                );
+                if (items.length === 0) {
+                    setCartItems([]); // clear any previous data
+                    setTotalPrice(0);
+                    setError(data.message || "No items found.");
+                } else {
+                    const normalizedItems = items.map((item) => {
+                        const discountPercent = item.discount
+                            ? parseFloat(item.discount.replace('%', '')) || 0
+                            : 0;
+                        const discountAmount = (item.price || 0) * (discountPercent / 100);
+
+                        return {
+                            ...item,
+                            price_per_item: item.price ?? item.final_price ?? 0,
+                            discounted_amount: discountAmount,
+                        };
+                    });
+
+                    setCartItems(normalizedItems);
+                    setTotalPrice(
+                        normalizedItems.reduce(
+                            (acc, item) => acc + (item.final_price * item.quantity),
+                            0
+                        ) || 0
+                    );
+                    setError(""); // Clear any "no items" messages
+                }
             } else {
                 setError(data.message || "Failed to search cart.");
             }
@@ -135,6 +148,9 @@ const CustomerViewCart = () => {
             setLoading(false);
         }
     };
+
+
+
 
     const handleDeleteCartItem = async (product_id) => {
         const customer_id = localStorage.getItem("customer_id");
@@ -472,7 +488,7 @@ const CustomerViewCart = () => {
                 )}
 
                 <div className="cart-price-section">
-                    {cartItems.length >0 && selectedProducts.length === 0 && (
+                    {cartItems.length > 0 && selectedProducts.length === 0 && (
                         <div className="cart-side-section">
                             <div>
                                 <div className="cart-price-header">Price details</div>
@@ -497,7 +513,7 @@ const CustomerViewCart = () => {
                             </div>
                         </div>
                     )}
-                    {cartItems.length >0 && selectedProducts.length > 0 && (
+                    {cartItems.length > 0 && selectedProducts.length > 0 && (
                         <div className="cart-side-section">
                             <div>
                                 <div className="cart-price-header">Total Payable</div>

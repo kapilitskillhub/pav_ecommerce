@@ -2,8 +2,8 @@ import{ useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../SignIn/Signin.css";
-import Logo from "../../assets/images/aviation-logo.png";
-import LogInImage from "../../assets/images/signinpage-image.png";
+import Logo from "../../assets/images/DK mail logo.svg";
+import LogInImage from "../../assets/images/login image.jpg";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import API_BASE_URL from "../../config";
 
@@ -147,7 +147,7 @@ const SignIn = ({ setIsAuthenticated }) => {
 
       <div className="login-image-section">
         <div className="image-text">
-          “Power On with <span>Confidence.”</span>
+             “Let's Your Vision Take Flight.”
         </div>
         <img className="login-image" alt="Sign In" src={LogInImage} />
       </div>

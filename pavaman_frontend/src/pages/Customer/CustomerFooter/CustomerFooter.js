@@ -1,5 +1,7 @@
 import "../CustomerFooter/CustomerFooter.css";
-import logo from '../../../assets/images/logo.png';
+// import logo from '../../../assets/images/logo.png';
+import logo from '../../../assets/images/footer logo.svg';
+
 import { useNavigate } from 'react-router-dom';
 import { FaFacebook , FaInstagram ,FaTwitter  ,FaYoutube ,FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";

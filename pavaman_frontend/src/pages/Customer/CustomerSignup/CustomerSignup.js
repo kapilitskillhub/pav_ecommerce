@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../CustomerSignup/CustomerSignup.css";
-import Logo from "../../../assets/images/aviation-logo.png";
-import LogInImage from "../../../assets/images/signinpage-image.png";
+import Logo from "../../../assets/images/DK mail logo.svg";
+import LogInImage from "../../../assets/images/login image.jpg";
 import { FaEye, FaEyeSlash, FaInfoCircle } from "react-icons/fa";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -240,7 +240,7 @@ const CustomerSignup = () => {
 
             <div className="signup-image-section">
                 <div className="signup-image-text">
-                    “Power On with <span>Confidence.”</span>
+                    “Let's Your Vision Take Flight.”
                 </div>
                 <img className="signup-image" alt="Sign Up" src={LogInImage} />
             </div>

@@ -4,8 +4,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import "../CustomerLogin/CustomerLogin.css";
-import Logo from "../../../assets/images/aviation-logo.png";
-import LogInImage from "../../../assets/images/signinpage-image.png";
+import Logo from "../../../assets/images/DK mail logo.svg";
+import LogInImage from "../../../assets/images/login image.jpg";
 import { FaEye, FaEyeSlash, FaInfoCircle } from "react-icons/fa";
 import PhoneInput from "react-phone-input-2";
 import { useLocation } from "react-router-dom";
@@ -446,7 +446,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
             <div className="customer-login-image-section">
                 <div className="customer-login-image-text">
-                    “Power On with <span>Confidence.”</span>
+                    “Let's Your Vision Take Flight.”
                 </div>
                 <img className="customer-login-image" alt="LogIn" src={LogInImage} />
             </div>
