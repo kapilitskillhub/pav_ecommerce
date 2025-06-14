@@ -32,6 +32,20 @@ from .models import (
 from .sms_utils import send_bulk_sms
 import threading
 # from .msg91 import send_bulk_sms
+# views.py
+
+from django.http import JsonResponse
+from .msg91 import send_msg91_sms
+
+def generate_otp():
+    return random.randint(100000, 999999)
+def send_otp_view(request):
+    test_number = "918885030341"  # your trial number
+    OTP = generate_otp()                # generate dynamically in real use
+
+    result = send_msg91_sms(test_number, OTP)
+    return JsonResponse(result)
+
 def is_valid_password(password):
     if len(password) < 8:
         return "Password must be at least 8 characters long."
