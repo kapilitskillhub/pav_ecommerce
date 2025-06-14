@@ -373,7 +373,8 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                         </div>
                     </div>
                     <div className="empty-space"></div>
-                    <ViewDiscountedProducts />
+                                <ViewDiscountedProducts slidesToShow={4} />
+
                 </div>
             </div>
         </div>
