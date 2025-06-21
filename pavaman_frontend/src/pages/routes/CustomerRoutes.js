@@ -32,7 +32,7 @@ import ViewWishlist from "../Customer/CustomerWishlist/CustomerViewWishlist";
 import LatestProducts from "../Customer/LatestProducts/LatestProducts";
 
 
-const CLIENT_ID = "698181623361-025dk4qeov6gk2er133mlcrnjka59fq6.apps.googleusercontent.com";
+const CLIENT_ID = "608603119335-ogp6iqcf7eq1md35247je2p5pkelji38.apps.googleusercontent.com";
 
 const CustomerRoutes = () => {
   const [isCustomerAuthenticated, setCustomerAuthenticated] = useState(false);
