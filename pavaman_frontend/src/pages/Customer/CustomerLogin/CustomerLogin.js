@@ -200,10 +200,10 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             return;
         }
 
-        // if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier.startsWith("+")) {
-        //     showPopup("Please enter a valid mobile number with country code.", "error");
-        //     return;
-        // }
+        if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier.startsWith("+")) {
+            showPopup("Please enter a valid mobile number with country code.", "error");
+            return;
+        }
 
         try {
             const response = await axios.post(`${API_BASE_URL}/otp-generate`, {
@@ -216,7 +216,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                 setShowForgotPasswordPopup(false);
                 setShowOTPVerification(true);
                 setResendDisabled(true);
-                setOtpTimer(300); 
+                setOtpTimer(120); 
             }
 
         } catch (error) {

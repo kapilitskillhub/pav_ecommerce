@@ -29,6 +29,8 @@ const AllProducts = () => {
                 {
                     customer_id,
                 }
+
+                //    navigate(`/categories/${category_name}/${subCategory.sub_category_name}`);
             );
             if (productRes.data.status_code === 200) {
                 setProducts(productRes.data.products);
@@ -120,7 +122,7 @@ const AllProducts = () => {
             return;
         }
         try {
-            const response = await fetch(`{API_BASE_URL}/add-cart-product`,{
+            const response = await fetch(`${API_BASE_URL}/add-cart-product`,{
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id, quantity: 1 }),

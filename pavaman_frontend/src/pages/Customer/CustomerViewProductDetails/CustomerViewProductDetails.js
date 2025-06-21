@@ -68,7 +68,7 @@ const CustomerViewProductDetails = () => {
                     category_name,
                     sub_category_name,
                     product_name,
-                    customer_id : localStorage.getItem("customer_id")
+                    customer_id: localStorage.getItem("customer_id")
                 }),
             });
 
@@ -237,31 +237,53 @@ const CustomerViewProductDetails = () => {
     };
 
 
+    // const handleShare = (product) => {
+    //     const shareUrl = `${window.location.origin}/product-details/${encodeURIComponent(product.product_name)}`;
+    //     const message = `Take a look at this amazing product: ${product.product_name}!\n\n${shareUrl}`;
+
+    //     const shareData = {
+    //         title: product.product_name,
+    //         text: message,
+    //         url: shareUrl,
+    //     };
+
+    //     if (navigator.share) {
+    //         navigator.share(shareData).catch((error) => {
+    //             console.error("Sharing failed:", error);
+    //             displayPopup("Failed to share product.", "error");
+    //         });
+    //     } else {
+    //         navigator.clipboard.writeText(message)
+    //             .then(() => {
+    //                 displayPopup("Product message copied to clipboard!", "success");
+    //             })
+    //             .catch(() => {
+    //                 displayPopup("Failed to copy message.", "error");
+    //             });
+    //     }
+    // };
+
     const handleShare = (product) => {
-        const shareUrl = `${window.location.origin}/product-details/${encodeURIComponent(product.product_name)}`;
-        const message = `Take a look at this amazing product: ${product.product_name}!\n\n${shareUrl}`;
-
-        const shareData = {
-            title: product.product_name,
-            text: message,
-            url: shareUrl,
-        };
-
-        if (navigator.share) {
-            navigator.share(shareData).catch((error) => {
-                console.error("Sharing failed:", error);
-                displayPopup("Failed to share product.", "error");
-            });
-        } else {
-            navigator.clipboard.writeText(message)
-                .then(() => {
-                    displayPopup("Product message copied to clipboard!", "success");
-                })
-                .catch(() => {
-                    displayPopup("Failed to copy message.", "error");
-                });
-        }
+    const productUrl = `${window.location.origin}/product-details/${product.category_name}/${product.sub_category_name}/${product.product_id}`;
+    const shareData = {
+        title: product.product_name,
+        text: `Check out this product: ${product.product_name}`,
+        url: productUrl,
     };
+
+    if (navigator.share) {
+        navigator.share(shareData)
+            .then(() => console.log('Shared successfully'))
+            .catch((error) => console.error('Error sharing:', error));
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(productUrl).then(() => {
+            alert("Link copied to clipboard!");
+        }).catch((err) => {
+            alert("Failed to copy link.");
+        });
+    }
+};
 
     const toggleWishlist = async () => {
         const customer_id = localStorage.getItem("customer_id");
@@ -370,7 +392,7 @@ const CustomerViewProductDetails = () => {
 
                         <div className="customer-view-info">
                             <div className="title-share-div">
-                                <p className="customer-view-title">{productDetails.product_name}</p>
+                                <div className="customer-view-title">{productDetails.product_name}</div>
                                 <div
                                     className="wishlist-icon product-wishlist-icon"
                                     onClick={(e) => {
@@ -389,15 +411,6 @@ const CustomerViewProductDetails = () => {
                                     <span>Share</span>
                                 </div>
                             </div>
-
-                            <p className="customer-availability">
-                                Availability :
-                                <span className={`availability ${productDetails.availability === "Out of Stock" ? "out-of-stock" : productDetails.availability === "Very Few Products Left" ? "few-left" : "in-stock"}`}>
-                                    {productDetails.availability}
-                                </span>
-                            </p>
-
-                            <p className="customer-sku">SKU: {productDetails.sku_number}</p>
                             <p className="customer-price">₹ {productDetails.final_price.toFixed(2)} <span>(Incl. GST)</span></p>
 
                             {productDetails.price !== productDetails.final_price && (
@@ -408,6 +421,15 @@ const CustomerViewProductDetails = () => {
                                     </span>
                                 </p>
                             )}
+                            <p className="customer-availability">
+                                Availability :
+                                <span className={`availability ${productDetails.availability === "Out of Stock" ? "out-of-stock" : productDetails.availability === "Very Few Products Left" ? "few-left" : "in-stock"}`}>
+                                    {productDetails.availability}
+                                </span>
+                            </p>
+
+                            <p className="customer-sku">SKU: {productDetails.sku_number}</p>
+
 
 
                             {(productDetails.availability === "Very Few Products Left" || productDetails.availability === "In Stock") && (

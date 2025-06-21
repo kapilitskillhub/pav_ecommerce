@@ -218,12 +218,13 @@ const sliderSettings = {
             <div className="customer-product-name customer-discount-section-name">
                 {product.product_name}
             </div>
-            <div className="customer-discount-section-price">
-                <span>₹</span>{product.final_price}.00 (incl. GST)
-            </div>
+        <div className="customer-discount-section-price">
+    ₹{parseFloat(product.final_price).toFixed(2)} (incl. GST)
+</div>
+
             <div>
                 <div className="customer-discount-section-original-price">
-                    ₹{product.price}.00 (incl. GST)
+                       ₹{parseFloat(product.price).toFixed(2)} (incl. GST)
                     <div className="discount-tag">
                         {product.discount && `${product.discount} off`}
                     </div>
@@ -240,7 +241,7 @@ const sliderSettings = {
                         {product.availability === "Out of Stock"
                             ? "Out of Stock"
                             : product.availability === "Very Few Products Left"
-                                ? "Very Few Products Left"
+                                ? "Few Left"
                                 : "In Stock"}
                     </span>
                     {(product.availability === "Very Few Products Left" || product.availability === "In Stock") && (

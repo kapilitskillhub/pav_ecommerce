@@ -44,12 +44,12 @@ const CustomerEditProfile = () => {
     };
 
     const handlePhoneChange = (value) => {
-        setFormData((prev) => ({ ...prev, mobile_no: "+" + value }));
+        setFormData((prev) => ({ ...prev, mobile_no:  value }));
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-             const response = await fetch(`${API_BASE_URL}/edit-customer-profile`, {
+            const response = await fetch(`${API_BASE_URL}/edit-customer-profile`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -121,19 +121,19 @@ const CustomerEditProfile = () => {
                 </div>
                 <div className="input-single">
                     <h3 className="profile-edit-heading-first">Mobile Number</h3>
-                   <PhoneInput
-  country={'in'}
-  value={formData.mobile_no.replace('+', '')} // Remove '+' for proper formatting
-  onChange={(value) => handlePhoneChange(value)}
-  inputProps={{
-    name: 'mobile_no',
-    required: true,
-  }}
-  enableSearch={true}
-  autoFormat={true}
-  disableCountryCode={false}
-  disableDropdown={false}
-/>
+                    <PhoneInput
+                        country={'in'}
+                        value={formData.mobile_no.replace('+', '')} // Remove '+' for proper formatting
+                        onChange={(value) => handlePhoneChange(value)}
+                        inputProps={{
+                            name: 'mobile_no',
+                            required: true,
+                        }}
+                        enableSearch={true}
+                        autoFormat={true}
+                        disableCountryCode={false}
+                        disableDropdown={false}
+                    />
 
                 </div>
                 <div className="button-row">
