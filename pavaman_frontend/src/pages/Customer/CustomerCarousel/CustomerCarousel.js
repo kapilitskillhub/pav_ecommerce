@@ -31,21 +31,25 @@ const CarouselLanding = () => {
     arrows: true,
   };
   return (
-    <div className="carousel-wrapper container">
-      <Slider {...settings}>
-        {carouselItems.map((item, index) => (
-          <div key={index} className="carousel-slide">
-            <img src={item.image} alt={item.alt} className="carousel-img" />
-              <div className="carousel-text-overlay">
-              {item.texts.map((text, i) => (
-                <p key={i} className="carousel-text">{text}</p>
-              ))}
-            </div>
-          </div>
-          
-        ))}
-      </Slider>
-    </div>
+<div className="carousel-wrapper container">
+  <Slider {...settings}>
+    {carouselItems.map((item, index) => (
+      <div key={index} className="carousel-slide">
+        <img src={item.image} alt={item.alt} className="carousel-img" />
+        <div
+          className={`carousel-text-overlay ${
+            index === 0 ? "text-left" : "text-right"
+          }`}
+        >
+          {item.texts.map((text, i) => (
+            <p key={i} className="carousel-text">{text}</p>
+          ))}
+        </div>
+      </div>
+    ))}
+  </Slider>
+</div>
+
   );
 };
 

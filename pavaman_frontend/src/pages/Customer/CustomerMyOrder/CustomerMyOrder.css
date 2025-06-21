@@ -208,14 +208,14 @@
 
 }
 
-.mobile-filter-toggle {
+/* .mobile-filter-toggle {
   display: none;
   font-size: 16px;
   color: #4450A2;
   font-weight: bold;
   margin-bottom: 10px;
   cursor: pointer;
-}
+} */
 
 .filters-sidebar.mobile {
   display: none; 
@@ -392,6 +392,10 @@
   .page-number {
     font-size: 14px;
     margin: 10px 0;
+  }
+
+  .mobile-filter-toggle{
+    text-align: left;
   }
 }
 .discount-tag-myorder {

@@ -200,7 +200,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             return;
         }
 
-        if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier) {
+        if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier.startsWith("+")) {
             showPopup("Please enter a valid mobile number with country code.", "error");
             return;
         }
@@ -216,7 +216,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                 setShowForgotPasswordPopup(false);
                 setShowOTPVerification(true);
                 setResendDisabled(true);
-                setOtpTimer(300); 
+                setOtpTimer(120); 
             }
 
         } catch (error) {
@@ -468,7 +468,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                                 className="forgot-phone-input-otp"
                                 country={"in"}
                                 value={forgotPasswordIdentifier}
-                                onChange={(value) => setForgotPasswordIdentifier( value)} 
+                                onChange={(value) => setForgotPasswordIdentifier("+" + value)} 
                                 inputProps={{
                                     required: true,
                                 }}

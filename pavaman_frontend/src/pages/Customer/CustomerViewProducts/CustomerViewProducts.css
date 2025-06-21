@@ -94,7 +94,7 @@
     }
     .filter-subcat-name{
         margin: 10px 40px;
-        text-align: center;
+        text-align: left;
         text-transform: capitalize;
         color: #4450A2;
     }
@@ -118,7 +118,7 @@
         .header-filter {
             width: 265px;
             margin: 10px auto;
-            height: 279px;
+            /* height: 320px; */
         }
 
         .customer-products-section {
