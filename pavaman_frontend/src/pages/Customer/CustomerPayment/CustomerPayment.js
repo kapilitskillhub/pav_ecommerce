@@ -35,6 +35,7 @@ const RazorpayPayment = ({ orderSummary }) => {
         const orderProducts = orderSummary.orders.map(order => ({
             order_id: order.order_id,
             product_id: order.product_id,
+            
         }));
 
         try {
@@ -45,7 +46,7 @@ const RazorpayPayment = ({ orderSummary }) => {
             });
 
             const orderData = await response.json();
-
+            const product_order_id = orderData.product_order_id;
             if (!response.ok) throw new Error(orderData.error || "Failed to create Razorpay order.");
 
             const options = {
@@ -66,6 +67,7 @@ const RazorpayPayment = ({ orderSummary }) => {
                             razorpay_signature: paymentResponse.razorpay_signature,
                             customer_id: customerId,
                             order_products: orderProducts,
+                             product_order_id: product_order_id,
                             address_id: orderSummary.shippingAddress?.address_id
 
                         }),
