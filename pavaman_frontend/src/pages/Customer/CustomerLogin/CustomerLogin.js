@@ -200,10 +200,10 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             return;
         }
 
-        // if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier.startsWith("+")) {
-        //     showPopup("Please enter a valid mobile number with country code.", "error");
-        //     return;
-        // }
+        if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier) {
+            showPopup("Please enter a valid mobile number with country code.", "error");
+            return;
+        }
 
         try {
             const response = await axios.post(`${API_BASE_URL}/otp-generate`, {
@@ -468,7 +468,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                                 className="forgot-phone-input-otp"
                                 country={"in"}
                                 value={forgotPasswordIdentifier}
-                                onChange={(value) => setForgotPasswordIdentifier("+" + value)} 
+                                onChange={(value) => setForgotPasswordIdentifier( value)} 
                                 inputProps={{
                                     required: true,
                                 }}

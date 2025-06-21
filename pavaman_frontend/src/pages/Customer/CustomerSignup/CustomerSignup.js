@@ -74,7 +74,7 @@ const CustomerSignup = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...formData,
-                    mobile_no: formData.mobile_no.startsWith("+") ? formData.mobile_no : "+" + formData.mobile_no
+                    mobile_no: formData.mobile_no
                 }),
                 
             });

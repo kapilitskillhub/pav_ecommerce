@@ -8,10 +8,14 @@ const carouselItems = [
   {
     image: carouselImage,
     alt: "Drone Banner 1",
+     texts: [
+      "Integrate your power into machines that elevate your dreams.",
+    ],
   },
   {
     image: carouselImage2,
     alt: "Drone Banner 2",
+    texts: ["Excel proficiency in aviation using cutting-edge technologies"],
   },
 ];
 
@@ -32,7 +36,13 @@ const CarouselLanding = () => {
         {carouselItems.map((item, index) => (
           <div key={index} className="carousel-slide">
             <img src={item.image} alt={item.alt} className="carousel-img" />
+              <div className="carousel-text-overlay">
+              {item.texts.map((text, i) => (
+                <p key={i} className="carousel-text">{text}</p>
+              ))}
+            </div>
           </div>
+          
         ))}
       </Slider>
     </div>
