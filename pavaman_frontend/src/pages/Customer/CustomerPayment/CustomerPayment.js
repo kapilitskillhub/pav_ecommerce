@@ -53,7 +53,7 @@ const RazorpayPayment = ({ orderSummary }) => {
                 key: orderData.razorpay_key,
                 amount: orderData.total_amount * 100,
                 currency: "INR",
-                name: "Pavaman E-commerce",
+                name: "Dronekits",
                 description: `Payment for Order(s): ${orderProducts.map(o => o.order_id).join(", ")}`,
                 order_id: orderData.razorpay_order_id,
                 handler: async (paymentResponse) => {

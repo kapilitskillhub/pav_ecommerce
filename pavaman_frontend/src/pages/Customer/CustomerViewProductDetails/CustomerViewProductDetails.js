@@ -75,7 +75,13 @@ const CustomerViewProductDetails = () => {
             const data = await response.json();
 
             if (data.status_code === 200) {
-                setProductDetails(data.product_details);
+                const fullDetails = {
+                    ...data.product_details,
+                    category_name: data.category_name,
+                    sub_category_name: data.sub_category_name,
+                };
+                setProductDetails(fullDetails);
+
                 setIsWishlisted(data.product_details.is_in_wishlist || false);
 
 
@@ -236,54 +242,27 @@ const CustomerViewProductDetails = () => {
         }
     };
 
-
-    // const handleShare = (product) => {
-    //     const shareUrl = `${window.location.origin}/product-details/${encodeURIComponent(product.product_name)}`;
-    //     const message = `Take a look at this amazing product: ${product.product_name}!\n\n${shareUrl}`;
-
-    //     const shareData = {
-    //         title: product.product_name,
-    //         text: message,
-    //         url: shareUrl,
-    //     };
-
-    //     if (navigator.share) {
-    //         navigator.share(shareData).catch((error) => {
-    //             console.error("Sharing failed:", error);
-    //             displayPopup("Failed to share product.", "error");
-    //         });
-    //     } else {
-    //         navigator.clipboard.writeText(message)
-    //             .then(() => {
-    //                 displayPopup("Product message copied to clipboard!", "success");
-    //             })
-    //             .catch(() => {
-    //                 displayPopup("Failed to copy message.", "error");
-    //             });
-    //     }
-    // };
-
     const handleShare = (product) => {
-    const productUrl = `${window.location.origin}/product-details/${product.category_name}/${product.sub_category_name}/${product.product_id}`;
-    const shareData = {
-        title: product.product_name,
-        text: `Check out this product: ${product.product_name}`,
-        url: productUrl,
-    };
+        const shareUrl = `${API_BASE_URL}/share-preview/${product.product_id}`;
 
-    if (navigator.share) {
-        navigator.share(shareData)
-            .then(() => console.log('Shared successfully'))
-            .catch((error) => console.error('Error sharing:', error));
-    } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(productUrl).then(() => {
-            alert("Link copied to clipboard!");
-        }).catch((err) => {
-            alert("Failed to copy link.");
-        });
-    }
-};
+        if (navigator.share) {
+            navigator.share({
+                title: product.product_name,
+                text: `Check out this product: ${product.product_name}`,
+                url: shareUrl,
+            }).catch(() => {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    displayPopup("Link copied to clipboard!", "success");
+
+                });
+            });
+        } else {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                displayPopup("Link copied to clipboard!", "success");
+
+            });
+        }
+    };
 
     const toggleWishlist = async () => {
         const customer_id = localStorage.getItem("customer_id");
@@ -328,7 +307,6 @@ const CustomerViewProductDetails = () => {
 
             {!loading && !error && productDetails && (
                 <div className="customer-view-details">
-                    {/* Breadcrumb */}
                     <div className="breadcrumb">
                         <span className="breadcrumb-link" onClick={() => navigate("/")}>Home</span>
                         <span className="breadcrumb-separator"> › </span>
@@ -339,7 +317,6 @@ const CustomerViewProductDetails = () => {
                         <span className="breadcrumb-link" onClick={() => navigate(`/categories/${encodeURIComponent(category_name)}/${encodeURIComponent(sub_category_name)}`, { state: { sub_category_name } })}>{product_name}</span>
                     </div>
 
-                    {/* Popup */}
                     <div className="popup-discount">
                         {showPopup && (
                             <PopupMessage
@@ -396,7 +373,7 @@ const CustomerViewProductDetails = () => {
                                 <div
                                     className="wishlist-icon product-wishlist-icon"
                                     onClick={(e) => {
-                                        e.stopPropagation(); // Prevent card click
+                                        e.stopPropagation();
                                         toggleWishlist();
                                     }}
                                 >
@@ -445,7 +422,6 @@ const CustomerViewProductDetails = () => {
                         </div>
                     </div>
 
-                    {/* Zoom Modal */}
                     {isZoomOpen && (
                         <div className="zoom-modal-overlay" onClick={handleZoomClose}>
                             <div className="zoom-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -473,7 +449,6 @@ const CustomerViewProductDetails = () => {
                         </div>
                     )}
 
-                    {/* Tabs */}
                     <div className="customer-view-tabs-container">
                         <div className="customer-tabs">
                             <button className={activeTab === "description" ? "active" : ""} onClick={() => setActiveTab("description")}>Description</button>

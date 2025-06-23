@@ -52,7 +52,6 @@ const ViewCategoriesAndDiscountedProducts = () => {
         setError(data.error || "Failed to fetch data");
       }
 
-      // ✅ Fetch latest products
       const latestResponse = await fetch(`${API_BASE_URL}/latest-products`, {
         method: "POST",
         headers: {
@@ -107,26 +106,26 @@ const ViewCategoriesAndDiscountedProducts = () => {
     navigate("/categories/view-sub-categories/", { state: { category_name: category.category_name } });
   };
 
-    const handleViewProductDetails = (product) => {
-  if (!product.category_id || !product.sub_category_id) {
-    console.error("Missing category_id or sub_category_id");
-    return;
-  }
+  const handleViewProductDetails = (product) => {
+    if (!product.category_id || !product.sub_category_id) {
+      console.error("Missing category_id or sub_category_id");
+      return;
+    }
 
-  localStorage.setItem("category_id", product.category_id);
-  localStorage.setItem("sub_category_id", product.sub_category_id);
-  localStorage.setItem("category_name", product.category);
-  localStorage.setItem("sub_category_name", product.sub_category);
-  localStorage.setItem("product_name", product.product_name);
+    localStorage.setItem("category_id", product.category_id);
+    localStorage.setItem("sub_category_id", product.sub_category_id);
+    localStorage.setItem("category_name", product.category);
+    localStorage.setItem("sub_category_name", product.sub_category);
+    localStorage.setItem("product_name", product.product_name);
 
-  navigate(`/product-details/${product.category}/${product.sub_category}/${product.product_id}`, {
-    state: {
-      category_name: product.category,
-      sub_category_name: product.sub_category,
-      product_name: product.product_name,
-    },
-  });
-};
+    navigate(`/product-details/${product.category}/${product.sub_category}/${product.product_id}`, {
+      state: {
+        category_name: product.category,
+        sub_category_name: product.sub_category,
+        product_name: product.product_name,
+      },
+    });
+  };
 
 
   return (
@@ -171,10 +170,10 @@ const ViewCategoriesAndDiscountedProducts = () => {
                   </div>
                   <div className="latest-products-grid">
                     {latestProducts.slice(1, 7).map((product) => (
-                      <div 
-                      key={product.product_id} 
-                      className="latest-product-card customer-product-card"
-                      onClick={() => handleViewProductDetails(product)}
+                      <div
+                        key={product.product_id}
+                        className="latest-product-card customer-product-card"
+                        onClick={() => handleViewProductDetails(product)}
                       >
                         <img src={product.product_image} alt={product.product_name} className="customer-product-image latest-product-image" />
                         <div className="customer-product-name">{product.product_name}</div>

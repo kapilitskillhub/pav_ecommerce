@@ -73,7 +73,6 @@ const CustomerViewProducts = () => {
 
         const handleSearch = (e) => {
             const query = e.detail;
-            // console.log("🔍 Product search triggered with query:", query);
             if (!query) {
                 fetchProducts(categoryName);
             } else {
@@ -137,7 +136,6 @@ const CustomerViewProducts = () => {
                 customer_id: localStorage.getItem("customer_id") || null,
             };
 
-            // console.log("📨 Product search payload:", payload);
 
             const response = await fetch(`${API_BASE_URL}/customer-search-products`, {
                 method: "POST",
@@ -146,7 +144,6 @@ const CustomerViewProducts = () => {
             });
 
             const data = await response.json();
-            // console.log("📬 Product API response:", data);
 
             if (data.status_code === 200 && data.products) {
                 setProducts(data.products);
@@ -334,7 +331,6 @@ const CustomerViewProducts = () => {
             if (data.status_code === 200) {
                 displayPopup(data.message, "success");
 
-                // Toggle the wishlist state
                 setWishlist((prev) =>
                     prev.includes(product_id)
                         ? prev.filter((id) => id !== product_id)
@@ -512,7 +508,7 @@ const CustomerViewProducts = () => {
                                         <div
                                             className="wishlist-icon"
                                             onClick={(e) => {
-                                                e.stopPropagation(); // Prevent card click
+                                                e.stopPropagation();
                                                 toggleWishlist(product.product_id);
                                             }}
                                         >
@@ -525,7 +521,6 @@ const CustomerViewProducts = () => {
 
 
                                         <div>
-                                            {/* <div>{console.log(product.product_image_url)}</div> */}
                                             <img
                                                 src={
                                                     product.product_images ||

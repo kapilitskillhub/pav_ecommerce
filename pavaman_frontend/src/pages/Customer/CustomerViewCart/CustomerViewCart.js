@@ -21,20 +21,20 @@ const CustomerViewCart = () => {
     }, []);
 
     useEffect(() => {
-    const handleSearch = (e) => {
-        const query = e.detail?.trim(); // normalize input
-        if (!query) {
-            setError(""); // Clear stale "no items found"
-            setLoading(true);
-            fetchCartData();
-        } else {
-            searchCart(query);
-        }
-    };
+        const handleSearch = (e) => {
+            const query = e.detail?.trim();
+            if (!query) {
+                setError("");
+                setLoading(true);
+                fetchCartData();
+            } else {
+                searchCart(query);
+            }
+        };
 
-    window.addEventListener("customerCategorySearch", handleSearch);
-    return () => window.removeEventListener("customerCategorySearch", handleSearch);
-}, []);
+        window.addEventListener("customerCategorySearch", handleSearch);
+        return () => window.removeEventListener("customerCategorySearch", handleSearch);
+    }, []);
 
 
     const displayPopup = (text, type = "success") => {
@@ -85,7 +85,7 @@ const CustomerViewCart = () => {
 
     const searchCart = async (query) => {
         setLoading(true);
-        setError(""); // Clear any previous errors
+        setError("");
 
         const customer_id = localStorage.getItem("customer_id");
 
@@ -113,7 +113,7 @@ const CustomerViewCart = () => {
                 const items = data.cart_items || [];
 
                 if (items.length === 0) {
-                    setCartItems([]); // clear any previous data
+                    setCartItems([]);
                     setTotalPrice(0);
                     setError(data.message || "No items found.");
                 } else {
@@ -137,7 +137,7 @@ const CustomerViewCart = () => {
                             0
                         ) || 0
                     );
-                    setError(""); // Clear any "no items" messages
+                    setError("");
                 }
             } else {
                 setError(data.message || "Failed to search cart.");

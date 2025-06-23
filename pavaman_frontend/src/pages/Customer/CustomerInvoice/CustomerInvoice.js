@@ -1,6 +1,9 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import signatureImg from '../../../assets/images/aviation-logo.png';
+import logo from '../../../assets/images/DK-slogan-for-Mail-01.png';
+import signatureImg from '../../../assets/images/signature.png';
+import stampImg from '../../../assets/images/stamp.png';
+
 import API_BASE_URL from "../../../config";
 const generateInvoicePDF = async (customerId, order, mode = 'download') => {
     try {
@@ -22,10 +25,11 @@ const generateInvoicePDF = async (customerId, order, mode = 'download') => {
 
         const invoice = result.invoices[0];
         const doc = new jsPDF();
+        doc.addImage(logo, 'PNG', 14, 10, 50, 20);
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.text('Tax Invoice', 105, 15, { align: 'center' });
-        let y = 25;
+        let y = 40;
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
         doc.text(`Sold By: Pavaman Aviation`, 14, y);
@@ -79,6 +83,7 @@ const generateInvoicePDF = async (customerId, order, mode = 'download') => {
         autoTable(doc, {
             startY: y + 10,
             head: [[
+                'S.No',
                 'Product Title',
                 'HSN',
                 'Qty',
@@ -87,17 +92,19 @@ const generateInvoicePDF = async (customerId, order, mode = 'download') => {
                 'GST',
                 'Total'
             ]],
-            body: invoice.items.map(item => ([
+            body: invoice.items.map((item, i) => ([
+                i + 1,
                 item.product_name,
                 item.hsn,
                 item.quantity,
                 Number(item.price).toFixed(2),
                 Number(item.discount).toFixed(2),
                 Number(item.gst_amount).toFixed(2),
-                Number(item.total_price).toFixed(2),
+                Number(item.final_price).toFixed(2),
             ])),
+
             headStyles: {
-                fillColor: [68, 80, 162],
+                fillColor: [68, 80, 130],
                 textColor: [255, 255, 255],
                 fontSize: 10,
                 halign: 'center',
@@ -125,16 +132,16 @@ const generateInvoicePDF = async (customerId, order, mode = 'download') => {
         const totalY = doc.lastAutoTable.finalY + 10;
 
         doc.setFont('helvetica', 'bold');
-        // doc.text(`Grand Total:   ${invoice.grand_total}`, 150, totalY);
         doc.text(`Grand Total:  INR ${Number(invoice.grand_total).toFixed(2)}`, 150, totalY);
         doc.setFont('helvetica', 'normal');
         doc.text(`Payment Mode: ${invoice.payment_mode}`, 150, totalY + 7);
-        doc.addImage(signatureImg, 'PNG', 150, totalY + 10, 40, 15);
+        doc.addImage(signatureImg, 'PNG', 140, totalY + 10, 30, 15);
+        doc.addImage(stampImg, 'PNG', 170, totalY + 10, 30, 30);
 
         doc.setFont('helvetica', 'italic');
-        doc.text('Authorized Signatory', 150, totalY + 35);
+        doc.text('Authorized Signatory', 150, totalY + 50);
 
-        const footerY = totalY + 40;
+        const footerY = totalY + 60;
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
         doc.text('*Keep this invoice and manufacturer box for warranty purposes.', 14, footerY);
