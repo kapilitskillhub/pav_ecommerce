@@ -1,5 +1,4 @@
 import "../CustomerFooter/CustomerFooter.css";
-// import logo from '../../../assets/images/logo.png';
 import logo from '../../../assets/images/footer logo.svg';
 
 import { useNavigate } from 'react-router-dom';
@@ -12,9 +11,9 @@ const PavamanFooter = () => {
       <div className="footer-top">
         <div className="footer-logo-section">
           <img src={logo} alt="Pavaman Logo" className="footer-logo" />
-          <p className="tagline">Your Dreams, Our Efforts</p>
+          <p className="tagline">Let's Your Vison take a Flight</p>
           <p className="support-hours">Got Questions? Call us between 9:15 AM to 6:15 PM (Mon - Sat)</p>
-          <p className="support-phone">1800 123 4567, 020 76543210</p>
+          <p className="support-phone">1800 123 4567, 020 76543210 , <br/>+91 906 313 3028</p>
         </div>
 
         <div className="footer-links">

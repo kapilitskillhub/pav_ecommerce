@@ -1,4 +1,4 @@
-import{ useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import Side from "./SideComponent";
@@ -29,8 +29,6 @@ const AllProducts = () => {
                 {
                     customer_id,
                 }
-
-                //    navigate(`/categories/${category_name}/${subCategory.sub_category_name}`);
             );
             if (productRes.data.status_code === 200) {
                 setProducts(productRes.data.products);
@@ -122,7 +120,7 @@ const AllProducts = () => {
             return;
         }
         try {
-            const response = await fetch(`${API_BASE_URL}/add-cart-product`,{
+            const response = await fetch(`${API_BASE_URL}/add-cart-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ customer_id, product_id, quantity: 1 }),
@@ -187,10 +185,10 @@ const AllProducts = () => {
                                 <p className="all-product-availability">
                                     <span
                                         className={`availability ${product.availability === "Out of Stock"
-                                                ? "out-of-stock"
-                                                : product.availability === "Very Few Products Left"
-                                                    ? "few-left"
-                                                    : "in-stock"
+                                            ? "out-of-stock"
+                                            : product.availability === "Very Few Products Left"
+                                                ? "few-left"
+                                                : "in-stock"
                                             }`}
                                     >
                                         {product.availability === "Out of Stock"

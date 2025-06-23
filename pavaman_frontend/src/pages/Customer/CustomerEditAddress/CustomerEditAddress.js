@@ -22,7 +22,7 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
         longitude: address.longitude || "",
         state: address.state || "",
         district: address.district || "",
-        locality:address.locality ||"",
+        locality: address.locality || "",
         mandal: address.mandal || ""
     });
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
@@ -235,16 +235,16 @@ const CartEditAddress = ({ address, onEditCompleted }) => {
                         </div>
                     </div>
 
-                     <div className="input-group">
-                            <input
-                                className="input-text-field"
-                                type="text"
-                                name="locality"
-                                value={formData.landmark}
-                                onChange={handleChange}
-                            />
-                            <label>City/Town<span className="required-star">*</span></label>
-                        </div>
+                    <div className="input-group">
+                        <input
+                            className="input-text-field"
+                            type="text"
+                            name="locality"
+                            value={formData.landmark}
+                            onChange={handleChange}
+                        />
+                        <label>City/Town<span className="required-star">*</span></label>
+                    </div>
 
                     <div className="form-row address-type-container" style={{ flexDirection: "column" }}>
                         <label className="Address-type">Address Type:</label>

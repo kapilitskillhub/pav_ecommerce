@@ -27,7 +27,6 @@
   align-items: center;
   color: #878787;
   cursor: pointer;
-  /* font-weight: 600; */
   text-transform: capitalize;
   transition: color 0.2s ease-in-out;
 }
@@ -208,14 +207,6 @@
 
 }
 
-/* .mobile-filter-toggle {
-  display: none;
-  font-size: 16px;
-  color: #4450A2;
-  font-weight: bold;
-  margin-bottom: 10px;
-  cursor: pointer;
-} */
 
 .filters-sidebar.mobile {
   display: none; 

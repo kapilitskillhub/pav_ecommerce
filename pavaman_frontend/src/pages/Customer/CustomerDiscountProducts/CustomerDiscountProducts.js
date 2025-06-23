@@ -44,7 +44,6 @@ const ViewDiscountedProducts = ({ slidesToShow = 5 }) => {
             const data = await response.json();
             if (data.status_code === 200) {
                 setDiscountedProducts(data.discounted_products);
-                // Extract products that are already in wishlist
                 const wishlistProductIds = data.discounted_products
                     .filter((product) => product.is_in_wishlist)
                     .map((product) => product.product_id);
@@ -140,6 +139,11 @@ const sliderSettings = {
             displayPopup("Category or Subcategory ID is missing.", "error");
             return;
         }
+                localStorage.setItem("category_id", product.category_id );
+        localStorage.setItem("sub_category_id", product.sub_category_id);
+        localStorage.setItem("category_name", product.category_name);
+        localStorage.setItem("sub_category_name", product.sub_category_name);
+        localStorage.setItem("product_name", product.product_name);
         navigate(`/product-details/${product.category_name}/${product.sub_category_name}/${product.product_id}`, {
             state: {
                 category_name: product.category_name,
@@ -172,7 +176,6 @@ const sliderSettings = {
             if (data.status_code === 200) {
                 displayPopup(data.message, "success");
 
-                // Toggle the wishlist state
                 setWishlist((prev) =>
                     prev.includes(product_id)
                         ? prev.filter((id) => id !== product_id)

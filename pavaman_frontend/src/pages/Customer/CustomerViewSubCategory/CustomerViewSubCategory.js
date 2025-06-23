@@ -106,7 +106,6 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
 
                 console.log("✅ Final enrichedCategories", enrichedCategories);
 
-                // Ensure current category is expanded on fetch success
                 if (category_id) {
                     setExpandedCategory(category_id);
                 }
@@ -162,7 +161,7 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
 
         navigate(`/categories/${category_name}/${subCategory.sub_category_name}`);
     };
-    
+
     const handleFilterProducts = async () => {
         const [min, max] = values;
         setMinPrice(min);
@@ -193,19 +192,18 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                 ];
                 setAllCategories(categoryNames);
                 setAllCategories(data.sub_categories);
-                
-        localStorage.setItem("category_id", data.category_id);
-        localStorage.setItem("category_name", data.category_name);
+
+                localStorage.setItem("category_id", data.category_id);
+                localStorage.setItem("category_name", data.category_name);
 
                 navigate("/filtered-products", {
                     state: {
                         filteredProducts,
                         allCategories: data.sub_categories
-                       
+
                     }
                 });
 
-                // navigate("/filtered-products", { state: { filteredProducts } });
             } else {
                 setError(data.error || "Failed to fetch filtered products.");
             }
@@ -246,8 +244,6 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                     <span className="breadcrumb-link" onClick={() => navigate("/")}>Home</span>
                     <span className="breadcrumb-separator"> › </span>
                     <span className="breadcrumb-link" onClick={() => navigate("/")}>{category_name}</span>
-                    {/* <span className="breadcrumb-separator"> › </span> */}
-                    {/* <span className="breadcrumb-current">Subcategories</span> */}
                 </div>
             )}
             <div className="customer-products-heading">Subcategories</div>
@@ -313,44 +309,44 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                                 </button>
                             </div>
                         </div>
-                     
-                            <div className="category-filter-section">
-                                        <div className="sidebar-category-heading">Categories</div>
 
-                                        <div className="sidebar-category-list">
-                                            {allCategories.map((category) => (
-                                                <div key={category.category_name}>
-                                                    <div
-                                                        className="sidebar-category-name"
-                                                        onClick={() => toggleCategory(category.category_name)}
-                                                    >
-                                                        <div className="filter-cat-name">{category.category_name}</div>
-                                                        <span className="filter-cat-name">
-                                                            {expandedCategory === category.category_name ? "▲" : "▼"}
-                                                        </span>
-                                                    </div>
+                        <div className="category-filter-section">
+                            <div className="sidebar-category-heading">Categories</div>
 
-                                                    {expandedCategory === category.category_name && (
-                                                        <div>
-                                                            {category.subcategories && category.subcategories.length > 0 ? (
-                                                                category.subcategories.map((sub) => (
-                                                                    <div
-                                                                        key={sub.sub_category_id} // use `sub.id` as discussed earlier
-                                                                        className="filter-subcat-name"
-                                                                        onClick={() => handleProducts(category, sub)}
-                                                                    >
-                                                                        {sub.sub_category_name}
-                                                                    </div>
-                                                                ))
-                                                            ) : (
-                                                                <div className="filter-subcat-name">No Subcategories</div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
+                            <div className="sidebar-category-list">
+                                {allCategories.map((category) => (
+                                    <div key={category.category_name}>
+                                        <div
+                                            className="sidebar-category-name"
+                                            onClick={() => toggleCategory(category.category_name)}
+                                        >
+                                            <div className="filter-cat-name">{category.category_name}</div>
+                                            <span className="filter-cat-name">
+                                                {expandedCategory === category.category_name ? "▲" : "▼"}
+                                            </span>
                                         </div>
+
+                                        {expandedCategory === category.category_name && (
+                                            <div>
+                                                {category.subcategories && category.subcategories.length > 0 ? (
+                                                    category.subcategories.map((sub) => (
+                                                        <div
+                                                            key={sub.sub_category_id}
+                                                            className="filter-subcat-name"
+                                                            onClick={() => handleProducts(category, sub)}
+                                                        >
+                                                            {sub.sub_category_name}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="filter-subcat-name">No Subcategories</div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
+                                ))}
+                            </div>
+                        </div>
 
 
                     </div>
@@ -373,7 +369,7 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                         </div>
                     </div>
                     <div className="empty-space"></div>
-                                <ViewDiscountedProducts slidesToShow={4} />
+                    <ViewDiscountedProducts slidesToShow={4} />
 
                 </div>
             </div>

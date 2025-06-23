@@ -44,7 +44,7 @@ const CustomerEditProfile = () => {
     };
 
     const handlePhoneChange = (value) => {
-        setFormData((prev) => ({ ...prev, mobile_no:  value }));
+        setFormData((prev) => ({ ...prev, mobile_no: value }));
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -123,7 +123,7 @@ const CustomerEditProfile = () => {
                     <h3 className="profile-edit-heading-first">Mobile Number</h3>
                     <PhoneInput
                         country={'in'}
-                        value={formData.mobile_no.replace('+', '')} // Remove '+' for proper formatting
+                        value={formData.mobile_no.replace('+', '')}
                         onChange={(value) => handlePhoneChange(value)}
                         inputProps={{
                             name: 'mobile_no',

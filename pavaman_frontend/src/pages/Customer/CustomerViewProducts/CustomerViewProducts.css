@@ -59,7 +59,6 @@
                 label {
                     font-weight: 500;
                     font-size: 20px;
-                    /* text-align: left; */
                     color: #4450A2;
                     margin-bottom: 10px;
                 }
@@ -118,7 +117,6 @@
         .header-filter {
             width: 265px;
             margin: 10px auto;
-            /* height: 320px; */
         }
 
         .customer-products-section {

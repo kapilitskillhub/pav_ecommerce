@@ -51,7 +51,6 @@ const FilteredProducts = () => {
         fetchFilteredAndSortedProducts();
     }, [sortOrder]);
 
-    // Inside your component
 
     useEffect(() => {
         fetchAllCategories();
@@ -60,12 +59,11 @@ const FilteredProducts = () => {
     const fetchAllCategories = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/filter-product-price-each-category`, {
-                method: "POST", // change GET to POST
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    // include authorization or session token here if required
                 },
-                body: JSON.stringify({}), // send empty object or required params if any
+                body: JSON.stringify({}),
             });
 
             const data = await response.json();
@@ -204,7 +202,7 @@ const FilteredProducts = () => {
 
             if (response.ok) {
                 setProducts(data.products);
-                    const initialWishlist = data.products
+                const initialWishlist = data.products
                     .filter((product) => product.wishlist_status === true)
                     .map((product) => product.product_id);
                 setWishlist(initialWishlist);
@@ -217,7 +215,7 @@ const FilteredProducts = () => {
             setLoading(false);
         }
     };
-        useEffect(() => {
+    useEffect(() => {
         if (products.length > 0) {
             const initialWishlist = products
                 .filter((product) => product.wishlist_status === true)
@@ -249,7 +247,6 @@ const FilteredProducts = () => {
             if (data.status_code === 200) {
                 displayPopup(data.message, "success");
 
-                // Toggle the wishlist state
                 setWishlist((prev) =>
                     prev.includes(product_id)
                         ? prev.filter((id) => id !== product_id)
@@ -348,47 +345,6 @@ const FilteredProducts = () => {
                                     </select>
                                 </div>
 
-                                {/* <div className="filter-group">
-                                    <div className="filter-group-heading sidebar-category-heading">Categories</div>
-
-                                    <ul className="category-list">
-                                        {allCategories.map((category) => (
-                                            <li key={category.id} className="sidebar-category">
-                                                <div
-                                                    className="sidebar-category-name"
-                                                    onClick={() => toggleCategory(category.id)}
-                                                >
-                                                    {category.category_name} {expandedCategory === category.id ? "▲" : "▼"}
-                                                </div>
-
-                                                {expandedCategory === category.id && category.subcategories && (
-                                                    <ul className="subcategory-list">
-                                                        {category.subcategories.map((sub) => (
-                                                            <li
-                                                                key={sub.id}
-                                                                className="sidebar-subcategory-name"
-                                                                onClick={() =>
-                                                                    navigate(`/filtered-products/${category.category_name}/${sub.sub_category_name}`, {
-                                                                        state: {
-                                                                            category_id: category.id,
-                                                                            sub_category_id: sub.id,
-                                                                            category_name: category.category_name,
-                                                                            sub_category_name: sub.sub_category_name,
-                                                                        },
-                                                                    })
-                                                                }
-                                                            >
-                                                                {sub.sub_category_name}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                </div> */}
-
                             </div>
                         </div>
 
@@ -403,19 +359,19 @@ const FilteredProducts = () => {
                                     className="customer-product-card wishlist-card"
                                     onClick={() => handleViewProductDetails(product)}
                                 >
-                                             <div
-                                            className="wishlist-icon"
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // Prevent card click
-                                                toggleWishlist(product.product_id);
-                                            }}
-                                        >
-                                            {wishlist.includes(product.product_id) ? (
-                                                <AiFillHeart className="wishlist-heart filled" />
-                                            ) : (
-                                                <AiOutlineHeart className="wishlist-heart" />
-                                            )}
-                                        </div>
+                                    <div
+                                        className="wishlist-icon"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            toggleWishlist(product.product_id);
+                                        }}
+                                    >
+                                        {wishlist.includes(product.product_id) ? (
+                                            <AiFillHeart className="wishlist-heart filled" />
+                                        ) : (
+                                            <AiOutlineHeart className="wishlist-heart" />
+                                        )}
+                                    </div>
                                     <img
                                         src={product.product_image_url}
                                         alt={product.product_name}

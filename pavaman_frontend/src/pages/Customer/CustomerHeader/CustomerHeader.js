@@ -4,7 +4,6 @@ import { IoMdPerson } from "react-icons/io";
 import { FiChevronRight, FiHome, FiPhone } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../CustomerHeader/CustomerHeader.css";
-// import Logo from "../../../assets/images/logo.png";
 import Logo from "../../../assets/images/header logo desktop.svg";
 
 import { BiCategory } from "react-icons/bi";
@@ -67,7 +66,6 @@ const CustomerHeader = (onSearch) => {
 
   const handleSearch = () => {
     const trimmedQuery = searchInput.trim();
-    // console.log("Dispatching search event with query:", trimmedQuery);
     window.dispatchEvent(new CustomEvent("customerCategorySearch", { detail: trimmedQuery }));
   };
 
@@ -85,7 +83,6 @@ const CustomerHeader = (onSearch) => {
       });
 
       const data = await response.json();
-      // console.log("Cart API response:", data); 
 
       if (data.status_code === 200) {
         const items = data.cart_items || [];
@@ -222,109 +219,110 @@ const CustomerHeader = (onSearch) => {
           <img src={Logo} alt="Logo" />
         </div>
         <div className="header-left">
-        <div
-          className={`sidebar-header ${searchInput === "" ? "shift-left" : ""}`}
-          onMouseEnter={() => setIsCollapsed(false)}
-          onMouseLeave={() => setIsCollapsed(true)}
-        >
-          <button className="menu-btn"><BiCategory size={24} /></button>
-          <p className="menu-name">Categories</p>
-          <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
-            <ul className="category-list">
-              {categories.map((cat) => (
-                <li
-                  key={cat.category_id}
-                  onMouseEnter={() => {
-                    setHoveredCategory(cat.category_name);
-                    fetchSubCategories(cat.category_name);
-                  }}
-                  className="category-item"
-                >
-                  <button
-                    className="category-btn"
-                    onClick={() => {
-                      localStorage.setItem("category_name", cat.category_name);
-                      localStorage.setItem("category_id", cat.category_id);
-                      navigate(`/categories/view-sub-categories/`, {
-                        state: { category_name: cat.category_name },
-                      })
+          <div
+            className={`sidebar-header ${searchInput === "" ? "shift-left" : ""}`}
+            onMouseEnter={() => setIsCollapsed(false)}
+            onMouseLeave={() => setIsCollapsed(true)}
+          >
+            <button className="menu-btn"><BiCategory size={24} /></button>
+            <p className="menu-name">Categories</p>
+            <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+              <ul className="category-list">
+                {categories.map((cat) => (
+                  <li
+                    key={cat.category_id}
+                    onMouseEnter={() => {
+                      setHoveredCategory(cat.category_name);
+                      fetchSubCategories(cat.category_name);
                     }}
+                    className="category-item"
                   >
-                    {cat.category_name} <FiChevronRight />
-                  </button>
-                  {hoveredCategory === cat.category_name &&
-                    subcategories[cat.category_name] && (
-                      <ul className="subcategory-list">
-                        {subcategories[cat.category_name].map((sub) => (
-                          <li
-                            key={sub.sub_category_id}
-                            className="subcategory-item"
-                            onMouseEnter={() => {
-                              setHoveredSubcategory(sub.sub_category_id);
-                              if (!products[sub.sub_category_id]) {
-                                fetchProducts(
-                                  sub.sub_category_id,
-                                  cat.category_name,
-                                  sub.sub_category_name
-                                );
-                              }
-                            }}
-                          >
-                            <button
-                              onClick={() => {
-                                localStorage.setItem("category_id", cat.sub_category_id);
-
-                                localStorage.setItem("category_name", cat.category_name);
-                                localStorage.setItem("sub_category_name", sub.sub_category_name);
-                                localStorage.setItem("sub_category_id", sub.sub_category_id);
-                                navigate(
-                                  `/categories/${cat.category_name}/${sub.sub_category_name}`,
-                                  {
-                                    state: {
-                                      sub_category_id: sub.sub_category_id,
-                                    },
-                                  }
-                                )
+                    <button
+                      className="category-btn"
+                      onClick={() => {
+                        localStorage.setItem("category_name", cat.category_name);
+                        localStorage.setItem("category_id", cat.category_id);
+                        navigate(`/categories/view-sub-categories/`, {
+                          state: { category_name: cat.category_name },
+                        })
+                      }}
+                    >
+                      {cat.category_name} <FiChevronRight />
+                    </button>
+                    {hoveredCategory === cat.category_name &&
+                      subcategories[cat.category_name] && (
+                        <ul className="subcategory-list">
+                          {subcategories[cat.category_name].map((sub) => (
+                            <li
+                              key={sub.sub_category_id}
+                              className="subcategory-item"
+                              onMouseEnter={() => {
+                                setHoveredSubcategory(sub.sub_category_id);
+                                if (!products[sub.sub_category_id]) {
+                                  fetchProducts(
+                                    sub.sub_category_id,
+                                    cat.category_name,
+                                    sub.sub_category_name
+                                  );
+                                }
                               }}
-                              className="subcategory-btn"
                             >
-                              {sub.sub_category_name} <FiChevronRight />
-                            </button>
+                              <button
+                                onClick={() => {
+                                  localStorage.setItem("category_id", cat.category_id);
 
-                            {hoveredSubcategory === sub.sub_category_id && (
-                              <ul className="product-list">
-                                {products[sub.sub_category_id] === "loading" ? (
-                                  <li>Loading products...</li>
-                                ) : products[sub.sub_category_id]?.length > 0 ? (
-                                  products[sub.sub_category_id].map((prod) => (
-                                    <li key={prod.product_id}
-                                      className="product-item"
-                                      onClick={() => {
-                                        localStorage.setItem("category_name", cat.category_name);
-                                        localStorage.setItem("sub_category_name", sub.sub_category_name);
-                                        localStorage.setItem("sub_category_id", sub.sub_category_id);
-                                        localStorage.setItem("product_id", prod.product_id);
-                                        localStorage.setItem("product_name", prod.product_name);
-                                        setIsCollapsed(true);
-                                        handleProductClick(cat.category_name, sub.sub_category_name, prod.product_id);
-                                      }}
-                                    >
-                                      {prod.product_name}
-                                    </li>
-                                  ))
-                                ) : (
-                                  <li>No products</li>
-                                )}
-                              </ul>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                </li>
-              ))}
-            </ul>
-          </div>
+                                  localStorage.setItem("category_name", cat.category_name);
+                                  localStorage.setItem("sub_category_name", sub.sub_category_name);
+                                  localStorage.setItem("sub_category_id", sub.sub_category_id);
+                                  navigate(
+                                    `/categories/${cat.category_name}/${sub.sub_category_name}`,
+                                    {
+                                      state: {
+                                        sub_category_id: sub.sub_category_id,
+                                      },
+                                    }
+                                  )
+                                }}
+                                className="subcategory-btn"
+                              >
+                                {sub.sub_category_name} <FiChevronRight />
+                              </button>
+
+                              {hoveredSubcategory === sub.sub_category_id && (
+                                <ul className="product-list">
+                                  {products[sub.sub_category_id] === "loading" ? (
+                                    <li>Loading products...</li>
+                                  ) : products[sub.sub_category_id]?.length > 0 ? (
+                                    products[sub.sub_category_id].map((prod) => (
+                                      <li key={prod.product_id}
+                                        className="product-item"
+                                        onClick={() => {
+                                          localStorage.setItem("category_id", cat.category_id);
+                                          localStorage.setItem("category_name", cat.category_name);
+                                          localStorage.setItem("sub_category_name", sub.sub_category_name);
+                                          localStorage.setItem("sub_category_id", sub.sub_category_id);
+                                          localStorage.setItem("product_id", prod.product_id);
+                                          localStorage.setItem("product_name", prod.product_name);
+                                          setIsCollapsed(true);
+                                          handleProductClick(cat.category_name, sub.sub_category_name, prod.product_id);
+                                        }}
+                                      >
+                                        {prod.product_name}
+                                      </li>
+                                    ))
+                                  ) : (
+                                    <li>No products</li>
+                                  )}
+                                </ul>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
         {(
@@ -347,7 +345,7 @@ const CustomerHeader = (onSearch) => {
 
           location.pathname === "/"
         ) && (
-          
+
             <div className="customer-search-bar">
               <input
                 type="text"
@@ -424,12 +422,12 @@ const CustomerHeader = (onSearch) => {
             <FiPhone className="nav-icon" />
             <span>Contact</span>
           </div>
-         
-         <div className="nav-item" onClick={() => navigate("/b2b")}>
+
+          <div className="nav-item" onClick={() => navigate("/b2b")}>
             <LuBriefcaseBusiness className="nav-icon" />
             <span>B2B</span>
           </div>
-        
+
         </div>
       </header>
       <div className="mobile-header-section">
