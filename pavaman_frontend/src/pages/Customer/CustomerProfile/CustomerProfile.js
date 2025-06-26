@@ -86,12 +86,20 @@ const CustomerProfile = ({ refresh }) => {
     );
   }
 
-  const handleEditClick = (field) => {
-    setEditField(field);
+const handleEditClick = (field) => {
+  setEditField(field);
+  setOtp("");
+  setOtpSent(false);
+
+  if (field === "mobile_no") {
+    setTempData({
+      mobile_no: customer.mobile_no || "",
+      new_mobile_no: "",
+    });
+  } else {
     setTempData({ ...customer });
-    setOtp("");
-    setOtpSent(false);
-  };
+  }
+};
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -199,7 +207,7 @@ const CustomerProfile = ({ refresh }) => {
         body: JSON.stringify({
           action: "send_previous_otp",
           customer_id: customerId,
-          mobile_no: tempData.mobile_no,
+          mobile_no: tempData.mobile_no.replace(/^\+/, ""), // <-- remove +
         }),
       });
       const data = await response.json();
@@ -225,7 +233,7 @@ const CustomerProfile = ({ refresh }) => {
           action: "verify_previous_otp",
           customer_id: customerId,
           otp,
-          mobile_no: tempData.mobile_no,
+          mobile_no: tempData.mobile_no.replace(/^\+/, ""), // <-- remove +
         }),
       });
       const data = await response.json();
@@ -256,7 +264,8 @@ const CustomerProfile = ({ refresh }) => {
         body: JSON.stringify({
           action: "send_new_otp",
           customer_id: customerId,
-          mobile_no: tempData.new_mobile_no || "",
+          mobile_no: (tempData.new_mobile_no || "").replace(/^\+/, ""),
+
         }),
       });
       const data = await response.json();
@@ -282,7 +291,8 @@ const CustomerProfile = ({ refresh }) => {
           action: "verify_new_otp",
           customer_id: customerId,
           otp: newOtp,
-          mobile_no: tempData.new_mobile_no || "",
+          mobile_no: (tempData.new_mobile_no || "").replace(/^\+/, ""),
+
         }),
       });
       const data = await response.json();
@@ -373,9 +383,21 @@ const CustomerProfile = ({ refresh }) => {
           <h3 className="profile-edit-heading">Mobile Number</h3>
           <BiSolidPencil className="edit-icon" onClick={() => handleEditClick("mobile_no")} />
         </div>
-        <div className="customer-input-single">
-          <input type="text" value={customer.mobile_no || "-"} readOnly className="customer-input-row-profile" />
-        </div>
+       <div className="customer-input-single">
+  <input
+    type="text"
+    value={
+      customer.mobile_no
+        ? customer.mobile_no.startsWith("+")
+          ? customer.mobile_no
+          : `+${customer.mobile_no}`
+        : "-"
+    }
+    readOnly
+    className="customer-input-row-profile"
+  />
+</div>
+
       </div>
       {editField === "email" && (
         <div className="edit-popup-box">
@@ -500,6 +522,7 @@ const CustomerProfile = ({ refresh }) => {
                       setTempData((prev) => ({
                         ...prev,
                         new_mobile_no: value.startsWith("+") ? value : "+" + value,
+                        
                       }))
                     }
                     inputProps={{ name: "new_mobile_no", required: true }}

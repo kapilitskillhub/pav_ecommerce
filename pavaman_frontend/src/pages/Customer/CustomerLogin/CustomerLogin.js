@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
 import "../CustomerLogin/CustomerLogin.css";
 import Logo from "../../../assets/images/DK mail logo.svg";
 import LogInImage from "../../../assets/images/login image.jpg";
@@ -11,6 +10,7 @@ import PhoneInput from "react-phone-input-2";
 import { useLocation } from "react-router-dom";
 import PopupMessage from "../../../components/Popup/Popup";
 import API_BASE_URL from "../../../config";
+import { GoogleLogin } from "@react-oauth/google";
 
 const CustomerLogin = ({ setCustomerAuthenticated }) => {
     const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ const CustomerLogin = ({ setCustomerAuthenticated }) => {
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
 
     const [showNewPassword, setShowNewPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 
 
@@ -129,9 +129,9 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
         }
 
         try {
-            setShowResendLink(false); 
+            setShowResendLink(false);
 
-            const response = await axios.post(`${API_BASE_URL}/resend-verification-email`, { email});
+            const response = await axios.post(`${API_BASE_URL}/resend-verification-email`, { email });
 
             if (response.data.message) {
                 showPopup("Verification email resent successfully.", "success");
@@ -141,11 +141,11 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             }
         } catch (error) {
             showPopup(error.response?.data?.error || "Error resending verification email. Please try again later.", "error");
-            setShowResendLink(true); 
+            setShowResendLink(true);
         }
     };
     const handleSubmitMobile = async () => {
-        const formattedNumber = mobileNumber.startsWith("+") ? mobileNumber : "+" + mobileNumber;
+        const formattedNumber = mobileNumber;
 
         if (!formattedNumber || formattedNumber.length < 10) {
             showPopup("Please enter a valid mobile number.", "error");
@@ -163,7 +163,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
         }
 
 
-        console.log("Submitting Data:", { customer_id: googleUserId, mobile_no: mobileNumber }); 
+        console.log("Submitting Data:", { customer_id: googleUserId, mobile_no: mobileNumber });
 
         try {
             const response = await axios.post(`${API_BASE_URL}/google-submit-mobile`, {
@@ -174,7 +174,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             if (response.data.message) {
                 showPopup("Mobile number added successfully!", "success");
                 localStorage.setItem("customerData", JSON.stringify(response.data));
-                localStorage.setItem("customer_id", googleUserId); 
+                localStorage.setItem("customer_id", googleUserId);
                 setShowMobilePopup(false);
                 navigate("/");
             }
@@ -191,8 +191,8 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showResetPasswordPopup, setShowResetPasswordPopup] = useState(false);
-    const [otpTimer, setOtpTimer] = useState(120); 
-    const [resendDisabled, setResendDisabled] = useState(true); 
+    const [otpTimer, setOtpTimer] = useState(120);
+    const [resendDisabled, setResendDisabled] = useState(true);
 
     const handleForgotPassword = async () => {
         if (!forgotPasswordIdentifier) {
@@ -200,7 +200,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             return;
         }
 
-        if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier.startsWith("+")) {
+        if (!isNaN(forgotPasswordIdentifier) && !forgotPasswordIdentifier) {
             showPopup("Please enter a valid mobile number with country code.", "error");
             return;
         }
@@ -216,7 +216,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                 setShowForgotPasswordPopup(false);
                 setShowOTPVerification(true);
                 setResendDisabled(true);
-                setOtpTimer(120); 
+                setOtpTimer(120);
             }
 
         } catch (error) {
@@ -231,26 +231,26 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                 setOtpTimer((prev) => {
                     if (prev === 1) {
                         clearInterval(interval);
-                        setResendDisabled(false); 
+                        setResendDisabled(false);
                         return 0;
                     }
                     return prev - 1;
                 });
             }, 1000);
 
-            return () => clearInterval(interval); 
+            return () => clearInterval(interval);
         }
     }, [showOTPVerification, otpTimer]);
 
 
-    const [otp, setOtp] = useState(["", "", "", "", "", ""]); 
+    const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
     const handleInputChange = (e, index) => {
         const value = e.target.value;
-        if (!/^\d*$/.test(value)) return; 
+        if (!/^\d*$/.test(value)) return;
 
         let newOtp = [...otp];
-        newOtp[index] = value.substring(value.length - 1); 
+        newOtp[index] = value.substring(value.length - 1);
 
         setOtp(newOtp);
         if (value && index < otp.length - 1) {
@@ -273,7 +273,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     };
 
     const handleVerifyOTP = async () => {
-        const enteredOTP = otp.join(""); 
+        const enteredOTP = otp.join("");
         if (enteredOTP.length !== 6) {
             showPopup("Please enter a valid 6-digit OTP.", "error");
             return;
@@ -413,7 +413,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                        required
+                            required
                         />
                         <span
                             className="customer-login-password-toggle-btn"
@@ -436,8 +436,10 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
                 <div className="customer-login-actions">
 
-                    <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => showPopup("Google Sign-In failed.", "error")} />
-
+<GoogleLogin
+  onSuccess={handleGoogleSuccess}
+  onError={() => showPopup("Google Sign-In failed.", "error")}
+/>
                     <button className="customer-register-btn" onClick={() => navigate("/customer-register")}>
                         <p className="customer-register-btn-text">Create Account</p>
                     </button>
@@ -463,12 +465,12 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                                 onChange={(e) => setForgotPasswordIdentifier(e.target.value)}
                             />
                         ) : (
-            
+
                             <PhoneInput
                                 className="forgot-phone-input-otp"
                                 country={"in"}
                                 value={forgotPasswordIdentifier}
-                                onChange={(value) => setForgotPasswordIdentifier("+" + value)} 
+                                onChange={(value) => setForgotPasswordIdentifier(value)}
                                 inputProps={{
                                     required: true,
                                 }}
@@ -506,7 +508,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                         <div className="forget_buttons">
                             <button className="verifyOTP" onClick={handleVerifyOTP}>Verify OTP</button>
                             <button className="verify-cancel" onClick={() => setShowOTPVerification(false)}>Cancel</button>
-                        
+
                         </div>
                         <div className="resend-container">
                             <p className="resend" disabled={resendDisabled} onClick={handleForgotPassword}>
@@ -517,50 +519,50 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                     </div>
                 </div>
             )}
-{showResetPasswordPopup && (
-    <div className="reset-password-popup">
-        <div className="popup-content-set-password">
-            <h3>Set New Password</h3>
+            {showResetPasswordPopup && (
+                <div className="reset-password-popup">
+                    <div className="popup-content-set-password">
+                        <h3>Set New Password</h3>
 
-            <div className="customer-login-password-input-wrapper">
-                <input
-                    type={showNewPassword ? "text" : "password"}
-                    placeholder="Enter New Password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="customer-login-input-field-set-password customer-login-password-input"
-                />
-                <span
-                    className="customer-login-password-toggle-btn-set"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                >
-                    {showNewPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-            </div>
+                        <div className="customer-login-password-input-wrapper">
+                            <input
+                                type={showNewPassword ? "text" : "password"}
+                                placeholder="Enter New Password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="customer-login-input-field-set-password customer-login-password-input"
+                            />
+                            <span
+                                className="customer-login-password-toggle-btn-set"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                            >
+                                {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
+                        </div>
 
-            <div className="customer-login-password-input-wrapper">
-                <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="customer-login-input-field customer-login-password-input"
-                />
-                <span
-                    className="customer-login-password-toggle-btn-set"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-            </div>
+                        <div className="customer-login-password-input-wrapper">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Confirm Password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="customer-login-input-field customer-login-password-input"
+                            />
+                            <span
+                                className="customer-login-password-toggle-btn-set"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
+                        </div>
 
-            <div className="reset_buttons">
-                <button className="reset_password" onClick={handleResetPassword}>Reset Password</button>
-                <button className="reset-cancel" onClick={() => setShowResetPasswordPopup(false)}>Cancel</button>
-            </div>
-        </div>
-    </div>
-)}
+                        <div className="reset_buttons">
+                            <button className="reset_password" onClick={handleResetPassword}>Reset Password</button>
+                            <button className="reset-cancel" onClick={() => setShowResetPasswordPopup(false)}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
 
         </div>
