@@ -30,9 +30,10 @@ import CustomerProfileOptions from "../../pages/Customer/CustomerHeader/Customer
 import Policies from '../Customer/CustomerFooter/TempPolicies';
 import ViewWishlist from "../Customer/CustomerWishlist/CustomerViewWishlist";
 import LatestProducts from "../Customer/LatestProducts/LatestProducts";
+import { GOOGLE_CLIENT_ID } from "../../config";
 
 
-const CLIENT_ID = "608603119335-ogp6iqcf7eq1md35247je2p5pkelji38.apps.googleusercontent.com";
+const CLIENT_ID = GOOGLE_CLIENT_ID;
 
 const CustomerRoutes = () => {
   const [isCustomerAuthenticated, setCustomerAuthenticated] = useState(false);
