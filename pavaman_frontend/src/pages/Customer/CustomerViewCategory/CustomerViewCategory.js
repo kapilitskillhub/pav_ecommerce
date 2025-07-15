@@ -17,21 +17,24 @@ const ViewCategoriesAndDiscountedProducts = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    fetchData();
+useEffect(() => {
+  fetchData();
 
-    const handleSearch = (e) => {
-      const query = e.detail;
-      if (!query) {
-        fetchData();
-        searchCategories(query);
-      }
-    };
+  const handleSearch = (e) => {
+    const query = e.detail;
 
-    window.addEventListener("customerCategorySearch", handleSearch);
-    return () => window.removeEventListener("customerCategorySearch", handleSearch);
-  }, []);
+    // Reset to all categories if search is cleared
+    if (!query) {
+      fetchData();
+    }
 
+    // Always attempt search (even for empty query to reset)
+    searchCategories(query);
+  };
+
+  window.addEventListener("customerCategorySearch", handleSearch);
+  return () => window.removeEventListener("customerCategorySearch", handleSearch);
+}, []);
 
   const fetchData = async () => {
     try {

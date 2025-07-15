@@ -12,7 +12,7 @@ import { IoMdClose } from "react-icons/io"
 import { LuBriefcaseBusiness } from "react-icons/lu";
 import API_BASE_URL from "../../../config";
 
-const CustomerHeader = (onSearch) => {
+const CustomerHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
