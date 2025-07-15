@@ -60,11 +60,12 @@ const ViewWishlist = () => {
 
     const handleAddCart = async (productId) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/add-to-cart`, {
+            const response = await axios.post(`${API_BASE_URL}/add-cart-product`, {
                 customer_id: customerId,
                 product_id: productId,
+                // quantity: 1,
             });
-            if (response.data.status === "success") {
+            if (response.data.status_code === 200) {
                 displayPopup("Product added to cart!");
             } else {
                 displayPopup("Failed to add product to cart.", "error");
@@ -73,10 +74,27 @@ const ViewWishlist = () => {
             displayPopup("Error adding to cart.", "error");
         }
     };
+const handleViewProductDetails = (product) => {
+    const category_id = product.category_id;
+    const sub_category_id = product.subcategory_id;
+    const categoryName = product.category_name;
+    const subCategoryName = product.subcategory_name;
 
-    const handleViewProductDetails = (product) => {
-        navigate(`/product-details/${product.product_id}`);
-    };
+    localStorage.setItem("category_id", category_id);
+    localStorage.setItem("sub_category_id", sub_category_id);
+    localStorage.setItem("category_name", categoryName);
+    localStorage.setItem("sub_category_name", subCategoryName);
+    localStorage.setItem("product_name", product.product_name);
+
+    navigate(`/product-details/${categoryName}/${subCategoryName}/${product.product_id}`, {
+        state: {
+            category_name: categoryName,
+            sub_category_name: subCategoryName,
+            product_name: product.product_name,
+        },
+    });
+};
+
 
     if (loading) return <div>Loading wishlist...</div>;
 

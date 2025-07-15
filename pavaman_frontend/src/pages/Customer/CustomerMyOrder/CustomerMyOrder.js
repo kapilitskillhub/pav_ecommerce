@@ -4,6 +4,8 @@ import './CustomerMyOrder.css';
 import { FaCircleArrowRight } from "react-icons/fa6";
 import PopupMessage from "../../../components/Popup/Popup";
 import API_BASE_URL from "../../../config";
+import { Link } from "react-router-dom";
+
 const CustomerMyOrders = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
@@ -44,7 +46,16 @@ const CustomerMyOrders = () => {
   }, [searchTerm]);
 
   const fetchOrders = async () => {
-    if (!customerId) return;
+    if (!customerId) {
+            displayPopup(
+                <>
+                    Please <Link to="/customer-login" className="popup-link">log in</Link> to view your cart.
+                </>,
+                "error"
+            );
+            return;
+        };
+
     try {
       const response = await fetch(`${API_BASE_URL}/customer-my-order`, {
         method: "POST",
