@@ -4,7 +4,10 @@ import "./CustomerOrderSummary.css";
 import defaultImage from "../../../assets/images/product.png";
 import PopupMessage from "../../../components/Popup/Popup";
 import API_BASE_URL from "../../../config";
+import { useNavigate } from "react-router-dom";
+
 const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = () => { } }) => {
+    const navigate = useNavigate();
     const [orders, setOrders] = useState(orderSummary?.orders || []);
     const [showPayment, setShowPayment] = useState(false);
     const [popupMessage, setPopupMessage] = useState({ text: "", type: "" });
@@ -54,6 +57,9 @@ const OrderSummary = ({ orderSummary, setOrderSummary = () => { }, setPopup = ()
                             !cancelled_orders.some(canceled => canceled.order_id === order.order_id)
                         ),
                     }));
+                    setTimeout(() => {
+                        navigate("/view-cart-products");
+                    }, 2000);
                 }
                 if (failed_orders.length > 0) {
                     displayPopup(`Some orders could not be cancelled:\n${failed_orders.map(f => f.message).join("\n")}`, "error");
