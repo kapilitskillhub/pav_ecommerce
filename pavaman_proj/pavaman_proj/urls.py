@@ -40,7 +40,8 @@ from pavaman_backend.customer_views import (customer_register,customer_login,vie
     top_five_selling_products,get_all_category_subcategory,not_selling_products,filter_my_order,
     generate_invoice_for_customer,admin_order_status,customer_cart_view_search,edit_profile_mobile_otp_handler,
     edit_profile_email_otp_handler,filter_and_sort_products,submit_feedback_rating,edit_feedback_rating,view_rating,
-    add_to_wishlist,view_wishlist,latest_products_current_year,view_products_by_category_and_subcategory
+    add_to_wishlist,view_wishlist,latest_products_current_year,view_products_by_category_and_subcategory,
+    share_product_preview
 )
 from django.conf.urls.static import static
 from django.conf import settings
@@ -84,7 +85,7 @@ urlpatterns = [
     path("set-new-password", set_new_password, name="set_new_password"),
     path('',view_categories_and_discounted_products,name='view_categories_and_discounted_products'),
     path('categories/view-sub-categories/', view_sub_categories_and_discounted_products, name='view_sub_categories_and_discounted_products'),
-    # path('categories/<str:category_name>/<str:sub_category_name>/',view_products_by_category_and_subcategory,name='view_products_by_category_and_subcategory'),
+    path('categories/<str:category_name>/<str:sub_category_name>/',view_products_by_category_and_subcategory,name='view_products_by_category_and_subcategory'),
     path('products/<str:product_name>/', view_products_details, name='view_products_details'),
     path('add-cart-product',add_product_to_cart,name='add_product_to_cart'),
     path('view-cart-products',view_product_cart,name='view_product_cart'),
@@ -142,6 +143,7 @@ urlpatterns = [
     path('add-to-wishlist',add_to_wishlist,name= 'add_to_wishlist'),
     path('view-wishlist',view_wishlist,name= 'view_wishlist'),
     path('latest-products', latest_products_current_year, name='latest_products_current_year'),
-    path('view-products-by-category-and-subcategory',view_products_by_category_and_subcategory,name='view_products_by_category_and_subcategory')
+    path('view-products-by-category-and-subcategory',view_products_by_category_and_subcategory,name='view_products_by_category_and_subcategory'),
+    path('share-preview/<int:product_id>/', share_product_preview,name='share_product_preview'),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

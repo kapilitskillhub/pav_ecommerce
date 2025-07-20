@@ -55,6 +55,7 @@ class ProductsDetails(models.Model):
     hsn_code = models.CharField(max_length=30, default='')
     def __str__(self):
         return self.product_name
+    
 class CustomerRegisterDetails(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)

@@ -9,7 +9,7 @@ import calendar
 from datetime import datetime, timedelta
 from collections import Counter
 from decimal import Decimal
-from django.http import JsonResponse, FileResponse
+from django.http import Http404, HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
 from django.conf import settings
 from django.utils import timezone
 from django.utils.timezone import now
@@ -3085,7 +3085,7 @@ def download_material_file(request, product_id):
 
         if not material_key:
             return JsonResponse({"error": "Material file not found.", "status_code": 404}, status=404)
-        
+
         s3 = boto3.client(
             's3',
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
@@ -3095,23 +3095,27 @@ def download_material_file(request, product_id):
 
         try:
             file_obj = s3.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=material_key)
-            file_content = file_obj['Body'].read()
-            response = FileResponse(file_content, as_attachment=True)
-            response['Content-Disposition'] = f'attachment; filename="{material_key.replace("\\", "/").split("/")[-1]}"'
+            file_stream = file_obj['Body']
+            content_type = file_obj.get('ContentType', 'application/pdf')
 
-            response['Content-Type'] = file_obj['ContentType']
+            filename = material_key.replace("\\", "/").split("/")[-1]
+
+            response = StreamingHttpResponse(file_stream, content_type=content_type)
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
             return response
 
         except ClientError as e:
-            return JsonResponse({"error": f"Failed to fetch material file from S3: {str(e)}", "status_code": 500}, status=500)
-
+            return JsonResponse({
+                "error": f"Failed to fetch material file from S3: {str(e)}",
+                "status_code": 500
+            }, status=500)
 
     except ProductsDetails.DoesNotExist:
         return JsonResponse({"error": "Product not found.", "status_code": 404}, status=404)
+
     except Exception as e:
         return JsonResponse({"error": f"Unexpected error: {str(e)}", "status_code": 500}, status=500)
-
 
 @csrf_exempt
 def get_customer_profile(request):
@@ -4478,7 +4482,7 @@ def view_wishlist(request):
             if not customer_id:
                 return JsonResponse({"status": "error", "message": "Customer ID is required."})
             
-            wishlist_items = Wishlist.objects.filter(customer_id=customer_id).select_related("product")
+            wishlist_items = Wishlist.objects.filter(customer_id=customer_id).select_related("product", "product__category", "product__sub_category")
 
             if not wishlist_items.exists():
                 return JsonResponse({
@@ -4504,6 +4508,11 @@ def view_wishlist(request):
                     "final_price": round(float(product.price) - (float(product.price) * float(product.discount or 0) / 100), 2),
                     "availability": product.availability,
                     "product_image": product_image_url,
+                    "category_id": product.category.id if product.category else None,
+                    "category_name": product.category.category_name if product.category else "",
+                    "subcategory_id": product.sub_category.id if product.sub_category else None,
+                    "subcategory_name": product.sub_category.sub_category_name if product.sub_category else "",
+                    
                 })
             response_data = {
                 "status": "success",
@@ -4525,7 +4534,7 @@ def latest_products_current_year(request):
             data = json.loads(request.body.decode("utf-8"))
             customer_id = data.get("customer_id", None)
 
-            current_year = datetime.now().year
+            current_year = timezone.now().year
             products = ProductsDetails.objects.filter(
                 created_at__year=current_year
             ).order_by('-created_at')[:50]
@@ -4580,3 +4589,54 @@ def latest_products_current_year(request):
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "message": "Only POST method allowed"}, status=405)
+def share_product_preview(request, product_id):
+    try:
+        product = ProductsDetails.objects.get(id=product_id)
+    except ProductsDetails.DoesNotExist:
+        raise Http404("Product not found")
+
+    product_images = product.product_images
+    if isinstance(product_images, list) and product_images:
+        product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_images[0].replace('\\', '/')}"
+    elif isinstance(product_images, str):
+        product_image_url = f"{settings.AWS_S3_BUCKET_URL}/{product_images.replace('\\', '/')}"
+    else:
+        product_image_url = f"{request.scheme}://{request.get_host()}/static/images/default.jpg"
+
+    price = float(product.price or 0)
+    discount = float(product.discount or 0)
+    final_price = round(price - ((price * discount) / 100), 2)
+
+    product_url = f"{request.scheme}://{request.get_host()}/products/{product.product_name}/"
+
+    short_description = (product.description[:120] + "...") if product.description and len(product.description) > 120 else product.description or "Top quality product from Dronekits Store"
+
+    og_description = f"Take a look at {product.product_name}! Buy it now for just ₹{final_price}. Premium product from Dronekits Store, available now."
+
+    html = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{product.product_name} - Buy Now at Dronekits Store</title>
+        <meta property="og:title" content="{product.product_name} - Buy Now at Dronekits Store" />
+        <meta property="og:description" content="{og_description}" />
+        <meta property="og:image" content="{product_image_url}" />
+        <meta property="og:url" content="{product_url}" />
+        <meta property="og:type" content="product" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta http-equiv="refresh" content="2; url={product_url}" />
+    </head>
+    <body>
+        <p>Redirecting to product page...</p>
+        <script>
+            setTimeout(function () {{
+                window.location.href = "{product_url}";
+            }}, 2000);
+        </script>
+    </body>
+    </html>
+    """
+
+
+    return HttpResponse(html)

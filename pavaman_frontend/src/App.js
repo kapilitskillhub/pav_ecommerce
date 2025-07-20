@@ -7,6 +7,8 @@ import SideMenu from "./components/SideMenu/SideMenu";
 import SignIn from "./components/SignIn/Signin";
 import AdminRoutes from "./pages/routes/AdminRoutes.js";
 import CustomerRoutes from "./pages/routes/CustomerRoutes";
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsOfService from "./TermsOfService";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,7 +31,9 @@ function App() {
             path="/admin-login"
             element={isAuthenticated ? <Navigate to="/dashboard" /> : <SignIn setIsAuthenticated={setIsAuthenticated} />}
           />
-          
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+
           <Route path="/*" element={<CustomerRoutes />} />
           
           {!isAuthenticated && <Route path="/admin/*" element={<Navigate to="/admin-login" />} />}
