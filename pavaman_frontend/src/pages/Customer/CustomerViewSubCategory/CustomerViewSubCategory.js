@@ -192,6 +192,12 @@ const ViewSubCategoriesAndDiscountedProducts = () => {
                 ];
                 setAllCategories(categoryNames);
                 setAllCategories(data.sub_categories);
+                const firstSubCategory = data.sub_categories.find(sub => sub.products && sub.products.length > 0);
+
+                if (firstSubCategory) {
+                    localStorage.setItem("sub_category_name", firstSubCategory.sub_category_name);
+                    localStorage.setItem("sub_category_id", firstSubCategory.sub_category_id);
+                }
 
                 localStorage.setItem("category_id", data.category_id);
                 localStorage.setItem("category_name", data.category_name);

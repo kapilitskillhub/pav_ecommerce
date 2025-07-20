@@ -301,3 +301,7 @@
 .wishlist-card{
     position: relative;
 }
+
+.latest-product-card{
+    max-height: 350px;
+}

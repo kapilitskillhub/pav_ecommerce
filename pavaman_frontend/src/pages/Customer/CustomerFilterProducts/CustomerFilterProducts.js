@@ -373,10 +373,11 @@ const FilteredProducts = () => {
                                         )}
                                     </div>
                                     <img
-                                        src={product.product_image_url}
+                                        src={Array.isArray(product.product_image_url) ? product.product_image_url[0] : product.product_image_url}
                                         alt={product.product_name}
                                         className="customer-product-image"
                                     />
+
                                     <div className="customer-product-name">{product.product_name}</div>
                                     <div className="customer-discount-section-price ">₹{product.final_price}.00 (incl. GST)</div>
                                     <div >

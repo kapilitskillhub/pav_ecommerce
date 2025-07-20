@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ViewDiscountedProducts from "../CustomerDiscountProducts/CustomerDiscountProducts";
 import CarouselLanding from "../CustomerCarousel/CustomerCarousel";
 import API_BASE_URL from "../../../config";
+
 const ViewCategoriesAndDiscountedProducts = () => {
   const navigate = useNavigate();
 
@@ -13,25 +14,25 @@ const ViewCategoriesAndDiscountedProducts = () => {
   const [error, setError] = useState("");
   const [latestProducts, setLatestProducts] = useState([]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+useEffect(() => {
+  fetchData(); // initial fetch
 
-  useEffect(() => {
-    fetchData();
+  const handleSearch = (e) => {
+    const query = e.detail;
 
-    const handleSearch = (e) => {
-      const query = e.detail;
-      if (!query) {
-        fetchData();
-        searchCategories(query);
-      }
-    };
+    if (!query || query.trim() === "") {
+      fetchData(); // 🔁 reset categories and discounted products
+    } else {
+      searchCategories(query);
+    }
+  };
 
-    window.addEventListener("customerCategorySearch", handleSearch);
-    return () => window.removeEventListener("customerCategorySearch", handleSearch);
-  }, []);
+  window.addEventListener("customerCategorySearch", handleSearch);
 
+  return () => {
+    window.removeEventListener("customerCategorySearch", handleSearch);
+  };
+}, []);
 
   const fetchData = async () => {
     try {
@@ -73,32 +74,34 @@ const ViewCategoriesAndDiscountedProducts = () => {
   };
 
 
-  const searchCategories = async (query) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/customer-search-categories`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category_name: query,
-          customer_id: localStorage.getItem("customer_id") || null,
-        }),
-      });
+const searchCategories = async (query) => {
+  if (!query || query.trim() === "") return; // avoid unnecessary call
 
-      const data = await response.json();
-      if (data.status_code === 200 && data.categories) {
-        setCategories(data.categories);
-        setError("");
-      } else {
-        setCategories([]);
-        setError(data.message || "No matching categories found.");
-      }
-    } catch (err) {
-      setError("Search failed.");
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  try {
+    const response = await fetch(`${API_BASE_URL}/customer-search-categories`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category_name: query,
+        customer_id: localStorage.getItem("customer_id") || null,
+      }),
+    });
+
+    const data = await response.json();
+    if (data.status_code === 200 && data.categories?.length) {
+      setCategories(data.categories);
+      setError("");
+    } else {
+      setCategories([]);
+      setError("No matching categories found.");
     }
-  };
+  } catch (err) {
+    setError("Search failed.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleViewSubCategory = (category) => {
     localStorage.setItem("category_id", category.category_id);

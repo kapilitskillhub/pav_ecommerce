@@ -200,23 +200,24 @@ const CustomerViewProductDetails = () => {
             displayPopup("An unexpected error occurred while placing the order.", error, "error");
         }
     };
-
     const handleDownloadMaterialFile = async (productId) => {
         try {
             const response = await fetch(`${API_BASE_URL}/download-material/${productId}/`);
 
-            if (!response.ok) {
-                throw new Error("Failed to download file.");
-            }
+            if (!response.ok) throw new Error("Failed to download file.");
+
             const blob = await response.blob();
+            const contentDisposition = response.headers.get("Content-Disposition");
+            const match = contentDisposition && contentDisposition.match(/filename="(.+)"/);
+            const fileName = match ? match[1] : `material_${productId}.pdf`;
+
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", `material_${productId}.pdf`);
+            link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-
+            link.remove();
         } catch (error) {
             console.error("Download error:", error);
             displayPopup("Failed to download the material file.", "error");
